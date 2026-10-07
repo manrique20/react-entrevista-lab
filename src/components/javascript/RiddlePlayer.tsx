@@ -75,15 +75,15 @@ export function RiddlePlayer({ riddle, index }: RiddlePlayerProps) {
     <div className="rounded-2xl border border-border/70 bg-card overflow-hidden shadow-sm hover:shadow-md transition-all">
       {/* Header */}
       <div className="p-5 border-b border-border/60 bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold text-sm">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold text-sm shrink-0">
             {riddle.id}
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted">
               Acertijo #{index + 1}
             </span>
-            <h3 className="text-base font-bold text-foreground">{riddle.title}</h3>
+            <h3 className="text-base font-bold text-foreground break-words">{riddle.title}</h3>
           </div>
         </div>
 

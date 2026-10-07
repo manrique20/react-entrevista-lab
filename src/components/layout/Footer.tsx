@@ -7,7 +7,7 @@ import { Sparkles, Heart } from 'lucide-react';
 export function Footer() {
   return (
     <footer className="w-full border-t border-border/80 bg-card/50 text-xs text-muted py-8 mt-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+      <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-primary" />
           <span className="font-semibold text-foreground">React &amp; Next.js Entrevista Lab</span>

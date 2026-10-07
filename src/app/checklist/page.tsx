@@ -96,20 +96,20 @@ export function ChecklistPage() {
       {/* Header */}
       <div className="p-6 sm:p-8 border rounded-3xl bg-card space-y-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-1">
+          <div className="space-y-1 flex-1 min-w-0">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-semibold">
               <CheckSquare className="w-3.5 h-3.5" />
               <span>Checklist Oficial de Preparación</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">
               Checklist de Repaso para la Entrevista
             </h1>
-            <p className="text-xs sm:text-sm text-muted max-w-2xl">
+            <p className="text-xs sm:text-sm text-muted max-w-4xl break-words">
               Monitorea tu preparación integral. Marca cada hito a medida que domines la teoría y puedas explicarlo con fluidez en voz alta.
             </p>
           </div>
 
-          <div className="p-4 border rounded-2xl bg-background text-right min-w-[170px]">
+          <div className="p-4 border rounded-2xl bg-background text-right min-w-[170px] shrink-0">
             <span className="text-xs text-muted block">Hitos Completados</span>
             <span className="text-2xl font-extrabold font-mono text-primary">
               {itemsMarcados}/{totalItems} ({porcentaje}%)

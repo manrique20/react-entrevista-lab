@@ -76,15 +76,15 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
       {/* Header del Nivel */}
       <div className="p-6 sm:p-8 border rounded-3xl bg-card space-y-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-1">
+          <div className="space-y-1 flex-1 min-w-0">
             <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-md">
               Nivel {levelInfo.id} de 8
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">{levelInfo.title}</h1>
-            <p className="text-xs sm:text-sm text-muted max-w-2xl">{levelInfo.description}</p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">{levelInfo.title}</h1>
+            <p className="text-xs sm:text-sm text-muted max-w-4xl break-words">{levelInfo.description}</p>
           </div>
 
-          <div className="p-4 border rounded-2xl bg-background text-right min-w-[160px]">
+          <div className="p-4 border rounded-2xl bg-background text-right min-w-[160px] shrink-0">
             <span className="text-xs text-muted block">Progreso en este Nivel</span>
             <span className="text-2xl font-extrabold font-mono text-primary">
               {completadosNivel}/{topics.length}

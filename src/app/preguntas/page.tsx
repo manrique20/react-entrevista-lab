@@ -36,10 +36,10 @@ export default function QuestionsPage() {
           <HelpCircle className="w-3.5 h-3.5" />
           <span>Simulador de Entrevista Senior</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">
           Preguntas Clásicas de Entrevista en React
         </h1>
-        <p className="text-xs sm:text-sm text-muted max-w-2xl leading-relaxed">
+        <p className="text-xs sm:text-sm text-muted max-w-4xl leading-relaxed break-words">
           Las 9 preguntas obligatorias en procesos técnicos para perfiles Mid y Senior. Cada tarjeta te permite pensar tu respuesta antes de revelar la explicación senior, el código demostrativo y las trampas que hacen fallar a candidatos.
         </p>
 

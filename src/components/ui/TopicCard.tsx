@@ -66,8 +66,8 @@ export function TopicCard({ topic, isCompleted = false, onToggleComplete }: Topi
           </button>
         </div>
 
-        <h3 className="text-lg font-bold text-foreground mt-2">{topic.title}</h3>
-        <p className="text-xs text-muted mt-1 leading-relaxed">{topic.summary}</p>
+        <h3 className="text-lg font-bold text-foreground mt-2 leading-snug break-words">{topic.title}</h3>
+        <p className="text-xs text-muted mt-1 leading-relaxed break-words">{topic.summary}</p>
 
         {/* Tabs de navegación interna */}
         <div className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-border/40 text-xs">

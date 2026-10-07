@@ -165,12 +165,12 @@ export default function JsChecklistPage() {
       {/* Header Banner */}
       <div className="p-6 sm:p-8 rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-card to-card shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+          <div className="space-y-1 flex-1 min-w-0">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-xs font-bold uppercase tracking-wider">
               <CheckSquare className="w-3.5 h-3.5" />
               <span>Preparación Final para la Entrevista</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-foreground">
+            <h1 className="text-2xl sm:text-4xl font-black text-foreground leading-tight break-words">
               Checklist de Repaso: JavaScript
             </h1>
           </div>
@@ -184,7 +184,7 @@ export default function JsChecklistPage() {
           </button>
         </div>
 
-        <p className="text-xs sm:text-sm text-muted leading-relaxed max-w-3xl">
+        <p className="text-xs sm:text-sm text-muted leading-relaxed max-w-5xl break-words">
           Lista oficial de verificación del documento. Marca cada hito a medida que seas capaz de explicarlo con soltura y escribirlo en vivo sin dudar.
         </p>
 

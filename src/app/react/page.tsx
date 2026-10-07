@@ -75,20 +75,20 @@ export default function HomePage() {
 
       {/* Hero Banner */}
       <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-primary/5 via-card to-card p-6 sm:p-10 text-center sm:text-left shadow-sm">
-        <div className="max-w-3xl space-y-4">
+        <div className="w-full max-w-5xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Actualizado para React 19, Server Components y Next.js 16</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight sm:leading-tight lg:leading-[1.2] break-words pb-1">
             React &amp; Next.js <br />
             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent">
               Laboratorio de Entrevistas
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-muted leading-relaxed">
+          <p className="text-sm sm:text-base text-muted leading-relaxed max-w-3xl">
             Una plataforma interactiva completa basada en el documento <code>react-entrevista.md</code>. Cada uno de los 79 tópicos cuenta con su modelo mental, código fuente, laboratorio en vivo interactivo y las respuestas senior que esperan los entrevistadores técnicos.
           </p>
 

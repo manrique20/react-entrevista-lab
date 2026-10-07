@@ -102,25 +102,25 @@ export function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+        <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 h-16 flex items-center justify-between gap-4">
           {/* Logo y Switcher de pistas */}
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 font-bold text-foreground hover:opacity-90 transition-opacity">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-primary/20">
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 font-bold text-foreground hover:opacity-90 transition-opacity shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-primary/20 shrink-0">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-extrabold tracking-tight flex items-center gap-1.5">
+              <div className="flex flex-col justify-center">
+                <span className="text-sm font-extrabold tracking-tight flex items-center gap-1.5 leading-tight">
                   Interview Hub
                 </span>
-                <span className="text-[10px] text-muted -mt-0.5 font-medium">
+                <span className="text-[10px] text-muted font-medium leading-tight">
                   React 19 &amp; JS Core
                 </span>
               </div>
             </Link>
 
             {/* Track Switcher (Desktop) */}
-            <div className="hidden lg:flex items-center p-1 rounded-xl bg-muted/50 border border-border/80 text-xs font-bold ml-2">
+            <div className="hidden md:flex items-center p-1 rounded-xl bg-muted/50 border border-border/80 text-xs font-bold ml-2 shrink-0">
               <Link
                 href="/"
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors ${
@@ -155,7 +155,7 @@ export function Navbar() {
           </div>
 
           {/* Links desktop según contexto */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden xl:flex items-center gap-1 shrink-0">
             {navLinks.map(link => {
               const Icon = link.icon;
               const isActive = pathname === link.href || (link.href !== '/' && link.href !== '/react' && link.href !== '/javascript' && pathname.startsWith(link.href));
@@ -177,7 +177,7 @@ export function Navbar() {
           </nav>
 
           {/* Acciones */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {/* Buscador */}
             <button
               onClick={() => setIsSearchOpen(true)}

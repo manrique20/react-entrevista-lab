@@ -77,11 +77,11 @@ export function JsTopicCard({ topic }: JsTopicCardProps) {
     >
       {/* Header */}
       <div className="p-5 border-b border-border/60 bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-500 text-slate-950 font-black flex items-center justify-center text-sm shadow-md shadow-amber-500/20 shrink-0">
             {topic.id}
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20 uppercase tracking-wider">
                 {topic.levelTitle}
@@ -92,7 +92,7 @@ export function JsTopicCard({ topic }: JsTopicCardProps) {
                 </span>
               ))}
             </div>
-            <h2 className="text-base sm:text-lg font-bold text-foreground leading-snug">
+            <h2 className="text-base sm:text-lg font-bold text-foreground leading-snug break-words">
               {topic.question}
             </h2>
           </div>

@@ -39,20 +39,20 @@ export default function JavascriptHomePage() {
     <div className="space-y-12 pb-16">
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 via-background to-background p-6 sm:p-10 lg:p-12 shadow-sm">
-        <div className="max-w-3xl space-y-4">
+        <div className="w-full max-w-5xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold tracking-wide uppercase">
             <Sparkles className="w-3.5 h-3.5" />
             <span>JavaScript Core &amp; Moderno (ES6+)</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-foreground">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-foreground leading-tight sm:leading-tight lg:leading-[1.2] break-words pb-1">
             Domina las Entrevistas Técnicas de{' '}
             <span className="bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent">
               JavaScript
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-muted leading-relaxed">
+          <p className="text-sm sm:text-base text-muted leading-relaxed max-w-3xl">
             De los fundamentos más oscuros (hoisting, coerción, microtareas y event loop) a patrones de diseño, polyfills canónicos y desafíos de algoritmos exigidos en roles Senior Frontend y Fullstack.
           </p>
 

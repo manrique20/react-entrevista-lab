@@ -100,11 +100,11 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
       {/* Header Banner */}
       <div className="p-6 sm:p-8 rounded-3xl border border-border/80 bg-gradient-to-r from-amber-500/10 via-card to-card shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
+          <div className="space-y-1 flex-1 min-w-0">
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
               JavaScript Core • Nivel {levelNum} de 8
             </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-black text-foreground leading-tight break-words">
               {levelInfo.title}
             </h1>
           </div>
@@ -127,7 +127,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-muted leading-relaxed max-w-3xl">
+        <p className="text-xs sm:text-sm text-muted leading-relaxed max-w-4xl break-words">
           {levelInfo.description}
         </p>
 

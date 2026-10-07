@@ -68,21 +68,21 @@ export default function UnifiedPortalHub() {
           <span>Frontend Interview Mastery Hub</span>
         </div>
 
-        <div className="max-w-3xl mx-auto space-y-3">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground">
+        <div className="w-full max-w-5xl mx-auto space-y-4">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-tight sm:leading-tight lg:leading-[1.15] break-words pb-1">
             El Laboratorio Definitivo de{' '}
             <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500 bg-clip-text text-transparent">
               Entrevistas Frontend
             </span>
           </h1>
-          <p className="text-sm sm:text-base text-muted leading-relaxed max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-muted leading-relaxed max-w-3xl mx-auto">
             Preparación intensiva y rigurosa en dos pistas independientes: la arquitectura moderna de <strong>React 19 &amp; Next.js</strong> y los mecanismos profundos de ejecución de <strong>JavaScript Core</strong>.
           </p>
         </div>
 
         {/* Global Progress Overview */}
-        <div className="max-w-xl mx-auto p-4 rounded-2xl bg-card border border-border/80 shadow-xs space-y-2.5">
-          <div className="flex items-center justify-between text-xs font-bold">
+        <div className="w-full max-w-2xl mx-auto p-5 rounded-2xl bg-card border border-border/80 shadow-xs space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
             <span className="flex items-center gap-1.5 text-foreground">
               <Activity className="w-4 h-4 text-emerald-500" />
               Progreso Global de Estudio
@@ -95,11 +95,11 @@ export default function UnifiedPortalHub() {
               style={{ width: `${globalPercent}%` }}
             />
           </div>
-          <div className="flex items-center justify-between text-[11px] text-muted">
-            <span>React: {reactCompleted}/79</span>
-            <span>JavaScript: {jsCompleted}/81</span>
-            <span>Acertijos: {jsRiddlesCompleted}/12</span>
-            <span>Retos: {jsExercisesCompleted}/17</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-muted text-center pt-1 font-medium">
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">React: {reactCompleted}/79</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">JS Core: {jsCompleted}/81</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Acertijos: {jsRiddlesCompleted}/12</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Retos: {jsExercisesCompleted}/17</span>
           </div>
         </div>
       </section>

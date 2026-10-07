@@ -81,18 +81,18 @@ export function JsExerciseTester({ exercise, index }: JsExerciseTesterProps) {
     <div className="rounded-2xl border border-border/70 bg-card overflow-hidden shadow-sm hover:shadow-md transition-all">
       {/* Header */}
       <div className="p-5 border-b border-border/60 bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold text-sm">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold text-sm shrink-0">
             {exercise.id}
           </div>
-          <div>
-            <div className="flex items-center gap-2 mb-0.5">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${categoryColors[exercise.category] || 'bg-muted text-muted'}`}>
                 {exercise.category}
               </span>
               <span className="text-[11px] text-muted font-medium">Ejercicio #{index + 1}</span>
             </div>
-            <h3 className="text-base font-bold text-foreground">{exercise.title}</h3>
+            <h3 className="text-base font-bold text-foreground break-words">{exercise.title}</h3>
           </div>
         </div>
 

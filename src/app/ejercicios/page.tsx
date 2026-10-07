@@ -49,10 +49,10 @@ export default function ExercisesPage() {
           <Code2 className="w-3.5 h-3.5" />
           <span>Laboratorio de Pruebas de Código</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">
           Ejercicios de Código Frecuentes en Entrevistas
         </h1>
-        <p className="text-xs sm:text-sm text-muted max-w-2xl leading-relaxed">
+        <p className="text-xs sm:text-sm text-muted max-w-4xl leading-relaxed break-words">
           Los 11 ejercicios prácticos que los entrevistadores solicitan construir en vivo durante pruebas técnicas (Live Coding y Take-Home). Interactúa con las implementaciones completas y analiza sus conceptos clave.
         </p>
       </div>
