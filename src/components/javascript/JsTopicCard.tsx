@@ -14,14 +14,22 @@ import {
   ChevronDown,
   ChevronUp,
   Share2,
-  Sparkles
+  Sparkles,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 interface JsTopicCardProps {
   topic: JsTopic;
+  isSpeaking?: boolean;
+  onToggleAudio?: () => void;
 }
 
-export function JsTopicCard({ topic }: JsTopicCardProps) {
+export function JsTopicCard({
+  topic,
+  isSpeaking = false,
+  onToggleAudio
+}: JsTopicCardProps) {
   const [isStudied, setIsStudied] = useState(false);
   const [showConsole, setShowConsole] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
@@ -70,7 +78,9 @@ export function JsTopicCard({ topic }: JsTopicCardProps) {
     <article
       id={topic.id}
       className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
-        isStudied
+        isSpeaking
+          ? 'border-amber-500 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/10'
+          : isStudied
           ? 'bg-card/70 border-emerald-500/40 shadow-sm'
           : 'bg-card border-border/80 hover:border-amber-500/40 shadow-sm'
       }`}
@@ -98,17 +108,34 @@ export function JsTopicCard({ topic }: JsTopicCardProps) {
           </div>
         </div>
 
-        <button
-          onClick={toggleStudied}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border shrink-0 ${
-            isStudied
-              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
-              : 'bg-muted/40 hover:bg-muted text-muted hover:text-foreground border-border/80'
-          }`}
-        >
-          <CheckCircle2 className={`w-3.5 h-3.5 ${isStudied ? 'text-emerald-500' : ''}`} />
-          <span>{isStudied ? 'Dominado' : 'Marcar dominado'}</span>
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          {onToggleAudio && (
+            <button
+              onClick={onToggleAudio}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                isSpeaking
+                  ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-xs font-bold'
+                  : 'border-border/80 hover:bg-muted text-muted hover:text-foreground'
+              }`}
+              title={isSpeaking ? 'Detener lectura de esta pregunta' : 'Escuchar esta pregunta con voz asistida'}
+            >
+              {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              <span className="text-[11px]">{isSpeaking ? 'Detener' : 'Escuchar'}</span>
+            </button>
+          )}
+
+          <button
+            onClick={toggleStudied}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border shrink-0 ${
+              isStudied
+                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                : 'bg-muted/40 hover:bg-muted text-muted hover:text-foreground border-border/80'
+            }`}
+          >
+            <CheckCircle2 className={`w-3.5 h-3.5 ${isStudied ? 'text-emerald-500' : ''}`} />
+            <span>{isStudied ? 'Dominado' : 'Marcar dominado'}</span>
+          </button>
+        </div>
       </div>
 
       <div className="p-5 space-y-4">

@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { LEVELS } from '@/data/levelsData';
 import { getTopicsByLevel } from '@/data/topicsData';
 import { TopicCard } from '@/components/ui/TopicCard';
+import { LevelAudioPlayer } from '@/components/audio/LevelAudioPlayer';
+import { useLevelAudioReader, NarratorItem } from '@/hooks/useLevelAudioReader';
 import {
   ChevronLeft,
   ChevronRight,
@@ -21,6 +23,34 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
   const topics = getTopicsByLevel(levelNum);
 
   const [completedTopics, setCompletedTopics] = useState<string[]>([]);
+
+  // Preparar contenido para audio-guía
+  const narratorItems: NarratorItem[] = useMemo(() => {
+    return topics.map(t => {
+      const parts: string[] = [t.summary];
+      if (t.whatIsIt) parts.push(`Explicación en profundidad: ${t.whatIsIt}`);
+      if (t.interviewTips && t.interviewTips.length > 0) {
+        parts.push(`Consejos para la entrevista: ${t.interviewTips.join('. ')}`);
+      }
+      if (t.commonTraps && t.commonTraps.length > 0) {
+        parts.push(`Trampas comunes a evitar: ${t.commonTraps.join('. ')}`);
+      }
+      if (t.keyTakeaway) {
+        parts.push(`Conclusión clave: ${t.keyTakeaway}`);
+      }
+      return {
+        id: t.id,
+        title: t.title,
+        text: parts.join('. '),
+        domId: `topic-${t.id}`
+      };
+    });
+  }, [topics]);
+
+  const narrator = useLevelAudioReader({
+    items: narratorItems,
+    levelTitle: levelInfo?.title || `Nivel ${levelNum}`
+  });
 
   useEffect(() => {
     try {
@@ -123,6 +153,9 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
         </div>
       </div>
 
+      {/* Reproductor de Audio del Nivel */}
+      <LevelAudioPlayer narrator={narrator} levelTitle={levelInfo.title} />
+
       {/* Listado de TopicCards */}
       <div className="space-y-6">
         {topics.map(topic => (
@@ -131,6 +164,13 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
             topic={topic}
             isCompleted={completedTopics.includes(topic.id)}
             onToggleComplete={toggleComplete}
+            isSpeaking={narrator.activeSpeechId === topic.id}
+            onToggleAudio={() => {
+              const item = narratorItems.find(ni => ni.id === topic.id);
+              if (item) {
+                narrator.speakSingleTopic(item.id, item.title, item.text);
+              }
+            }}
           />
         ))}
       </div>

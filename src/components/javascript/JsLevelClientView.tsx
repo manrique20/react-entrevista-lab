@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { jsLevelsData } from '@/data/javascript/levelsData';
 import { jsTopicsByLevel } from '@/data/javascript/topicsData';
 import { JsTopicCard } from './JsTopicCard';
+import { LevelAudioPlayer } from '@/components/audio/LevelAudioPlayer';
+import { useLevelAudioReader, NarratorItem } from '@/hooks/useLevelAudioReader';
 import { EventLoopVisualizer } from './EventLoopVisualizer';
 import { CoercionMatrix } from './CoercionMatrix';
 import {
@@ -26,6 +28,30 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
   const topics = jsTopicsByLevel[levelNum] || [];
   const [filterText, setFilterText] = useState('');
   const [completedTopicIds, setCompletedTopicIds] = useState<string[]>([]);
+
+  // Preparar contenido para audio-guía de JavaScript
+  const narratorItems: NarratorItem[] = useMemo(() => {
+    return topics.map(t => {
+      const parts: string[] = [t.shortAnswer];
+      if (t.explanation) {
+        parts.push(`Explicación detallada: ${t.explanation}`);
+      }
+      if (t.seniorTip) {
+        parts.push(`Consejo senior para la entrevista: ${t.seniorTip}`);
+      }
+      return {
+        id: t.id,
+        title: t.question,
+        text: parts.join('. '),
+        domId: t.id
+      };
+    });
+  }, [topics]);
+
+  const narrator = useLevelAudioReader({
+    items: narratorItems,
+    levelTitle: `JavaScript Nivel ${levelNum}: ${levelInfo?.title || ''}`
+  });
 
   useEffect(() => {
     const updateProgress = () => {
@@ -167,6 +193,9 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
         </div>
       )}
 
+      {/* Reproductor de Audio del Nivel */}
+      <LevelAudioPlayer narrator={narrator} levelTitle={`JavaScript Nivel ${levelNum}: ${levelInfo.title}`} />
+
       {/* Listado de preguntas */}
       <div className="space-y-5">
         <div className="flex items-center justify-between text-xs text-muted font-semibold">
@@ -180,7 +209,17 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
           </div>
         ) : (
           filteredTopics.map((topic) => (
-            <JsTopicCard key={topic.id} topic={topic} />
+            <JsTopicCard
+              key={topic.id}
+              topic={topic}
+              isSpeaking={narrator.activeSpeechId === topic.id}
+              onToggleAudio={() => {
+                const item = narratorItems.find(ni => ni.id === topic.id);
+                if (item) {
+                  narrator.speakSingleTopic(item.id, item.title, item.text);
+                }
+              }}
+            />
           ))
         )}
       </div>

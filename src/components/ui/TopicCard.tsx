@@ -13,23 +13,37 @@ import {
   Circle,
   AlertTriangle,
   Lightbulb,
-  ExternalLink
+  ExternalLink,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 
 interface TopicCardProps {
   topic: Topic;
   isCompleted?: boolean;
   onToggleComplete?: (id: string) => void;
+  isSpeaking?: boolean;
+  onToggleAudio?: () => void;
 }
 
-export function TopicCard({ topic, isCompleted = false, onToggleComplete }: TopicCardProps) {
+export function TopicCard({
+  topic,
+  isCompleted = false,
+  onToggleComplete,
+  isSpeaking = false,
+  onToggleAudio
+}: TopicCardProps) {
   const [activeTab, setActiveTab] = useState<'concept' | 'demo' | 'code' | 'interview'>('concept');
 
   return (
     <div
       id={`topic-${topic.id}`}
       className={`border rounded-2xl bg-card shadow-sm transition-all duration-200 overflow-hidden ${
-        isCompleted ? 'border-emerald-500/40 ring-1 ring-emerald-500/20' : 'border-border/80 hover:border-primary/40'
+        isSpeaking
+          ? 'border-primary ring-2 ring-primary/50 shadow-lg shadow-primary/10'
+          : isCompleted
+          ? 'border-emerald-500/40 ring-1 ring-emerald-500/20'
+          : 'border-border/80 hover:border-primary/40'
       }`}
     >
       {/* Header */}
@@ -44,26 +58,43 @@ export function TopicCard({ topic, isCompleted = false, onToggleComplete }: Topi
             </span>
           </div>
 
-          <button
-            onClick={() => onToggleComplete?.(topic.id)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-              isCompleted
-                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                : 'border border-border/80 hover:bg-muted text-muted hover:text-foreground'
-            }`}
-          >
-            {isCompleted ? (
-              <>
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                <span>Dominado</span>
-              </>
-            ) : (
-              <>
-                <Circle className="w-4 h-4 text-muted" />
-                <span>Marcar como estudiado</span>
-              </>
+          <div className="flex items-center gap-2">
+            {onToggleAudio && (
+              <button
+                onClick={onToggleAudio}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                  isSpeaking
+                    ? 'bg-primary text-white border-primary shadow-xs'
+                    : 'border-border/80 hover:bg-muted text-muted hover:text-foreground'
+                }`}
+                title={isSpeaking ? 'Detener lectura de este tema' : 'Escuchar este tema con voz asistida'}
+              >
+                {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                <span className="text-[11px]">{isSpeaking ? 'Detener' : 'Escuchar'}</span>
+              </button>
             )}
-          </button>
+
+            <button
+              onClick={() => onToggleComplete?.(topic.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                isCompleted
+                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                  : 'border border-border/80 hover:bg-muted text-muted hover:text-foreground'
+              }`}
+            >
+              {isCompleted ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <span>Dominado</span>
+                </>
+              ) : (
+                <>
+                  <Circle className="w-4 h-4 text-muted" />
+                  <span>Marcar como estudiado</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         <h3 className="text-lg font-bold text-foreground mt-2 leading-snug break-words">{topic.title}</h3>
