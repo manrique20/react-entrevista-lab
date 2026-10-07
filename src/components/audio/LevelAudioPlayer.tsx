@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Play,
   Pause,
@@ -8,12 +8,7 @@ import {
   SkipForward,
   SkipBack,
   Volume2,
-  VolumeX,
-  Gauge,
-  ArrowDownCircle,
-  Sparkles,
-  ChevronDown,
-  ChevronUp
+  ArrowDownCircle
 } from 'lucide-react';
 import { useLevelAudioReader } from '@/hooks/useLevelAudioReader';
 
@@ -23,7 +18,6 @@ interface LevelAudioPlayerProps {
 }
 
 export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
 
   if (!narrator.isSupported) {
     return null;
@@ -81,6 +75,11 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
               <span className="text-[11px] text-muted font-medium">
                 Tema {narrator.currentIndex + 1} de {narrator.totalItems}
               </span>
+              {narrator.isLoadingAudio && (
+                <span className="text-[10px] text-primary font-bold animate-pulse">
+                  (Cargando audio...)
+                </span>
+              )}
             </div>
 
             <p className="text-xs sm:text-sm font-bold text-foreground truncate">
@@ -152,44 +151,8 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
             <span className="hidden md:inline">Scroll automático</span>
           </button>
 
-          {/* Selector de Voz colapsable */}
-          {narrator.voices.length > 1 && (
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="p-2 rounded-xl border border-border/80 hover:bg-muted text-muted"
-              title="Ajustes de voz"
-            >
-              {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            </button>
-          )}
         </div>
       </div>
-
-      {/* Ajustes avanzados (Voces) */}
-      {isExpanded && narrator.voices.length > 0 && (
-        <div className="p-3 bg-muted/20 border-t border-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-in fade-in">
-          <span className="text-muted font-medium">Voz del sintetizador:</span>
-          <select
-            value={narrator.selectedVoice?.name || ''}
-            onChange={(e) => {
-              if (!e.target.value) {
-                narrator.setSelectedVoice(null);
-              } else {
-                const v = narrator.voices.find(voice => voice.name === e.target.value);
-                if (v) narrator.setSelectedVoice(v);
-              }
-            }}
-            className="p-1.5 rounded-lg border border-border/80 bg-background text-xs text-foreground focus:outline-none max-w-xs"
-          >
-            <option value="">Voz nativa del sistema (Recomendada en Linux/Brave)</option>
-            {narrator.voices.map((v, idx) => (
-              <option key={idx} value={v.name}>
-                {v.name} ({v.lang}) {v.localService ? '• Local' : ''}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
 
       {/* Banner informativo de error / bloqueo de síntesis */}
       {narrator.errorMessage && (
