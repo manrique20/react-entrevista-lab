@@ -67,7 +67,7 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
   // Reproductor de audio HTML5 y caché en memoria para audio instantáneo
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const currentObjectUrlRef = useRef<string | null>(null);
-  const audioBlobCacheRef = useRef<Map<string, string>>(new Map());
+  const audioBlobCacheRef = useRef<Map<string, Blob>>(new Map());
 
   useEffect(() => {
     itemsRef.current = items;
@@ -96,7 +96,11 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
         audioElementRef.current.src = '';
       }
       if (currentObjectUrlRef.current) {
-        URL.revokeObjectURL(currentObjectUrlRef.current);
+        try {
+          URL.revokeObjectURL(currentObjectUrlRef.current);
+        } catch {
+          // ignore
+        }
       }
     };
   }, []);
@@ -108,10 +112,6 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
       if (audioElementRef.current) {
         audioElementRef.current.pause();
         audioElementRef.current.currentTime = 0;
-      }
-      if (currentObjectUrlRef.current) {
-        URL.revokeObjectURL(currentObjectUrlRef.current);
-        currentObjectUrlRef.current = null;
       }
 
       // 2. Auto-scroll suave para centrar la tarjeta del tema activo
@@ -129,10 +129,10 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
       setIsLoadingAudio(true);
       setErrorMessage(null);
 
-      // 3. Obtener el archivo de audio completo desde la caché o el endpoint /api/tts
-      let audioUrl = audioBlobCacheRef.current.get(item.id);
+      // 3. Obtener el archivo de audio (Blob) desde la caché o el endpoint /api/tts
+      let blob = audioBlobCacheRef.current.get(item.id);
 
-      if (!audioUrl) {
+      if (!blob) {
         const res = await fetch('/api/tts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -143,11 +143,21 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
           throw new Error(`HTTP ${res.status} al sintetizar audio`);
         }
 
-        const blob = await res.blob();
-        audioUrl = URL.createObjectURL(blob);
-        audioBlobCacheRef.current.set(item.id, audioUrl);
+        blob = await res.blob();
+        audioBlobCacheRef.current.set(item.id, blob);
       }
 
+      // Revocar la URL de objeto anterior para liberar memoria
+      if (currentObjectUrlRef.current) {
+        try {
+          URL.revokeObjectURL(currentObjectUrlRef.current);
+        } catch {
+          // ignore
+        }
+      }
+
+      // Crear URL fresca válida a partir del Blob seguro
+      const audioUrl = URL.createObjectURL(blob);
       currentObjectUrlRef.current = audioUrl;
 
       // 4. Configurar y reproducir a través del elemento Audio
