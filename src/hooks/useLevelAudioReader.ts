@@ -13,7 +13,7 @@ export function cleanMarkdownForSpeech(text: string): string {
   if (!text) return '';
   return text
     // Eliminar bloques de código markdown
-    .replace(/```[\s\S]*?```/g, ' Ejemplo de código en pantalla. ')
+    .replace(/```[\s\S]*?```/g, ' Ejemplo de código disponible en pantalla. ')
     // Eliminar código inline backticks
     .replace(/`([^`]+)`/g, '$1')
     // Eliminar enlaces [texto](url) -> texto
@@ -45,7 +45,7 @@ export function cleanMarkdownForSpeech(text: string): string {
 
 /**
  * Divide el texto en oraciones cortas (máximo ~180 caracteres).
- * Esto evita el conocido bug de Chromium donde utterances largas se cancelan o silencian.
+ * Esto permite una cadencia natural y compatibilidad tanto con Web Speech API como con el reproductor HTTP.
  */
 export function splitIntoSentences(text: string): string[] {
   if (!text) return [];
@@ -58,11 +58,11 @@ export function splitIntoSentences(text: string): string[] {
   const sentences: string[] = [];
 
   for (const s of rawSentences) {
-    if (s.length > 200) {
+    if (s.length > 180) {
       const parts = s.split(/([,;:])\s+/);
       let current = '';
       for (let i = 0; i < parts.length; i++) {
-        if ((current + parts[i]).length < 200) {
+        if ((current + parts[i]).length < 180) {
           current += parts[i];
         } else {
           if (current.trim()) sentences.push(current.trim());
@@ -91,7 +91,7 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
   const [autoScroll, setAutoScroll] = useState(true);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
-  const [isSupported, setIsSupported] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
   const [activeSpeechId, setActiveSpeechId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -101,11 +101,14 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
   const selectedVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
   const autoScrollRef = useRef(autoScroll);
 
-  // Registro de voces que hayan fallado con 'synthesis-failed' (ej. voces cloud de Google en Brave/Linux)
-  const failedVoicesRef = useRef<Set<string>>(new Set());
-  const useSystemDefaultVoiceRef = useRef<boolean>(false);
+  // Modo de reproducción por streaming HTTP (/api/tts) cuando Web Speech API falla (ej. en Brave / Linux)
+  const useHttpAudioRef = useRef<boolean>(false);
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
-  // Referencias para manejo robusto de ciclo de vida de Web Speech API
+  // Registro de voces que hayan fallado con 'synthesis-failed'
+  const failedVoicesRef = useRef<Set<string>>(new Set());
+
+  // Referencias para manejo de Web Speech API
   const activeUtterancesRef = useRef<Set<SpeechSynthesisUtterance>>(new Set());
   const speakTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -117,6 +120,9 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
 
   useEffect(() => {
     rateRef.current = rate;
+    if (audioElementRef.current) {
+      audioElementRef.current.playbackRate = rate;
+    }
   }, [rate]);
 
   useEffect(() => {
@@ -150,28 +156,25 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     }, 10000);
   }, [stopKeepAlive]);
 
-  // Cargar voces del sistema operativo y navegador
+  // Cargar voces disponibles en el navegador
   useEffect(() => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-      setIsSupported(false);
+    if (typeof window === 'undefined') return;
+
+    if (!('speechSynthesis' in window)) {
+      useHttpAudioRef.current = true;
       return;
     }
-
-    setIsSupported(true);
 
     const updateVoices = () => {
       const allVoices = window.speechSynthesis.getVoices();
       if (!allVoices || allVoices.length === 0) return;
 
-      // Filtrar voces en español disponibles
       const spanishVoices = allVoices.filter(v =>
         v.lang.toLowerCase().startsWith('es')
       );
       const voiceList = spanishVoices.length > 0 ? spanishVoices : allVoices;
       setVoices(voiceList);
 
-      // En Linux y navegadores como Brave, las voces de Google fallan porque Brave bloquea los endpoints de telemetría de Google TTS.
-      // Priorizamos: 1) Voces locales en español, 2) Voces no-Google en español, 3) Cualquier voz local.
       if (!selectedVoiceRef.current) {
         const localSpanish = voiceList.find(v => v.lang.toLowerCase().startsWith('es') && v.localService);
         const nonGoogleSpanish = voiceList.find(v => v.lang.toLowerCase().startsWith('es') && !v.name.toLowerCase().includes('google'));
@@ -191,12 +194,44 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current.src = '';
+      }
     };
   }, []);
 
-  // Función para narrar un conjunto de oraciones secuencialmente
+  // Función para reproducir fragmento usando HTML5 Audio (/api/tts)
+  const playHttpSentence = useCallback((text: string, onEnded: () => void, onError: () => void) => {
+    try {
+      if (audioElementRef.current) {
+        audioElementRef.current.pause();
+        audioElementRef.current.src = '';
+      }
+
+      const audio = new Audio(`/api/tts?text=${encodeURIComponent(text)}`);
+      audio.playbackRate = rateRef.current;
+      audioElementRef.current = audio;
+
+      audio.onended = () => {
+        onEnded();
+      };
+
+      audio.onerror = () => {
+        onError();
+      };
+
+      audio.play().catch(() => {
+        onError();
+      });
+    } catch {
+      onError();
+    }
+  }, []);
+
+  // Función para narrar oraciones en cola (híbrido: Web Speech API con auto-fallback a HTTP Audio)
   const speakSentences = useCallback((sentences: string[], onEndCallback: () => void) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (typeof window === 'undefined') return;
 
     if (sentences.length === 0) {
       onEndCallback();
@@ -206,8 +241,14 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     shouldStopRef.current = false;
     setErrorMessage(null);
 
-    // Cancelar cualquier audio anterior y limpiar timeouts
-    window.speechSynthesis.cancel();
+    // Cancelar cualquier síntesis en curso
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.src = '';
+    }
     if (speakTimeoutRef.current) {
       clearTimeout(speakTimeoutRef.current);
       speakTimeoutRef.current = null;
@@ -230,7 +271,17 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
       const text = sentences[sentenceIndex];
       sentenceIndex++;
 
-      // Retardo de 60ms: esencial en Chromium para que no descarte el nuevo speak() tras un cancel()
+      // Si ya se activó el motor HTTP (ej. tras error en Brave/Linux), reproducir vía /api/tts
+      if (useHttpAudioRef.current) {
+        playHttpSentence(
+          text,
+          () => speakNext(),
+          () => speakNext() // si una frase tiene micro-corte, continuar con la siguiente
+        );
+        return;
+      }
+
+      // Intentar primero con la Web Speech API nativa
       speakTimeoutRef.current = setTimeout(() => {
         if (shouldStopRef.current) return;
 
@@ -242,22 +293,9 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.rate = rateRef.current;
 
-          let voiceToUse: SpeechSynthesisVoice | undefined = undefined;
-
-          // Si el usuario no ha forzado el fallback de voz del sistema:
-          if (!useSystemDefaultVoiceRef.current) {
-            const allVoices = window.speechSynthesis.getVoices().filter(
-              v => !failedVoicesRef.current.has(v.name)
-            );
-
-            if (selectedVoiceRef.current && !failedVoicesRef.current.has(selectedVoiceRef.current.name)) {
-              voiceToUse = selectedVoiceRef.current;
-            } else if (allVoices.length > 0) {
-              const localEs = allVoices.find(v => v.lang.toLowerCase().startsWith('es') && v.localService);
-              const nonGoogleEs = allVoices.find(v => v.lang.toLowerCase().startsWith('es') && !v.name.toLowerCase().includes('google'));
-              const anyEs = allVoices.find(v => v.lang.toLowerCase().startsWith('es'));
-              voiceToUse = localEs || nonGoogleEs || anyEs || allVoices[0];
-            }
+          let voiceToUse = selectedVoiceRef.current;
+          if (voiceToUse && failedVoicesRef.current.has(voiceToUse.name)) {
+            voiceToUse = null;
           }
 
           if (voiceToUse) {
@@ -267,7 +305,6 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
             utterance.lang = 'es-ES';
           }
 
-          // Mantener referencia contra Garbage Collection
           activeUtterancesRef.current.add(utterance);
 
           utterance.onstart = () => {
@@ -288,30 +325,13 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
               return;
             }
 
-            console.warn('[AudioReader] Evento de error en voz:', e.error);
-
-            // Manejo especial para "synthesis-failed" (habitual cuando Brave o Linux bloquean voces de Google)
-            if (e.error === 'synthesis-failed') {
-              if (voiceToUse && !useSystemDefaultVoiceRef.current) {
-                console.warn(`[AudioReader] La voz "${voiceToUse.name}" falló con synthesis-failed. Reintentando con el sintetizador nativo del sistema...`);
-                failedVoicesRef.current.add(voiceToUse.name);
-                selectedVoiceRef.current = null;
-                useSystemDefaultVoiceRef.current = true;
-                // Reintentar la misma frase con el sintetizador por defecto del sistema
-                sentenceIndex--;
-                speakNext();
-                return;
-              }
-
-              // Si ya falló incluso en modo nativo:
-              console.error('[AudioReader] El sintetizador de voz del sistema no pudo emitir audio.');
-              setErrorMessage(
-                'El navegador no pudo emitir voz. Si usas Brave o Linux, los escudos de huella digital o el servicio speech-dispatcher pueden estar bloqueándolo.'
-              );
-              stopKeepAlive();
-              setIsPlaying(false);
-              setIsPaused(false);
-              setActiveSpeechId(null);
+            // Si Web Speech API falla (ej. synthesis-failed en Brave/Linux):
+            if (e.error === 'synthesis-failed' || e.error === 'audio-busy') {
+              console.warn('[AudioReader] Web Speech API no disponible en este entorno. Activando reproductor de audio optimizado...');
+              useHttpAudioRef.current = true;
+              // Reintentar la misma frase inmediatamente a través de /api/tts
+              sentenceIndex--;
+              speakNext();
               return;
             }
 
@@ -321,15 +341,17 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
           window.speechSynthesis.speak(utterance);
           window.speechSynthesis.resume();
           startKeepAlive();
-        } catch (err) {
-          console.warn('[AudioReader] Fallo al reproducir fragmento:', err);
+        } catch {
+          // Fallback inmediato a HTTP Audio ante cualquier excepción
+          useHttpAudioRef.current = true;
+          sentenceIndex--;
           speakNext();
         }
       }, 60);
     };
 
     speakNext();
-  }, [startKeepAlive, stopKeepAlive]);
+  }, [playHttpSentence, startKeepAlive, stopKeepAlive]);
 
   // Reproducir el tema actual y encadenar el siguiente
   const playItemAtIndex = useCallback((index: number) => {
@@ -374,7 +396,9 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
 
   const play = useCallback(() => {
     if (isPaused) {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      if (useHttpAudioRef.current && audioElementRef.current) {
+        audioElementRef.current.play();
+      } else if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.resume();
         startKeepAlive();
       }
@@ -387,7 +411,9 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
   }, [isPaused, playItemAtIndex, startKeepAlive]);
 
   const pause = useCallback(() => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    if (useHttpAudioRef.current && audioElementRef.current) {
+      audioElementRef.current.pause();
+    } else if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.pause();
     }
     stopKeepAlive();
@@ -404,6 +430,10 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     stopKeepAlive();
     activeUtterancesRef.current.clear();
 
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.src = '';
+    }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
@@ -427,6 +457,9 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
   const changeRate = useCallback((newRate: number) => {
     setRate(newRate);
     rateRef.current = newRate;
+    if (audioElementRef.current) {
+      audioElementRef.current.playbackRate = newRate;
+    }
     if (isPlaying) {
       playItemAtIndex(currentIndexRef.current);
     }
@@ -434,7 +467,7 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
 
   // Reproducir un tema individual puntual
   const speakSingleTopic = useCallback((topicId: string, title: string, text: string) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    if (typeof window === 'undefined') return;
 
     if (activeSpeechId === topicId && (isPlaying || isPaused)) {
       stop();
@@ -449,7 +482,14 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     }
     stopKeepAlive();
     activeUtterancesRef.current.clear();
-    window.speechSynthesis.cancel();
+
+    if (audioElementRef.current) {
+      audioElementRef.current.pause();
+      audioElementRef.current.src = '';
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
 
     // Iniciar nuevo tema individual
     setActiveSpeechId(topicId);
@@ -490,7 +530,7 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     setSelectedVoice: (voice: SpeechSynthesisVoice | null) => {
       setSelectedVoice(voice);
       selectedVoiceRef.current = voice;
-      useSystemDefaultVoiceRef.current = !voice;
+      useHttpAudioRef.current = false;
     },
     playItemAtIndex,
     speakSingleTopic
