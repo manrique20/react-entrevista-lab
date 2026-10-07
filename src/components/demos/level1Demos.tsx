@@ -438,3 +438,328 @@ export function DataFlowDemo() {
     </div>
   );
 }
+
+// Demo 1.8: Comparativa de Estilos en React
+export function StylesComparisonDemo() {
+  const [estrategia, setEstrategia] = useState<'tailwind' | 'inline' | 'modules' | 'cssinjs'>('tailwind');
+  const [progreso, setProgreso] = useState(65);
+  const [colorPrimario, setColorPrimario] = useState<'blue' | 'emerald' | 'purple' | 'amber'>('blue');
+  const [radioBorde, setRadioBorde] = useState<'rounded-none' | 'rounded-lg' | 'rounded-2xl'>('rounded-xl' as 'rounded-lg');
+  const [modoOscuro, setModoOscuro] = useState(false);
+
+  const coloresMap = {
+    blue: { bg: 'bg-blue-600', hover: 'hover:bg-blue-700', hex: '#2563eb', border: 'border-blue-500/30', text: 'text-blue-500' },
+    emerald: { bg: 'bg-emerald-600', hover: 'hover:bg-emerald-700', hex: '#059669', border: 'border-emerald-500/30', text: 'text-emerald-500' },
+    purple: { bg: 'bg-purple-600', hover: 'hover:bg-purple-700', hex: '#7c3aed', border: 'border-purple-500/30', text: 'text-purple-500' },
+    amber: { bg: 'bg-amber-600', hover: 'hover:bg-amber-700', hex: '#d97706', border: 'border-amber-500/30', text: 'text-amber-500' }
+  };
+
+  const selColor = coloresMap[colorPrimario];
+
+  return (
+    <div className="space-y-6">
+      {/* Selector de Estrategia de Estilo */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold text-muted uppercase tracking-wider block">
+          Selecciona una Estrategia de Estilizado en React:
+        </label>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button
+            onClick={() => setEstrategia('tailwind')}
+            className={`p-2.5 rounded-xl border text-xs font-semibold transition-all text-left ${
+              estrategia === 'tailwind'
+                ? 'border-blue-500 bg-blue-500/15 text-blue-600 dark:text-blue-400 font-bold shadow-xs'
+                : 'border-border/80 hover:bg-muted text-foreground'
+            }`}
+          >
+            <div className="text-[11px] font-bold">1. Tailwind CSS</div>
+            <div className="text-[10px] text-muted font-normal mt-0.5">Utility-first • Cero runtime</div>
+          </button>
+
+          <button
+            onClick={() => setEstrategia('inline')}
+            className={`p-2.5 rounded-xl border text-xs font-semibold transition-all text-left ${
+              estrategia === 'inline'
+                ? 'border-amber-500 bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold shadow-xs'
+                : 'border-border/80 hover:bg-muted text-foreground'
+            }`}
+          >
+            <div className="text-[11px] font-bold">2. Estilos en Línea</div>
+            <div className="text-[10px] text-muted font-normal mt-0.5">style={'{{ ... }}'} • Valores dinámicos</div>
+          </button>
+
+          <button
+            onClick={() => setEstrategia('modules')}
+            className={`p-2.5 rounded-xl border text-xs font-semibold transition-all text-left ${
+              estrategia === 'modules'
+                ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold shadow-xs'
+                : 'border-border/80 hover:bg-muted text-foreground'
+            }`}
+          >
+            <div className="text-[11px] font-bold">3. CSS Modules</div>
+            <div className="text-[10px] text-muted font-normal mt-0.5">Scoped CSS • Nombres hasheados</div>
+          </button>
+
+          <button
+            onClick={() => setEstrategia('cssinjs')}
+            className={`p-2.5 rounded-xl border text-xs font-semibold transition-all text-left ${
+              estrategia === 'cssinjs'
+                ? 'border-purple-500 bg-purple-500/15 text-purple-600 dark:text-purple-400 font-bold shadow-xs'
+                : 'border-border/80 hover:bg-muted text-foreground'
+            }`}
+          >
+            <div className="text-[11px] font-bold">4. CSS-in-JS (Runtime)</div>
+            <div className="text-[10px] text-muted font-normal mt-0.5">styled-components • Inyección DOM</div>
+          </button>
+        </div>
+      </div>
+
+      {/* Controles Dinámicos para experimentar */}
+      <div className="p-4 rounded-2xl border border-border/80 bg-muted/20 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+          <span className="font-bold text-foreground">Ajustes Dinámicos para el Componente:</span>
+
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Color selector */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-muted font-medium">Color:</span>
+              {(['blue', 'emerald', 'purple', 'amber'] as const).map(c => (
+                <button
+                  key={c}
+                  onClick={() => setColorPrimario(c)}
+                  className={`w-5 h-5 rounded-full border-2 transition-transform ${coloresMap[c].bg} ${
+                    colorPrimario === c ? 'scale-125 border-foreground ring-2 ring-primary/30' : 'border-transparent'
+                  }`}
+                  title={c}
+                />
+              ))}
+            </div>
+
+            {/* Slider de Progreso */}
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-muted font-medium">Progreso ({progreso}%):</span>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                value={progreso}
+                onChange={e => setProgreso(Number(e.target.value))}
+                className="w-24 h-1.5 accent-primary cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Tarjeta Renderizada con la Estrategia Activa */}
+        <div className="p-5 rounded-2xl border border-border/80 bg-card shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono font-bold text-muted">
+              Resultado renderizado según estrategia:
+            </span>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
+              estrategia === 'tailwind' || estrategia === 'modules'
+                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                : estrategia === 'inline'
+                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30'
+            }`}>
+              {estrategia === 'tailwind' && '✅ 100% Compatible con React Server Components (RSC)'}
+              {estrategia === 'modules' && '✅ 100% Compatible con RSC (Cero Runtime)'}
+              {estrategia === 'inline' && '⚠️ Recomendado solo para valores calculados matemáticamente'}
+              {estrategia === 'cssinjs' && '❌ Problemas con RSC streaming y sobrecarga en JS runtime'}
+            </span>
+          </div>
+
+          {/* DEMO 1: TAILWIND */}
+          {estrategia === 'tailwind' && (
+            <div className="p-4 rounded-xl border border-border/80 bg-background space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">Tarjeta con Tailwind Utility-First</h4>
+                  <p className="text-xs text-muted">Estilos generados en tiempo de compilación por el motor de PostCSS / Turbopack.</p>
+                </div>
+                <button className={`px-4 py-2 ${selColor.bg} ${selColor.hover} text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95`}>
+                  Botón Tailwind
+                </button>
+              </div>
+
+              {/* Barra de progreso */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] text-muted">
+                  <span>Capacidad en caché</span>
+                  <span className="font-mono font-bold">{progreso}%</span>
+                </div>
+                <div className="w-full h-2.5 bg-muted/40 rounded-full overflow-hidden p-0.5 border border-border/60">
+                  <div
+                    className={`h-full ${selColor.bg} rounded-full transition-all duration-300`}
+                    style={{ width: `${progreso}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* DEMO 2: INLINE STYLES */}
+          {estrategia === 'inline' && (
+            <div
+              style={{
+                padding: '16px',
+                borderRadius: '12px',
+                border: `1px solid ${selColor.hex}40`,
+                backgroundColor: 'var(--background)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+              }}
+              className="space-y-3"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">Tarjeta con style={'{{ ... }}'}</h4>
+                  <p className="text-xs text-muted">Valores aplicados directamente al atributo style del elemento DOM.</p>
+                </div>
+                <button
+                  style={{
+                    backgroundColor: selColor.hex,
+                    color: '#ffffff',
+                    padding: '8px 16px',
+                    borderRadius: '12px',
+                    fontWeight: 'bold',
+                    fontSize: '12px',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Botón Inline Style
+                </button>
+              </div>
+
+              {/* Barra dinámica calculada matemáticamente */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] text-muted">
+                  <span>Cálculo dinámico en cada frame:</span>
+                  <span className="font-mono font-bold">{progreso}%</span>
+                </div>
+                <div style={{ width: '100%', height: '10px', backgroundColor: 'rgba(100,116,139,0.2)', borderRadius: '9999px', overflow: 'hidden' }}>
+                  <div
+                    style={{
+                      width: `${progreso}%`,
+                      height: '100%',
+                      backgroundColor: selColor.hex,
+                      transition: 'width 0.3s ease'
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* DEMO 3: CSS MODULES */}
+          {estrategia === 'modules' && (
+            <div className="p-4 rounded-xl border border-emerald-500/30 bg-background space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">Tarjeta simulando CSS Modules</h4>
+                  <p className="text-xs text-muted font-mono">
+                    className=&quot;Card_contenedor__9fa2c Button_primario__x7b81&quot;
+                  </p>
+                </div>
+                <button className={`px-4 py-2 ${selColor.bg} text-white font-bold text-xs rounded-xl shadow-md`}>
+                  styles.botonPrimario
+                </button>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] text-muted font-mono">
+                  <span>styles.barraProgreso</span>
+                  <span>{progreso}%</span>
+                </div>
+                <div className="w-full h-2.5 bg-muted/40 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${selColor.bg} rounded-full transition-all duration-300`}
+                    style={{ width: `${progreso}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* DEMO 4: CSS-IN-JS (RUNTIME) */}
+          {estrategia === 'cssinjs' && (
+            <div className="p-4 rounded-xl border border-purple-500/30 bg-background space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">Simulación styled-components / Emotion</h4>
+                  <p className="text-xs text-muted font-mono">
+                    &lt;Boton color=&quot;{selColor.hex}&quot; /&gt; -&gt; Inyecta &lt;style&gt; en el &lt;head&gt;
+                  </p>
+                </div>
+                <button className={`px-4 py-2 ${selColor.bg} text-white font-bold text-xs rounded-xl shadow-md`}>
+                  styled.button`...`
+                </button>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] text-muted">
+                  <span>Sobrecarga en hilo principal:</span>
+                  <span className="font-mono text-purple-600 font-bold">~15ms de parseo JS</span>
+                </div>
+                <div className="w-full h-2.5 bg-muted/40 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${selColor.bg} rounded-full transition-all duration-300`}
+                    style={{ width: `${progreso}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Tabla comparativa técnica para la entrevista */}
+      <div className="p-4 rounded-2xl border border-border/80 bg-card overflow-x-auto text-xs space-y-3">
+        <h4 className="font-bold text-foreground">Tabla Comparativa para la Entrevista Senior:</h4>
+        <table className="w-full text-left border-collapse min-w-[550px]">
+          <thead>
+            <tr className="border-b border-border text-muted font-mono text-[11px]">
+              <th className="py-2 pr-3">Estrategia</th>
+              <th className="py-2 pr-3">Runtime Overhead</th>
+              <th className="py-2 pr-3">Compatibilidad RSC</th>
+              <th className="py-2 pr-3">Pseudo-clases (:hover)</th>
+              <th className="py-2">Cuándo Usarlo</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/60 text-[11px]">
+            <tr className={estrategia === 'tailwind' ? 'bg-blue-500/10 font-semibold' : ''}>
+              <td className="py-2 pr-3 font-bold text-blue-600 dark:text-blue-400">Tailwind CSS</td>
+              <td className="py-2 pr-3 text-emerald-600 font-bold">0 KB (Compilación)</td>
+              <td className="py-2 pr-3 text-emerald-600 font-bold">100% Nativo</td>
+              <td className="py-2 pr-3">Sí (hover:, focus:)</td>
+              <td className="py-2 text-muted">Desarrollo moderno por defecto en Next.js y React 19.</td>
+            </tr>
+            <tr className={estrategia === 'modules' ? 'bg-emerald-500/10 font-semibold' : ''}>
+              <td className="py-2 pr-3 font-bold text-emerald-600 dark:text-emerald-400">CSS Modules</td>
+              <td className="py-2 pr-3 text-emerald-600 font-bold">0 KB (Compilación)</td>
+              <td className="py-2 pr-3 text-emerald-600 font-bold">100% Nativo</td>
+              <td className="py-2 pr-3">Sí</td>
+              <td className="py-2 text-muted">Equipos que prefieren escribir CSS tradicional con scope local.</td>
+            </tr>
+            <tr className={estrategia === 'inline' ? 'bg-amber-500/10 font-semibold' : ''}>
+              <td className="py-2 pr-3 font-bold text-amber-600 dark:text-amber-400">Estilos en línea</td>
+              <td className="py-2 pr-3 text-amber-600">Creación de objetos en render</td>
+              <td className="py-2 pr-3 text-emerald-600">Compatible</td>
+              <td className="py-2 pr-3 text-rose-500">No soportado</td>
+              <td className="py-2 text-muted">Solo para valores dinámicos calculados (coordenadas, %).</td>
+            </tr>
+            <tr className={estrategia === 'cssinjs' ? 'bg-purple-500/10 font-semibold' : ''}>
+              <td className="py-2 pr-3 font-bold text-purple-600 dark:text-purple-400">CSS-in-JS (styled)</td>
+              <td className="py-2 pr-3 text-rose-500 font-bold">Alto (~12-25KB bundle + parseo)</td>
+              <td className="py-2 pr-3 text-rose-500 font-bold">No compatible con streaming</td>
+              <td className="py-2 pr-3">Sí</td>
+              <td className="py-2 text-muted">Proyectos legacy Client-Side Rendering (CSR).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+

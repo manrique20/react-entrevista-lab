@@ -25,7 +25,7 @@ export function TopicDemoDispatcher({ componentKey, topicTitle }: TopicDemoDispa
   if (componentKey === 'ListKeysTrapDemo') return <Level1.ListKeysTrapDemo />;
   if (componentKey === 'ConditionalRenderingDemo') return <Level1.ConditionalRenderingDemo />;
   if (componentKey === 'EventsDemo') return <Level1.EventsDemo />;
-  if (componentKey === 'StylesComparisonDemo') return <Level1.JsxExpressionsDemo />;
+  if (componentKey === 'StylesComparisonDemo') return <Level1.StylesComparisonDemo />;
   if (componentKey === 'DataFlowDemo') return <Level1.DataFlowDemo />;
 
   // Level 2
