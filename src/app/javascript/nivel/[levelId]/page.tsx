@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { jsLevelsData } from '@/data/javascript/levelsData';
 import { JsLevelClientView } from '@/components/javascript/JsLevelClientView';
@@ -12,7 +13,7 @@ interface JsLevelPageProps {
   params: Promise<{ levelId: string }>;
 }
 
-export default async function JsLevelPage({ params }: JsLevelPageProps) {
+async function JsLevelContent({ params }: JsLevelPageProps) {
   const { levelId } = await params;
   const levelNum = Number(levelId);
 
@@ -22,4 +23,12 @@ export default async function JsLevelPage({ params }: JsLevelPageProps) {
   }
 
   return <JsLevelClientView levelNum={levelNum} />;
+}
+
+export default function JsLevelPage(props: JsLevelPageProps) {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-xs text-muted">Cargando nivel...</div>}>
+      <JsLevelContent {...props} />
+    </Suspense>
+  );
 }

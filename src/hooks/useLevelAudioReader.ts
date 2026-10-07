@@ -13,7 +13,7 @@ export function cleanMarkdownForSpeech(text: string): string {
   if (!text) return '';
   return text
     // Eliminar bloques de código markdown
-    .replace(/```[\s\S]*?```/g, ' Código de ejemplo disponible en pantalla. ')
+    .replace(/```[\s\S]*?```/g, ' Ejemplo de código en pantalla. ')
     // Eliminar código inline backticks
     .replace(/`([^`]+)`/g, '$1')
     // Eliminar enlaces [texto](url) -> texto
@@ -36,11 +36,46 @@ export function cleanMarkdownForSpeech(text: string): string {
     .replace(/\s*&&\s*/g, ' y ')
     .replace(/\s*\|\|\s*/g, ' o ')
     .replace(/\s*\?\?\s*/g, ' nullish coalescing ')
-    .replace(/\s*\?\.s*/g, ' optional chaining ')
+    .replace(/\s*\?\.\s*/g, ' optional chaining ')
     // Limpiar saltos de línea excesivos y espacios
     .replace(/\n+/g, '. ')
     .replace(/\s{2,}/g, ' ')
     .trim();
+}
+
+/**
+ * Divide el texto en oraciones cortas (máximo ~180 caracteres).
+ * Esto evita el conocido bug de Chromium donde utterances de más de 15 segundos se silencian o cancelan.
+ */
+export function splitIntoSentences(text: string): string[] {
+  if (!text) return [];
+  const rawSentences = text
+    .replace(/([.?!])\s+/g, '$1|§|')
+    .split('|§|')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  const sentences: string[] = [];
+
+  for (const s of rawSentences) {
+    if (s.length > 200) {
+      const parts = s.split(/([,;:])\s+/);
+      let current = '';
+      for (let i = 0; i < parts.length; i++) {
+        if ((current + parts[i]).length < 200) {
+          current += parts[i];
+        } else {
+          if (current.trim()) sentences.push(current.trim());
+          current = parts[i];
+        }
+      }
+      if (current.trim()) sentences.push(current.trim());
+    } else {
+      sentences.push(s);
+    }
+  }
+
+  return sentences.filter(s => s.length > 0);
 }
 
 interface UseLevelAudioReaderOptions {
@@ -59,12 +94,17 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
   const [isSupported, setIsSupported] = useState(false);
   const [activeSpeechId, setActiveSpeechId] = useState<string | null>(null);
 
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const currentIndexRef = useRef(0);
   const itemsRef = useRef(items);
   const rateRef = useRef(rate);
   const selectedVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
   const autoScrollRef = useRef(autoScroll);
+
+  // Referencias para manejo robusto de ciclo de vida de Web Speech API
+  const activeUtterancesRef = useRef<Set<SpeechSynthesisUtterance>>(new Set());
+  const speakTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const keepAliveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const shouldStopRef = useRef(false);
 
   useEffect(() => {
     itemsRef.current = items;
@@ -86,7 +126,26 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     currentIndexRef.current = currentIndex;
   }, [currentIndex]);
 
-  // Cargar voces del sistema
+  const stopKeepAlive = useCallback(() => {
+    if (keepAliveIntervalRef.current) {
+      clearInterval(keepAliveIntervalRef.current);
+      keepAliveIntervalRef.current = null;
+    }
+  }, []);
+
+  const startKeepAlive = useCallback(() => {
+    stopKeepAlive();
+    keepAliveIntervalRef.current = setInterval(() => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          window.speechSynthesis.pause();
+          window.speechSynthesis.resume();
+        }
+      }
+    }, 10000);
+  }, [stopKeepAlive]);
+
+  // Cargar voces del sistema operativo y navegador
   useEffect(() => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       setIsSupported(false);
@@ -97,16 +156,23 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
 
     const updateVoices = () => {
       const allVoices = window.speechSynthesis.getVoices();
-      // Filtrar voces en español
-      const spanishVoices = allVoices.filter(v => v.lang.startsWith('es') || v.lang.startsWith('ES'));
+      if (!allVoices || allVoices.length === 0) return;
+
+      const spanishVoices = allVoices.filter(v =>
+        v.lang.toLowerCase().startsWith('es')
+      );
       const voiceList = spanishVoices.length > 0 ? spanishVoices : allVoices;
       setVoices(voiceList);
 
-      // Seleccionar voz por defecto preferida (Google Español, Mónica, Paulina, etc.)
-      if (!selectedVoiceRef.current && voiceList.length > 0) {
+      if (!selectedVoiceRef.current) {
         const preferred =
-          voiceList.find(v => v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium')) ||
-          voiceList[0];
+          voiceList.find(v =>
+            v.name.includes('Google') ||
+            v.name.includes('Natural') ||
+            v.name.includes('Paulina') ||
+            v.name.includes('Mónica') ||
+            v.name.includes('Jorge')
+          ) || voiceList[0];
         setSelectedVoice(preferred);
         selectedVoiceRef.current = preferred;
       }
@@ -114,40 +180,114 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
 
     updateVoices();
     window.speechSynthesis.onvoiceschanged = updateVoices;
+    const voiceRetryTimer = setTimeout(updateVoices, 300);
 
     return () => {
+      clearTimeout(voiceRetryTimer);
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
     };
   }, []);
 
-  // Función interna para hablar un texto
-  const speakText = useCallback((textToSpeak: string, onEndCallback: () => void) => {
+  // Función para narrar un conjunto de oraciones secuencialmente
+  const speakSentences = useCallback((sentences: string[], onEndCallback: () => void) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
 
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.rate = rateRef.current;
-    utterance.lang = selectedVoiceRef.current?.lang || 'es-ES';
-    if (selectedVoiceRef.current) {
-      utterance.voice = selectedVoiceRef.current;
+    if (sentences.length === 0) {
+      onEndCallback();
+      return;
     }
 
-    utterance.onend = () => {
-      onEndCallback();
-    };
+    shouldStopRef.current = false;
 
-    utterance.onerror = (e) => {
-      if (e.error !== 'canceled' && e.error !== 'interrupted') {
-        onEndCallback();
+    // Cancelar cualquier audio anterior y limpiar timeouts
+    window.speechSynthesis.cancel();
+    if (speakTimeoutRef.current) {
+      clearTimeout(speakTimeoutRef.current);
+      speakTimeoutRef.current = null;
+    }
+
+    let sentenceIndex = 0;
+
+    const speakNext = () => {
+      if (shouldStopRef.current) {
+        stopKeepAlive();
+        return;
       }
+
+      if (sentenceIndex >= sentences.length) {
+        stopKeepAlive();
+        onEndCallback();
+        return;
+      }
+
+      const text = sentences[sentenceIndex];
+      sentenceIndex++;
+
+      // Retardo de 60ms: esencial en Chrome para que no descarte el nuevo speak() tras un cancel()
+      speakTimeoutRef.current = setTimeout(() => {
+        if (shouldStopRef.current) return;
+
+        try {
+          if (window.speechSynthesis.paused) {
+            window.speechSynthesis.resume();
+          }
+
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = rateRef.current;
+
+          // Resolver la voz a usar
+          const allVoices = window.speechSynthesis.getVoices();
+          let voiceToUse = selectedVoiceRef.current;
+
+          if (!voiceToUse && allVoices.length > 0) {
+            voiceToUse =
+              allVoices.find(v => v.lang.toLowerCase().startsWith('es')) ||
+              allVoices[0];
+          }
+
+          if (voiceToUse) {
+            utterance.voice = voiceToUse;
+            utterance.lang = voiceToUse.lang;
+          } else {
+            utterance.lang = 'es-ES';
+          }
+
+          // Mantener referencia contra Garbage Collection
+          activeUtterancesRef.current.add(utterance);
+
+          utterance.onstart = () => {
+            if (window.speechSynthesis.paused) {
+              window.speechSynthesis.resume();
+            }
+          };
+
+          utterance.onend = () => {
+            activeUtterancesRef.current.delete(utterance);
+            speakNext();
+          };
+
+          utterance.onerror = (e) => {
+            activeUtterancesRef.current.delete(utterance);
+            console.warn('[AudioReader] Error de síntesis de voz:', e.error);
+            if (!shouldStopRef.current && e.error !== 'canceled' && e.error !== 'interrupted') {
+              speakNext();
+            }
+          };
+
+          window.speechSynthesis.speak(utterance);
+          window.speechSynthesis.resume();
+          startKeepAlive();
+        } catch (err) {
+          console.warn('[AudioReader] Fallo al reproducir fragmento:', err);
+          speakNext();
+        }
+      }, 60);
     };
 
-    utteranceRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
-  }, []);
+    speakNext();
+  }, [startKeepAlive, stopKeepAlive]);
 
   // Reproducir el tema actual y encadenar el siguiente
   const playItemAtIndex = useCallback((index: number) => {
@@ -175,8 +315,9 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     }
 
     const fullText = `${item.title}. ${cleanMarkdownForSpeech(item.text)}`;
+    const sentences = splitIntoSentences(fullText);
 
-    speakText(fullText, () => {
+    speakSentences(sentences, () => {
       const nextIdx = currentIndexRef.current + 1;
       if (nextIdx < itemsRef.current.length) {
         playItemAtIndex(nextIdx);
@@ -187,12 +328,13 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
         setActiveSpeechId(null);
       }
     });
-  }, [speakText]);
+  }, [speakSentences]);
 
   const play = useCallback(() => {
     if (isPaused) {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.resume();
+        startKeepAlive();
       }
       setIsPaused(false);
       setIsPlaying(true);
@@ -200,24 +342,33 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     }
 
     playItemAtIndex(currentIndexRef.current);
-  }, [isPaused, playItemAtIndex]);
+  }, [isPaused, playItemAtIndex, startKeepAlive]);
 
   const pause = useCallback(() => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.pause();
     }
+    stopKeepAlive();
     setIsPaused(true);
     setIsPlaying(false);
-  }, []);
+  }, [stopKeepAlive]);
 
   const stop = useCallback(() => {
+    shouldStopRef.current = true;
+    if (speakTimeoutRef.current) {
+      clearTimeout(speakTimeoutRef.current);
+      speakTimeoutRef.current = null;
+    }
+    stopKeepAlive();
+    activeUtterancesRef.current.clear();
+
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
     setIsPlaying(false);
     setIsPaused(false);
     setActiveSpeechId(null);
-  }, []);
+  }, [stopKeepAlive]);
 
   const next = useCallback(() => {
     const nextIdx = currentIndexRef.current + 1;
@@ -235,7 +386,6 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     setRate(newRate);
     rateRef.current = newRate;
     if (isPlaying) {
-      // Reiniciar tema actual con nueva velocidad
       playItemAtIndex(currentIndexRef.current);
     }
   }, [isPlaying, playItemAtIndex]);
@@ -249,19 +399,30 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
       return;
     }
 
-    stop();
+    // Cancelar cualquier reproducción previa
+    shouldStopRef.current = true;
+    if (speakTimeoutRef.current) {
+      clearTimeout(speakTimeoutRef.current);
+      speakTimeoutRef.current = null;
+    }
+    stopKeepAlive();
+    activeUtterancesRef.current.clear();
+    window.speechSynthesis.cancel();
+
+    // Iniciar nuevo tema individual
     setActiveSpeechId(topicId);
     setIsPlaying(true);
     setIsPaused(false);
 
     const fullText = `${title}. ${cleanMarkdownForSpeech(text)}`;
+    const sentences = splitIntoSentences(fullText);
 
-    speakText(fullText, () => {
+    speakSentences(sentences, () => {
       setIsPlaying(false);
       setIsPaused(false);
       setActiveSpeechId(null);
     });
-  }, [activeSpeechId, isPlaying, isPaused, stop, speakText]);
+  }, [activeSpeechId, isPlaying, isPaused, stop, stopKeepAlive, speakSentences]);
 
   return {
     isSupported,
