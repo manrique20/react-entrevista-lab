@@ -166,23 +166,44 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
       </div>
 
       {/* Ajustes avanzados (Voces) */}
-      {isExpanded && narrator.voices.length > 1 && (
-        <div className="p-3 bg-muted/20 border-t border-border/60 flex items-center justify-between gap-3 text-xs animate-in fade-in">
+      {isExpanded && narrator.voices.length > 0 && (
+        <div className="p-3 bg-muted/20 border-t border-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-in fade-in">
           <span className="text-muted font-medium">Voz del sintetizador:</span>
           <select
             value={narrator.selectedVoice?.name || ''}
             onChange={(e) => {
-              const v = narrator.voices.find(voice => voice.name === e.target.value);
-              if (v) narrator.setSelectedVoice(v);
+              if (!e.target.value) {
+                narrator.setSelectedVoice(null);
+              } else {
+                const v = narrator.voices.find(voice => voice.name === e.target.value);
+                if (v) narrator.setSelectedVoice(v);
+              }
             }}
-            className="p-1.5 rounded-lg border border-border/80 bg-background text-xs text-foreground focus:outline-none"
+            className="p-1.5 rounded-lg border border-border/80 bg-background text-xs text-foreground focus:outline-none max-w-xs"
           >
+            <option value="">Voz nativa del sistema (Recomendada en Linux/Brave)</option>
             {narrator.voices.map((v, idx) => (
               <option key={idx} value={v.name}>
-                {v.name} ({v.lang})
+                {v.name} ({v.lang}) {v.localService ? '• Local' : ''}
               </option>
             ))}
           </select>
+        </div>
+      )}
+
+      {/* Banner informativo de error / bloqueo de síntesis */}
+      {narrator.errorMessage && (
+        <div className="p-3 bg-amber-500/10 border-t border-amber-500/30 text-xs text-amber-700 dark:text-amber-300 flex items-start justify-between gap-3 animate-in fade-in">
+          <p className="flex-1 leading-relaxed">
+            <span className="font-bold block mb-0.5">Aviso del motor de audio:</span>
+            {narrator.errorMessage}
+          </p>
+          <button
+            onClick={narrator.clearError}
+            className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 transition-colors shrink-0"
+          >
+            Cerrar
+          </button>
         </div>
       )}
     </div>

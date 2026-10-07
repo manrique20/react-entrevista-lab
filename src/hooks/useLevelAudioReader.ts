@@ -45,7 +45,7 @@ export function cleanMarkdownForSpeech(text: string): string {
 
 /**
  * Divide el texto en oraciones cortas (máximo ~180 caracteres).
- * Esto evita el conocido bug de Chromium donde utterances de más de 15 segundos se silencian o cancelan.
+ * Esto evita el conocido bug de Chromium donde utterances largas se cancelan o silencian.
  */
 export function splitIntoSentences(text: string): string[] {
   if (!text) return [];
@@ -93,12 +93,17 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
   const [isSupported, setIsSupported] = useState(false);
   const [activeSpeechId, setActiveSpeechId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const currentIndexRef = useRef(0);
   const itemsRef = useRef(items);
   const rateRef = useRef(rate);
   const selectedVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
   const autoScrollRef = useRef(autoScroll);
+
+  // Registro de voces que hayan fallado con 'synthesis-failed' (ej. voces cloud de Google en Brave/Linux)
+  const failedVoicesRef = useRef<Set<string>>(new Set());
+  const useSystemDefaultVoiceRef = useRef<boolean>(false);
 
   // Referencias para manejo robusto de ciclo de vida de Web Speech API
   const activeUtterancesRef = useRef<Set<SpeechSynthesisUtterance>>(new Set());
@@ -158,23 +163,22 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
       const allVoices = window.speechSynthesis.getVoices();
       if (!allVoices || allVoices.length === 0) return;
 
+      // Filtrar voces en español disponibles
       const spanishVoices = allVoices.filter(v =>
         v.lang.toLowerCase().startsWith('es')
       );
       const voiceList = spanishVoices.length > 0 ? spanishVoices : allVoices;
       setVoices(voiceList);
 
+      // En Linux y navegadores como Brave, las voces de Google fallan porque Brave bloquea los endpoints de telemetría de Google TTS.
+      // Priorizamos: 1) Voces locales en español, 2) Voces no-Google en español, 3) Cualquier voz local.
       if (!selectedVoiceRef.current) {
-        const preferred =
-          voiceList.find(v =>
-            v.name.includes('Google') ||
-            v.name.includes('Natural') ||
-            v.name.includes('Paulina') ||
-            v.name.includes('Mónica') ||
-            v.name.includes('Jorge')
-          ) || voiceList[0];
-        setSelectedVoice(preferred);
-        selectedVoiceRef.current = preferred;
+        const localSpanish = voiceList.find(v => v.lang.toLowerCase().startsWith('es') && v.localService);
+        const nonGoogleSpanish = voiceList.find(v => v.lang.toLowerCase().startsWith('es') && !v.name.toLowerCase().includes('google'));
+        const systemVoice = localSpanish || nonGoogleSpanish || voiceList.find(v => v.localService) || voiceList[0];
+
+        setSelectedVoice(systemVoice);
+        selectedVoiceRef.current = systemVoice;
       }
     };
 
@@ -200,6 +204,7 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     }
 
     shouldStopRef.current = false;
+    setErrorMessage(null);
 
     // Cancelar cualquier audio anterior y limpiar timeouts
     window.speechSynthesis.cancel();
@@ -225,7 +230,7 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
       const text = sentences[sentenceIndex];
       sentenceIndex++;
 
-      // Retardo de 60ms: esencial en Chrome para que no descarte el nuevo speak() tras un cancel()
+      // Retardo de 60ms: esencial en Chromium para que no descarte el nuevo speak() tras un cancel()
       speakTimeoutRef.current = setTimeout(() => {
         if (shouldStopRef.current) return;
 
@@ -237,14 +242,22 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.rate = rateRef.current;
 
-          // Resolver la voz a usar
-          const allVoices = window.speechSynthesis.getVoices();
-          let voiceToUse = selectedVoiceRef.current;
+          let voiceToUse: SpeechSynthesisVoice | undefined = undefined;
 
-          if (!voiceToUse && allVoices.length > 0) {
-            voiceToUse =
-              allVoices.find(v => v.lang.toLowerCase().startsWith('es')) ||
-              allVoices[0];
+          // Si el usuario no ha forzado el fallback de voz del sistema:
+          if (!useSystemDefaultVoiceRef.current) {
+            const allVoices = window.speechSynthesis.getVoices().filter(
+              v => !failedVoicesRef.current.has(v.name)
+            );
+
+            if (selectedVoiceRef.current && !failedVoicesRef.current.has(selectedVoiceRef.current.name)) {
+              voiceToUse = selectedVoiceRef.current;
+            } else if (allVoices.length > 0) {
+              const localEs = allVoices.find(v => v.lang.toLowerCase().startsWith('es') && v.localService);
+              const nonGoogleEs = allVoices.find(v => v.lang.toLowerCase().startsWith('es') && !v.name.toLowerCase().includes('google'));
+              const anyEs = allVoices.find(v => v.lang.toLowerCase().startsWith('es'));
+              voiceToUse = localEs || nonGoogleEs || anyEs || allVoices[0];
+            }
           }
 
           if (voiceToUse) {
@@ -270,10 +283,39 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
 
           utterance.onerror = (e) => {
             activeUtterancesRef.current.delete(utterance);
-            console.warn('[AudioReader] Error de síntesis de voz:', e.error);
-            if (!shouldStopRef.current && e.error !== 'canceled' && e.error !== 'interrupted') {
-              speakNext();
+
+            if (shouldStopRef.current || e.error === 'canceled' || e.error === 'interrupted') {
+              return;
             }
+
+            console.warn('[AudioReader] Evento de error en voz:', e.error);
+
+            // Manejo especial para "synthesis-failed" (habitual cuando Brave o Linux bloquean voces de Google)
+            if (e.error === 'synthesis-failed') {
+              if (voiceToUse && !useSystemDefaultVoiceRef.current) {
+                console.warn(`[AudioReader] La voz "${voiceToUse.name}" falló con synthesis-failed. Reintentando con el sintetizador nativo del sistema...`);
+                failedVoicesRef.current.add(voiceToUse.name);
+                selectedVoiceRef.current = null;
+                useSystemDefaultVoiceRef.current = true;
+                // Reintentar la misma frase con el sintetizador por defecto del sistema
+                sentenceIndex--;
+                speakNext();
+                return;
+              }
+
+              // Si ya falló incluso en modo nativo:
+              console.error('[AudioReader] El sintetizador de voz del sistema no pudo emitir audio.');
+              setErrorMessage(
+                'El navegador no pudo emitir voz. Si usas Brave o Linux, los escudos de huella digital o el servicio speech-dispatcher pueden estar bloqueándolo.'
+              );
+              stopKeepAlive();
+              setIsPlaying(false);
+              setIsPaused(false);
+              setActiveSpeechId(null);
+              return;
+            }
+
+            speakNext();
           };
 
           window.speechSynthesis.speak(utterance);
@@ -436,6 +478,8 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     autoScroll,
     voices,
     selectedVoice,
+    errorMessage,
+    clearError: () => setErrorMessage(null),
     play,
     pause,
     stop,
@@ -443,7 +487,11 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
     prev,
     setRate: changeRate,
     setAutoScroll,
-    setSelectedVoice,
+    setSelectedVoice: (voice: SpeechSynthesisVoice | null) => {
+      setSelectedVoice(voice);
+      selectedVoiceRef.current = voice;
+      useSystemDefaultVoiceRef.current = !voice;
+    },
     playItemAtIndex,
     speakSingleTopic
   };
