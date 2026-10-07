@@ -19,6 +19,8 @@ export const ALL_TOPICS: Topic[] = [
   ...LEVEL_8_TOPICS
 ];
 
+export const TOPICS = ALL_TOPICS;
+
 export function getTopicsByLevel(level: number): Topic[] {
   return ALL_TOPICS.filter(t => t.level === level);
 }

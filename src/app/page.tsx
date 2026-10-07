@@ -2,267 +2,338 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { LEVELS } from '@/data/levelsData';
-import { ALL_TOPICS } from '@/data/topicsData';
-import { INTERVIEW_QUESTIONS } from '@/data/interviewQuestions';
-import { EXERCISES } from '@/data/exercisesData';
 import {
-  Boxes,
-  Zap,
-  Layers,
-  Cpu,
-  Gauge,
   Sparkles,
-  Building2,
-  Microscope,
-  ArrowRight,
-  CheckCircle2,
+  Atom,
+  Terminal,
   HelpCircle,
   Code2,
-  BookOpen,
-  Terminal,
-  Trophy
-} from 'lucide-react';
-
-const ICONS_MAP: Record<string, React.ElementType> = {
-  Boxes,
+  CheckSquare,
+  ArrowRight,
   Zap,
   Layers,
+  BookOpen,
+  CheckCircle2,
+  Search,
+  Activity,
   Cpu,
-  Gauge,
-  Sparkles,
-  Building2,
-  Microscope
-};
+  GraduationCap
+} from 'lucide-react';
+import { LEVELS } from '@/data/levelsData';
+import { jsLevelsData } from '@/data/javascript/levelsData';
+import { allJsTopics } from '@/data/javascript/topicsData';
+import { TOPICS } from '@/data/topicsData';
 
-export default function HomePage() {
-  const [completedTopics, setCompletedTopics] = useState<string[]>([]);
+export default function UnifiedPortalHub() {
+  const [reactCompleted, setReactCompleted] = useState(0);
+  const [jsCompleted, setJsCompleted] = useState(0);
+  const [jsRiddlesCompleted, setJsRiddlesCompleted] = useState(0);
+  const [jsExercisesCompleted, setJsExercisesCompleted] = useState(0);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('react_entrevista_progress');
-      if (saved) {
-        const arr = JSON.parse(saved);
-        if (Array.isArray(arr)) setCompletedTopics(arr);
+    const updateStats = () => {
+      try {
+        const savedReact = localStorage.getItem('react_entrevista_progress');
+        if (savedReact) setReactCompleted(JSON.parse(savedReact).length);
+
+        const savedJs = localStorage.getItem('js_topics_studied');
+        if (savedJs) setJsCompleted(JSON.parse(savedJs).length);
+
+        const savedRiddles = localStorage.getItem('js_riddles_mastered');
+        if (savedRiddles) setJsRiddlesCompleted(JSON.parse(savedRiddles).length);
+
+        const savedExercises = localStorage.getItem('js_exercises_completed');
+        if (savedExercises) setJsExercisesCompleted(JSON.parse(savedExercises).length);
+      } catch {
+        // Fallback
       }
-    } catch {
-      // Fallback
-    }
+    };
+    updateStats();
+    window.addEventListener('storage', updateStats);
+    return () => window.removeEventListener('storage', updateProgressSafe);
   }, []);
 
-  const totalTopics = ALL_TOPICS.length;
-  const porcentaje = Math.round((completedTopics.length / totalTopics) * 100);
+  const updateProgressSafe = () => {};
+
+  const totalTopics = TOPICS.length + allJsTopics.length; // 79 + 81 = 160
+  const totalCompletedTopics = reactCompleted + jsCompleted;
+  const globalPercent = Math.round((totalCompletedTopics / totalTopics) * 100);
 
   return (
-    <div className="space-y-12">
-      {/* Hero Banner */}
-      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-primary/5 via-card to-card p-6 sm:p-10 text-center sm:text-left shadow-sm">
-        <div className="max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Actualizado para React 19, Server Components y Next.js 16</span>
-          </div>
+    <div className="space-y-12 pb-20">
+      {/* Hero Principal */}
+      <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-primary/5 via-card to-card p-6 sm:p-12 text-center space-y-6 shadow-sm">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wide uppercase">
+          <Sparkles className="w-4 h-4 animate-pulse" />
+          <span>Frontend Interview Mastery Hub</span>
+        </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
-            React &amp; Next.js <br />
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent">
-              Laboratorio de Entrevistas
+        <div className="max-w-3xl mx-auto space-y-3">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground">
+            El Laboratorio Definitivo de{' '}
+            <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500 bg-clip-text text-transparent">
+              Entrevistas Frontend
             </span>
           </h1>
-
-          <p className="text-sm sm:text-base text-muted leading-relaxed">
-            Una plataforma interactiva completa basada en el documento <code>react-entrevista.md</code>. Cada uno de los 79 tópicos cuenta con su modelo mental, código fuente, laboratorio en vivo interactivo y las respuestas senior que esperan los entrevistadores técnicos.
+          <p className="text-sm sm:text-base text-muted leading-relaxed max-w-2xl mx-auto">
+            Preparación intensiva y rigurosa en dos pistas independientes: la arquitectura moderna de <strong>React 19 &amp; Next.js</strong> y los mecanismos profundos de ejecución de <strong>JavaScript Core</strong>.
           </p>
-
-          <div className="flex flex-wrap gap-3 pt-2 justify-center sm:justify-start">
-            <Link
-              href="/nivel/1"
-              className="px-5 py-2.5 rounded-xl bg-primary text-white text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 flex items-center gap-2"
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>Comenzar desde Nivel 1</span>
-            </Link>
-            <Link
-              href="/preguntas"
-              className="px-5 py-2.5 rounded-xl border border-border hover:bg-muted text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
-            >
-              <HelpCircle className="w-4 h-4 text-purple-500" />
-              <span>Simular Preguntas Clásicas</span>
-            </Link>
-            <Link
-              href="/ejercicios"
-              className="px-5 py-2.5 rounded-xl border border-border hover:bg-muted text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
-            >
-              <Code2 className="w-4 h-4 text-emerald-500" />
-              <span>11 Ejercicios Prácticos</span>
-            </Link>
-          </div>
         </div>
 
-        {/* Barra de progreso global */}
-        <div className="mt-8 pt-6 border-t border-border/60 max-w-xl">
-          <div className="flex justify-between items-center text-xs mb-2">
-            <span className="font-semibold text-muted">Progreso Global de Estudio</span>
-            <span className="font-mono font-bold text-primary">{completedTopics.length} de {totalTopics} temas ({porcentaje}%)</span>
+        {/* Global Progress Overview */}
+        <div className="max-w-xl mx-auto p-4 rounded-2xl bg-card border border-border/80 shadow-xs space-y-2.5">
+          <div className="flex items-center justify-between text-xs font-bold">
+            <span className="flex items-center gap-1.5 text-foreground">
+              <Activity className="w-4 h-4 text-emerald-500" />
+              Progreso Global de Estudio
+            </span>
+            <span className="text-primary font-mono">{totalCompletedTopics} / {totalTopics} temas dominados ({globalPercent}%)</span>
           </div>
-          <div className="w-full h-2.5 rounded-full bg-muted/40 overflow-hidden">
+          <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-500 rounded-full"
-              style={{ width: `${porcentaje}%` }}
+              className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500 transition-all duration-500"
+              style={{ width: `${globalPercent}%` }}
             />
           </div>
-        </div>
-      </section>
-
-      {/* Métricas destacadas */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-5 border rounded-2xl bg-card text-center sm:text-left space-y-1">
-          <span className="text-2xl sm:text-3xl font-extrabold text-blue-500 font-mono">8</span>
-          <p className="text-xs font-semibold text-foreground">Niveles Estructurados</p>
-          <p className="text-[11px] text-muted">De Fundamentos a Internos Fiber</p>
-        </div>
-        <div className="p-5 border rounded-2xl bg-card text-center sm:text-left space-y-1">
-          <span className="text-2xl sm:text-3xl font-extrabold text-indigo-500 font-mono">79</span>
-          <p className="text-xs font-semibold text-foreground">Tópicos con Demos</p>
-          <p className="text-[11px] text-muted">Laboratorios y tips de entrevista</p>
-        </div>
-        <div className="p-5 border rounded-2xl bg-card text-center sm:text-left space-y-1">
-          <span className="text-2xl sm:text-3xl font-extrabold text-purple-500 font-mono">9</span>
-          <p className="text-xs font-semibold text-foreground">Preguntas Clásicas</p>
-          <p className="text-[11px] text-muted">Simulador con trampas y red flags</p>
-        </div>
-        <div className="p-5 border rounded-2xl bg-card text-center sm:text-left space-y-1">
-          <span className="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">11</span>
-          <p className="text-xs font-semibold text-foreground">Ejercicios de Código</p>
-          <p className="text-[11px] text-muted">Los retos más frecuentes en pruebas</p>
-        </div>
-      </section>
-
-      {/* Grid de los 8 Niveles */}
-      <section className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/80 pb-4">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Ruta de Aprendizaje por Niveles</h2>
-            <p className="text-xs text-muted">Selecciona cualquier nivel para explorar sus explicaciones, código y widgets interactivos.</p>
+          <div className="flex items-center justify-between text-[11px] text-muted">
+            <span>React: {reactCompleted}/79</span>
+            <span>JavaScript: {jsCompleted}/81</span>
+            <span>Acertijos: {jsRiddlesCompleted}/12</span>
+            <span>Retos: {jsExercisesCompleted}/17</span>
           </div>
-          <Link href="/checklist" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
-            Ver checklist completo &rarr;
-          </Link>
+        </div>
+      </section>
+
+      {/* Selector de Pistas Principales (Dual Track Cards) */}
+      <section className="space-y-4">
+        <div className="text-center sm:text-left space-y-1">
+          <h2 className="text-2xl font-black text-foreground">
+            Elige tu Pista de Estudio
+          </h2>
+          <p className="text-xs sm:text-sm text-muted">
+            Ambas rutas cuentan con niveles estructurados, preguntas de entrevista, código ejecutable y pruebas en vivo.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {LEVELS.map(level => {
-            const Icon = ICONS_MAP[level.iconName] || Layers;
-            const topicsEnNivel = level.topicIds.length;
-            const completadosEnNivel = level.topicIds.filter(id => completedTopics.includes(id)).length;
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* PISTA 1: REACT 19 & NEXT.JS */}
+          <div className="rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-500/10 via-card to-card p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-blue-500/60 transition-all group">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white flex items-center justify-center shadow-md shadow-blue-500/30">
+                  <Atom className="w-7 h-7" />
+                </div>
+                <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider font-mono">
+                  Track 1
+                </span>
+              </div>
 
-            return (
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  React 19 &amp; Next.js App Router
+                </h3>
+                <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
+                  De los fundamentos de reconciliación y closures en hooks hasta Server Components (RSC), transiciones concurrentes, Server Actions y arquitectura de producción.
+                </p>
+              </div>
+
+              {/* Características del track React */}
+              <div className="grid grid-cols-2 gap-2.5 pt-2 text-xs">
+                <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-blue-500 shrink-0" />
+                  <span><strong>8 Niveles</strong> (79 tópicos)</span>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                  <HelpCircle className="w-4 h-4 text-blue-500 shrink-0" />
+                  <span><strong>9 Preguntas</strong> Senior</span>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-blue-500 shrink-0" />
+                  <span><strong>11 Ejercicios</strong> interactivos</span>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                  <CheckSquare className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span>Checklist con progreso</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-border/60">
               <Link
-                key={level.id}
-                href={`/nivel/${level.id}`}
-                className="group p-5 border border-border/80 hover:border-primary/50 rounded-2xl bg-card transition-all duration-200 hover:shadow-lg flex flex-col justify-between"
+                href="/react"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white font-extrabold text-sm shadow-md shadow-blue-500/25 hover:opacity-95 transition-all"
               >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <span className="text-xs font-mono font-bold text-muted bg-muted px-2 py-0.5 rounded">
-                      {completadosEnNivel}/{topicsEnNivel}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
-                      {level.title}
-                    </h3>
-                    <p className="text-xs text-muted mt-1 line-clamp-3 leading-relaxed">
-                      {level.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="pt-4 mt-4 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
-                  <span>Explorar nivel</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
+                <span>Entrar a React &amp; Next.js</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-            );
-          })}
+
+              <div className="flex items-center justify-center gap-4 text-xs font-semibold text-muted">
+                <Link href="/preguntas" className="hover:text-foreground hover:underline">
+                  Preguntas Senior &gt;
+                </Link>
+                <Link href="/ejercicios" className="hover:text-foreground hover:underline">
+                  Ejercicios React &gt;
+                </Link>
+                <Link href="/checklist" className="hover:text-foreground hover:underline">
+                  Checklist React &gt;
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* PISTA 2: JAVASCRIPT CORE & ES6+ */}
+          <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 via-card to-card p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-amber-500/60 transition-all group">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-500 text-slate-950 flex items-center justify-center shadow-md shadow-amber-500/30">
+                  <Terminal className="w-7 h-7" />
+                </div>
+                <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-bold uppercase tracking-wider font-mono">
+                  Track 2
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                  JavaScript Core &amp; Moderno (ES6+)
+                </h3>
+                <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
+                  De los misterios del motor V8 (hoisting, coerción, microtareas y event loop) a acertijos trampa y los 17 retos canónicos de algoritmos y polyfills.
+                </p>
+              </div>
+
+              {/* Características del track JavaScript */}
+              <div className="grid grid-cols-2 gap-2.5 pt-2 text-xs">
+                <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span><strong>8 Niveles</strong> (81 preguntas)</span>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                  <HelpCircle className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span><strong>12 Acertijos</strong> ¿Qué imprime?</span>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-amber-500 shrink-0" />
+                  <span><strong>17 Retos</strong> con test suite</span>
+                </div>
+                <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
+                  <CheckSquare className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span>Checklist con progreso</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-4 border-t border-border/60">
+              <Link
+                href="/javascript"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-extrabold text-sm shadow-md shadow-amber-500/25 hover:opacity-95 transition-all"
+              >
+                <span>Entrar a JavaScript Core</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+
+              <div className="flex items-center justify-center gap-4 text-xs font-semibold text-muted">
+                <Link href="/javascript/acertijos" className="hover:text-foreground hover:underline">
+                  Acertijos &gt;
+                </Link>
+                <Link href="/javascript/ejercicios" className="hover:text-foreground hover:underline">
+                  Retos E1–E17 &gt;
+                </Link>
+                <Link href="/javascript/checklist" className="hover:text-foreground hover:underline">
+                  Checklist JS &gt;
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Sección rápida: Preguntas de entrevista recomendadas */}
-      <section className="p-6 sm:p-8 border rounded-3xl bg-card space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-purple-500" />
-              Simulador de Preguntas Clásicas de Entrevista
-            </h3>
-            <p className="text-xs text-muted">¿Por qué no se debe mutar el estado? ¿Cuándo usar Context vs Zustand? ¿Qué pasa si usas el index como key?</p>
-          </div>
+      {/* Matriz de Accesos Rápidos */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-bold text-foreground">
+          Herramientas y Secciones Rápidas
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link
+            href="/javascript/acertijos"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-amber-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
+          >
+            <div className="space-y-1">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-bold text-xs">
+                ?
+              </div>
+              <h3 className="text-sm font-bold text-foreground group-hover:text-amber-500 transition-colors">
+                Acertijos &quot;¿Qué imprime?&quot;
+              </h3>
+              <p className="text-xs text-muted">
+                12 acertijos con simulación y trampa de entrevista explicada.
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-amber-500 flex items-center gap-1 pt-2">
+              Probar ahora &gt;
+            </span>
+          </Link>
+
+          <Link
+            href="/javascript/ejercicios"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-amber-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
+          >
+            <div className="space-y-1">
+              <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-bold text-xs">
+                &lt;/&gt;
+              </div>
+              <h3 className="text-sm font-bold text-foreground group-hover:text-indigo-500 transition-colors">
+                17 Retos de Algoritmos JS
+              </h3>
+              <p className="text-xs text-muted">
+                Debounce, throttle, deepClone con ciclos, LRU y polyfills.
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-indigo-500 flex items-center gap-1 pt-2">
+              Ejecutar tests &gt;
+            </span>
+          </Link>
+
           <Link
             href="/preguntas"
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold transition-colors"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-blue-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
           >
-            Abrir Simulador Completo
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {INTERVIEW_QUESTIONS.slice(0, 3).map(q => (
-            <Link
-              key={q.id}
-              href="/preguntas"
-              className="p-4 border rounded-xl bg-background hover:border-purple-500/40 transition-colors block space-y-2"
-            >
-              <span className="text-[10px] font-mono bg-purple-500/10 text-purple-600 px-2 py-0.5 rounded">
-                {q.category}
-              </span>
-              <h4 className="font-semibold text-xs text-foreground line-clamp-2">
-                {q.question}
-              </h4>
-              <p className="text-[11px] text-muted line-clamp-2">
-                {q.seniorAnswer}
+            <div className="space-y-1">
+              <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-xs">
+                9
+              </div>
+              <h3 className="text-sm font-bold text-foreground group-hover:text-blue-500 transition-colors">
+                Preguntas Senior React
+              </h3>
+              <p className="text-xs text-muted">
+                Simulador con red flags, respuestas canónicas y trampas.
               </p>
-            </Link>
-          ))}
-        </div>
-      </section>
+            </div>
+            <span className="text-[11px] font-bold text-blue-500 flex items-center gap-1 pt-2">
+              Simular entrevista &gt;
+            </span>
+          </Link>
 
-      {/* Sección rápida: Laboratorio de Ejercicios */}
-      <section className="p-6 sm:p-8 border rounded-3xl bg-card space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Code2 className="w-5 h-5 text-emerald-500" />
-              Suite de 11 Ejercicios Prácticos Frecuentes
-            </h3>
-            <p className="text-xs text-muted">Todo list, Buscador Debounce con AbortController, Modal con createPortal, Paginación, Infinite Scroll y Formularios Zod.</p>
-          </div>
           <Link
             href="/ejercicios"
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-colors"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-cyan-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
           >
-            Ver todos los Ejercicios
+            <div className="space-y-1">
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center font-bold text-xs">
+                11
+              </div>
+              <h3 className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">
+                Ejercicios Prácticos React
+              </h3>
+              <p className="text-xs text-muted">
+                Virtualización, debounce search, form con Zod y concurrencia.
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-cyan-500 flex items-center gap-1 pt-2">
+              Ver ejercicios &gt;
+            </span>
           </Link>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {EXERCISES.slice(0, 4).map(ex => (
-            <Link
-              key={ex.id}
-              href="/ejercicios"
-              className="p-4 border rounded-xl bg-background hover:border-emerald-500/40 transition-colors block space-y-2"
-            >
-              <span className="text-[10px] font-mono bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded">
-                {ex.difficulty}
-              </span>
-              <h4 className="font-semibold text-xs text-foreground line-clamp-1">{ex.title}</h4>
-              <p className="text-[11px] text-muted line-clamp-2">{ex.description}</p>
-            </Link>
-          ))}
         </div>
       </section>
     </div>

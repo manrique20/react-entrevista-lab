@@ -49,3 +49,5 @@ export interface UserProgress {
   completedExercises: string[];
   checklistItems: Record<string, boolean>;
 }
+
+export * from './javascript';

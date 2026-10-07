@@ -14,14 +14,22 @@ import {
   HelpCircle,
   Menu,
   X,
-  Layers
+  Layers,
+  Atom,
+  Terminal,
+  Home
 } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [completedCount, setCompletedCount] = useState(0);
+  const [reactCompletedCount, setReactCompletedCount] = useState(0);
+  const [jsCompletedCount, setJsCompletedCount] = useState(0);
+
+  const isJsTrack = pathname.startsWith('/javascript');
+  const isReactTrack = pathname.startsWith('/react') || pathname.startsWith('/nivel') || pathname.startsWith('/preguntas') || pathname === '/ejercicios' || pathname === '/checklist';
+  const isHub = pathname === '/';
 
   useEffect(() => {
     // Escuchar atajo Ctrl+K / Cmd+K
@@ -36,10 +44,16 @@ export function Navbar() {
     // Leer progreso de localStorage
     const updateProgress = () => {
       try {
-        const saved = localStorage.getItem('react_entrevista_progress');
-        if (saved) {
-          const list = JSON.parse(saved);
-          setCompletedCount(Array.isArray(list) ? list.length : 0);
+        const savedReact = localStorage.getItem('react_entrevista_progress');
+        if (savedReact) {
+          const list = JSON.parse(savedReact);
+          setReactCompletedCount(Array.isArray(list) ? list.length : 0);
+        }
+
+        const savedJs = localStorage.getItem('js_topics_studied');
+        if (savedJs) {
+          const list = JSON.parse(savedJs);
+          setJsCompletedCount(Array.isArray(list) ? list.length : 0);
         }
       } catch {
         // Fallback
@@ -54,35 +68,97 @@ export function Navbar() {
     };
   }, []);
 
-  const navLinks = [
-    { href: '/', label: 'Niveles 1-8', icon: Layers },
-    { href: '/preguntas', label: 'Preguntas de Entrevista', icon: HelpCircle },
-    { href: '/ejercicios', label: 'Ejercicios Prácticos', icon: Code2 },
-    { href: '/checklist', label: 'Checklist de Repaso', icon: CheckSquare }
-  ];
+  // Enlaces según la pista activa
+  const getNavLinks = () => {
+    if (isJsTrack) {
+      return [
+        { href: '/javascript', label: 'Niveles 1-8', icon: Layers },
+        { href: '/javascript/acertijos', label: 'Acertijos ¿Qué imprime?', icon: HelpCircle },
+        { href: '/javascript/ejercicios', label: 'Retos E1–E17', icon: Code2 },
+        { href: '/javascript/checklist', label: 'Checklist JS', icon: CheckSquare }
+      ];
+    }
+
+    if (isReactTrack) {
+      return [
+        { href: '/react', label: 'Niveles 1-8', icon: Layers },
+        { href: '/preguntas', label: 'Preguntas Senior', icon: HelpCircle },
+        { href: '/ejercicios', label: 'Ejercicios React', icon: Code2 },
+        { href: '/checklist', label: 'Checklist React', icon: CheckSquare }
+      ];
+    }
+
+    // Portal Hub links
+    return [
+      { href: '/react', label: 'Pista React & Next', icon: Atom },
+      { href: '/javascript', label: 'Pista JavaScript Core', icon: Terminal },
+      { href: '/javascript/acertijos', label: 'Acertijos', icon: HelpCircle },
+      { href: '/javascript/ejercicios', label: 'Ejercicios JS', icon: Code2 }
+    ];
+  };
+
+  const navLinks = getNavLinks();
 
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 font-bold text-foreground hover:opacity-90 transition-opacity">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-extrabold tracking-tight flex items-center gap-1.5">
-                React Lab <span className="text-[10px] font-mono font-normal px-1.5 py-0.2 rounded bg-primary/10 text-primary border border-primary/20">19 &amp; Next</span>
-              </span>
-              <span className="text-[10px] text-muted -mt-0.5 font-medium">Guía de Entrevista Senior</span>
-            </div>
-          </Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+          {/* Logo y Switcher de pistas */}
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2.5 font-bold text-foreground hover:opacity-90 transition-opacity">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-primary/20">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-extrabold tracking-tight flex items-center gap-1.5">
+                  Interview Hub
+                </span>
+                <span className="text-[10px] text-muted -mt-0.5 font-medium">
+                  React 19 &amp; JS Core
+                </span>
+              </div>
+            </Link>
 
-          {/* Links desktop */}
+            {/* Track Switcher (Desktop) */}
+            <div className="hidden lg:flex items-center p-1 rounded-xl bg-muted/50 border border-border/80 text-xs font-bold ml-2">
+              <Link
+                href="/"
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors ${
+                  isHub ? 'bg-background text-foreground shadow-xs' : 'text-muted hover:text-foreground'
+                }`}
+                title="Portal Hub Principal"
+              >
+                <Home className="w-3 h-3" />
+                <span>Hub</span>
+              </Link>
+              <Link
+                href="/react"
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-colors ${
+                  isReactTrack && !isHub ? 'bg-blue-600 text-white shadow-xs' : 'text-muted hover:text-foreground'
+                }`}
+                title="Pista React 19 & Next.js"
+              >
+                <Atom className="w-3 h-3" />
+                <span>React</span>
+              </Link>
+              <Link
+                href="/javascript"
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-colors ${
+                  isJsTrack ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : 'text-muted hover:text-foreground'
+                }`}
+                title="Pista JavaScript Core"
+              >
+                <Terminal className="w-3 h-3" />
+                <span>JavaScript</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Links desktop según contexto */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map(link => {
               const Icon = link.icon;
-              const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+              const isActive = pathname === link.href || (link.href !== '/' && link.href !== '/react' && link.href !== '/javascript' && pathname.startsWith(link.href));
               return (
                 <Link
                   key={link.href}
@@ -120,15 +196,35 @@ export function Navbar() {
               <Search className="w-4 h-4" />
             </button>
 
-            {/* Progreso pill */}
-            <Link
-              href="/checklist"
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold border border-emerald-500/20"
-              title="Temas marcados como estudiados"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{completedCount}/79 dominados</span>
-            </Link>
+            {/* Progreso pill contextual */}
+            {isJsTrack ? (
+              <Link
+                href="/javascript/checklist"
+                className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold border border-amber-500/20"
+                title="Temas de JavaScript dominados"
+              >
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <span>{jsCompletedCount}/81 JS</span>
+              </Link>
+            ) : isReactTrack ? (
+              <Link
+                href="/checklist"
+                className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-semibold border border-blue-500/20"
+                title="Temas de React dominados"
+              >
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <span>{reactCompletedCount}/79 React</span>
+              </Link>
+            ) : (
+              <Link
+                href="/"
+                className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold border border-emerald-500/20"
+                title="Progreso combinado de estudio"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>{reactCompletedCount + jsCompletedCount}/160 temas</span>
+              </Link>
+            )}
 
             <ThemeToggle />
 
@@ -144,21 +240,48 @@ export function Navbar() {
 
         {/* Mobile dropdown */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t p-4 bg-card space-y-2 animate-in slide-in-from-top-2">
-            {navLinks.map(link => {
-              const Icon = link.icon;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl text-xs font-semibold hover:bg-muted text-foreground block"
-                >
-                  <Icon className="w-4 h-4 text-primary" />
-                  <span>{link.label}</span>
-                </Link>
-              );
-            })}
+          <div className="md:hidden border-t p-4 bg-card space-y-3 animate-in slide-in-from-top-2">
+            {/* Mobile track switcher */}
+            <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-muted/60 border text-xs font-bold text-center">
+              <Link
+                href="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`py-1.5 rounded-lg ${isHub ? 'bg-background shadow-xs text-foreground' : 'text-muted'}`}
+              >
+                Hub
+              </Link>
+              <Link
+                href="/react"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`py-1.5 rounded-lg ${isReactTrack && !isHub ? 'bg-blue-600 text-white' : 'text-muted'}`}
+              >
+                React
+              </Link>
+              <Link
+                href="/javascript"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`py-1.5 rounded-lg ${isJsTrack ? 'bg-amber-500 text-slate-950' : 'text-muted'}`}
+              >
+                JavaScript
+              </Link>
+            </div>
+
+            <div className="space-y-1">
+              {navLinks.map(link => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-semibold hover:bg-muted text-foreground block"
+                  >
+                    <Icon className="w-4 h-4 text-primary" />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </header>
