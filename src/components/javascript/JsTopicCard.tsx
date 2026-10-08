@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { JsTopic } from '@/types/javascript';
 import { JsConsoleRunner } from './JsConsoleRunner';
+import { JsMarkdownView } from './JsMarkdownView';
 import confetti from 'canvas-confetti';
 import {
   CheckCircle2,
@@ -140,14 +141,12 @@ export function JsTopicCard({
 
       <div className="p-5 space-y-4">
         {/* Respuesta Corta / Directa */}
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-1">
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-extrabold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Respuesta Concisa para la Entrevista</span>
           </div>
-          <p className="text-xs sm:text-sm text-foreground leading-relaxed font-medium">
-            {topic.shortAnswer}
-          </p>
+          <JsMarkdownView content={topic.shortAnswer} className="text-foreground font-medium" />
         </div>
 
         {/* Explicación Detallada */}
@@ -165,8 +164,8 @@ export function JsTopicCard({
             </button>
 
             {isExplanationOpen && (
-              <div className="p-3.5 rounded-xl bg-muted/20 border border-border/60 text-xs text-muted leading-relaxed whitespace-pre-line animate-in fade-in">
-                {topic.explanation}
+              <div className="p-4 rounded-xl bg-muted/20 border border-border/60 text-muted leading-relaxed animate-in fade-in">
+                <JsMarkdownView content={topic.explanation} />
               </div>
             )}
           </div>
@@ -216,9 +215,9 @@ export function JsTopicCard({
         {topic.seniorTip && (
           <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-2.5 text-xs">
             <Lightbulb className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-            <div className="space-y-0.5">
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">Consejo Senior de Entrevista:</span>
-              <p className="text-muted leading-relaxed">{topic.seniorTip}</p>
+            <div className="space-y-1 flex-1">
+              <span className="font-bold text-emerald-700 dark:text-emerald-400 block">Consejo Senior de Entrevista:</span>
+              <JsMarkdownView content={topic.seniorTip} className="text-muted leading-relaxed" />
             </div>
           </div>
         )}
