@@ -28,15 +28,17 @@ export function cleanMarkdownForSpeech(text: string): string {
     // Convertir listas con viñetas en pausas
     .replace(/^[-*•]\s+/gm, '. ')
     .replace(/^\d+\.\s+/gm, '. ')
-    // Operadores comunes a texto hablado
+    // Operadores comunes a texto hablado (solo cuando operan sintácticamente, no signos de puntuación)
     .replace(/\s*!==\s*/g, ' estrictamente diferente de ')
     .replace(/\s*===\s*/g, ' estrictamente igual a ')
     .replace(/\s*!=\s*/g, ' diferente de ')
     .replace(/\s*==\s*/g, ' igual a ')
     .replace(/\s*&&\s*/g, ' y ')
     .replace(/\s*\|\|\s*/g, ' o ')
-    .replace(/\s*\?\?\s*/g, ' nullish coalescing ')
-    .replace(/\s*\?\.\s*/g, ' optional chaining ')
+    .replace(/(?<=\s)\?\?(?=\s)/g, ' nullish coalescing ')
+    .replace(/([a-zA-Z0-9_$)\]])\s*\?\?\s*(?=[a-zA-Z0-9_$([{'"])/g, '$1 nullish coalescing ')
+    .replace(/(?<=\s)\?\.(?=\s)/g, ' optional chaining ')
+    .replace(/([a-zA-Z0-9_$)\]])\?\.(?=[a-zA-Z0-9_$([{'"])/g, '$1 optional chaining ')
     // Limpiar saltos de línea excesivos y espacios
     .replace(/\n+/g, '. ')
     .replace(/\s{2,}/g, ' ')
@@ -125,7 +127,9 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
         }
       }
 
-      const fullText = cleanMarkdownForSpeech(`${item.title}. ${item.text}`);
+      const titleClean = (item.title || '').trim();
+      const titleFormatted = /[.?!]$/.test(titleClean) ? titleClean : `${titleClean}.`;
+      const fullText = cleanMarkdownForSpeech(`${titleFormatted} ${item.text}`);
       setIsLoadingAudio(true);
       setErrorMessage(null);
 

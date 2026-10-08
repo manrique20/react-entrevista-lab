@@ -2,58 +2,84 @@ import { NextRequest, NextResponse } from 'next/server';
 
 function splitIntoChunks(text: string, maxLen = 140): string[] {
   if (!text) return [];
-  // Dividir por signos de puntuación respetando pausas naturales
-  const rawSentences = text
-    .replace(/([.?!])\s+/g, '$1|§|')
-    .split('|§|')
-    .map(s => s.trim())
-    .filter(Boolean);
 
-  const chunks: string[] = [];
-  let current = '';
+  function breakDown(fragment: string): string[] {
+    const trimmed = fragment.trim();
+    if (!trimmed) return [];
+    if (trimmed.length <= maxLen) return [trimmed];
 
-  for (const s of rawSentences) {
-    if ((current ? current + ' ' + s : s).length <= maxLen) {
-      current = current ? current + ' ' + s : s;
-    } else {
-      if (current) chunks.push(current);
-      if (s.length <= maxLen) {
-        current = s;
+    // 1. Dividir por signos de final de oración (. ! ?)
+    const sentences = trimmed.split(/(?<=[.?!])\s+/).filter(Boolean);
+    if (sentences.length > 1) {
+      return combineUnderLimit(sentences.flatMap(breakDown), maxLen);
+    }
+
+    // 2. Dividir por cláusulas gramaticales (, ; : — – paréntesis)
+    const clauses = trimmed.split(/(?<=[,;:—–\)])\s+/).filter(Boolean);
+    if (clauses.length > 1) {
+      return combineUnderLimit(clauses.flatMap(breakDown), maxLen);
+    }
+
+    // 3. Dividir por palabras
+    const words = trimmed.split(/\s+/).filter(Boolean);
+    if (words.length > 1) {
+      return combineUnderLimit(words.flatMap(breakDown), maxLen);
+    }
+
+    // 4. Si una sola palabra/token excede maxLen, dividir por caracteres estrictamente
+    const slices: string[] = [];
+    for (let i = 0; i < trimmed.length; i += maxLen) {
+      slices.push(trimmed.slice(i, i + maxLen));
+    }
+    return slices;
+  }
+
+  function combineUnderLimit(pieces: string[], limit: number): string[] {
+    const result: string[] = [];
+    let current = '';
+
+    for (const p of pieces) {
+      const piece = p.trim();
+      if (!piece) continue;
+
+      if (!current) {
+        current = piece;
+      } else if ((current + ' ' + piece).length <= limit) {
+        current += ' ' + piece;
       } else {
-        // Si una oración es muy extensa, subdividir por comas o dos puntos
-        const parts = s.split(/([,;:])\s+/);
-        let subCurr = '';
-        for (const p of parts) {
-          if ((subCurr + p).length <= maxLen) {
-            subCurr += p;
-          } else {
-            if (subCurr.trim()) chunks.push(subCurr.trim());
-            subCurr = p;
-          }
-        }
-        current = subCurr.trim();
+        result.push(current);
+        current = piece;
       }
     }
+    if (current) result.push(current);
+    return result;
   }
-  if (current.trim()) chunks.push(current.trim());
 
-  return chunks.filter(c => c.length > 0);
+  return breakDown(text);
 }
 
-async function fetchAudioChunk(chunk: string): Promise<ArrayBuffer | null> {
+async function fetchAudioChunk(chunk: string, retries = 1): Promise<ArrayBuffer | null> {
   const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=es&client=tw-ob&q=${encodeURIComponent(chunk)}`;
-  try {
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+      if (res.ok) {
+        return await res.arrayBuffer();
       }
-    });
-    if (!res.ok) return null;
-    return await res.arrayBuffer();
-  } catch {
-    return null;
+      console.warn(`[TTS] Error HTTP ${res.status} (intento ${attempt + 1}) en fragmento de audio: "${chunk.slice(0, 40)}..."`);
+    } catch (err) {
+      console.warn(`[TTS] Excepción de red (intento ${attempt + 1}):`, err);
+    }
+    if (attempt < retries) {
+      await new Promise(r => setTimeout(r, 150));
+    }
   }
+  return null;
 }
 
 async function synthesizeFullAudio(text: string): Promise<Buffer | null> {
@@ -65,6 +91,8 @@ async function synthesizeFullAudio(text: string): Promise<Buffer | null> {
     const ab = await fetchAudioChunk(chunk);
     if (ab) {
       buffers.push(Buffer.from(ab));
+    } else {
+      console.warn(`[TTS] Se omitió fragmento fallido tras reintentos: "${chunk.slice(0, 40)}..."`);
     }
   }
 
