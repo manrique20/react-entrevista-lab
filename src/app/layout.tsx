@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'React & Next.js Entrevista Lab — Guía Interactiva Completa',
-  description: 'Plataforma interactiva de maestría en React 19 y Next.js con 8 niveles, laboratorios en vivo, preguntas de entrevista senior y 11 ejercicios de código.',
+  title: 'Frontend Interview Mastery Lab — React 19 & JavaScript Core',
+  description: 'The definitive technical interview preparation lab for React 19, Next.js, and JavaScript Core. Interactive visualizers, live coding challenges, system design blueprints, and mock interviews.',
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="es"
+      lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >

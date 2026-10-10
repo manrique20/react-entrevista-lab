@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, CheckCircle, Circle, Filter } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, Trash2, CheckCircle, Circle } from 'lucide-react';
 
 interface Tarea {
   id: string;
@@ -12,18 +12,18 @@ interface Tarea {
 
 export function TodoExercise() {
   const [tareas, setTareas] = useState<Tarea[]>([
-    { id: '1', texto: 'Comprender el algoritmo Fiber O(n)', completada: true, creadaEn: 'Hoy' },
-    { id: '2', texto: 'Resolver ejercicio de Debounce con AbortController', completada: false, creadaEn: 'Hoy' },
-    { id: '3', texto: 'Repasar preguntas de concurrencia y Server Actions', completada: false, creadaEn: 'Hoy' }
+    { id: '1', texto: 'Understand the O(n) Fiber reconciliation algorithm', completada: true, creadaEn: 'Today' },
+    { id: '2', texto: 'Solve Debounce exercise with AbortController', completada: false, creadaEn: 'Today' },
+    { id: '3', texto: 'Review concurrency questions and Server Actions', completada: false, creadaEn: 'Today' }
   ]);
   const [nuevoTexto, setNuevoTexto] = useState('');
-  const [filtro, setFiltro] = useState<'todas' | 'pendientes' | 'completadas'>('todas');
+  const [filtro, setFiltro] = useState<'all' | 'pending' | 'completed'>('all');
 
   const agregarTarea = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nuevoTexto.trim()) return;
     const nueva: Tarea = {
-      id: crypto.randomUUID(), // ID estable
+      id: crypto.randomUUID(), // Stable ID
       texto: nuevoTexto.trim(),
       completada: false,
       creadaEn: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -43,37 +43,37 @@ export function TodoExercise() {
   };
 
   const tareasFiltradas = tareas.filter(t => {
-    if (filtro === 'pendientes') return !t.completada;
-    if (filtro === 'completadas') return t.completada;
+    if (filtro === 'pending') return !t.completada;
+    if (filtro === 'completed') return t.completada;
     return true;
   });
 
   return (
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="border-b pb-3">
-        <h3 className="font-bold text-base">Ejercicio 2: To-do List Completo</h3>
-        <p className="text-xs text-muted">Evalúa gestión de estado inmutable (.map, .filter), IDs estables para `key` y filtrado derivado.</p>
+        <h3 className="font-bold text-base">Exercise 2: Complete To-do List</h3>
+        <p className="text-xs text-muted">Evaluates immutable state management (.map, .filter), stable IDs for `key`, and derived filtering.</p>
       </div>
 
       <form onSubmit={agregarTarea} className="flex gap-2">
         <input
           value={nuevoTexto}
           onChange={e => setNuevoTexto(e.target.value)}
-          placeholder="Escribe una nueva tarea..."
+          placeholder="Write a new task..."
           className="flex-1 px-3 py-2 border rounded-xl bg-background text-foreground text-xs focus:ring-2 focus:ring-primary focus:outline-none"
         />
         <button
           type="submit"
           className="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-xl hover:bg-primary/90 flex items-center gap-1.5 transition-colors"
         >
-          <Plus className="w-4 h-4" /> Agregar
+          <Plus className="w-4 h-4" /> Add
         </button>
       </form>
 
-      {/* Barra de Filtros */}
+      {/* Filter Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex gap-1.5">
-          {(['todas', 'pendientes', 'completadas'] as const).map(tipo => (
+          {(['all', 'pending', 'completed'] as const).map(tipo => (
             <button
               key={tipo}
               onClick={() => setFiltro(tipo)}
@@ -86,15 +86,15 @@ export function TodoExercise() {
           ))}
         </div>
         <span className="text-muted font-mono text-[11px]">
-          {tareas.filter(t => !t.completada).length} pendientes de {tareas.length}
+          {tareas.filter(t => !t.completada).length} pending of {tareas.length}
         </span>
       </div>
 
-      {/* Lista */}
+      {/* List */}
       <ul className="space-y-2">
         {tareasFiltradas.length === 0 ? (
           <li className="p-6 text-center text-xs text-muted italic border rounded-xl bg-muted/10">
-            No hay tareas en esta categoría.
+            No tasks in this category.
           </li>
         ) : (
           tareasFiltradas.map(t => (
@@ -122,7 +122,7 @@ export function TodoExercise() {
                 <button
                   onClick={() => eliminarTarea(t.id)}
                   className="text-muted hover:text-red-500 p-1 transition-colors"
-                  title="Eliminar tarea"
+                  title="Delete task"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

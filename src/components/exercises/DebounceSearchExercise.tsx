@@ -22,7 +22,7 @@ export function DebounceSearchExercise() {
   const [cargando, setCargando] = useState(false);
   const [resultados, setResultados] = useState<typeof BD_MOCK>([]);
 
-  // Hook personalizado de debounce en línea
+  // Inline debounce custom hook effect
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedTermino(termino);
@@ -31,7 +31,7 @@ export function DebounceSearchExercise() {
     return () => clearTimeout(timer);
   }, [termino]);
 
-  // Simulación de búsqueda asíncrona en red
+  // Simulated asynchronous network search
   useEffect(() => {
     if (!debouncedTermino.trim()) {
       setResultados([]);
@@ -51,7 +51,7 @@ export function DebounceSearchExercise() {
         setResultados(filtrados);
         setCargando(false);
       }
-    }, 500); // 500ms de latencia simulada de API
+    }, 500); // 500ms simulated API latency
 
     return () => {
       controller.abort();
@@ -62,8 +62,8 @@ export function DebounceSearchExercise() {
   return (
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="border-b pb-3">
-        <h3 className="font-bold text-base">Ejercicio 3: Buscador en Tiempo Real con Debounce</h3>
-        <p className="text-xs text-muted">Evalúa hooks personalizados, cancelación de timers y prevención de llamadas excesivas a APIs.</p>
+        <h3 className="font-bold text-base">Exercise 3: Real-Time Debounced Search</h3>
+        <p className="text-xs text-muted">Evaluates custom hooks, timer cancellation, and preventing excessive API calls.</p>
       </div>
 
       <div className="relative">
@@ -71,7 +71,7 @@ export function DebounceSearchExercise() {
         <input
           value={termino}
           onChange={e => setTermino(e.target.value)}
-          placeholder="Busca por título o categoría (ej: 'React 19', 'State', 'Fiber')..."
+          placeholder="Search by title or category (e.g. 'React 19', 'State', 'Fiber')..."
           className="w-full pl-9 pr-4 py-2 border rounded-xl bg-background text-foreground text-xs focus:ring-2 focus:ring-primary focus:outline-none"
         />
         {cargando && (
@@ -80,20 +80,20 @@ export function DebounceSearchExercise() {
       </div>
 
       <div className="flex items-center justify-between text-xs font-mono text-muted bg-muted/20 px-3 py-1.5 rounded-lg">
-        <span>Término inmediato en input: &quot;{termino}&quot;</span>
+        <span>Immediate input value: &quot;{termino}&quot;</span>
         <span>Debounced (400ms): &quot;{debouncedTermino}&quot;</span>
       </div>
 
-      {/* Resultados */}
+      {/* Results */}
       <div className="space-y-2">
         {cargando ? (
           <div className="p-6 text-center text-xs text-muted font-medium flex items-center justify-center gap-2">
             <Loader2 className="w-4 h-4 animate-spin text-primary" />
-            <span>Consultando API simulada...</span>
+            <span>Querying simulated API...</span>
           </div>
         ) : debouncedTermino && resultados.length === 0 ? (
           <div className="p-6 text-center text-xs text-muted italic border rounded-xl">
-            No se encontraron coincidencias para &quot;{debouncedTermino}&quot;.
+            No matches found for &quot;{debouncedTermino}&quot;.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -104,7 +104,7 @@ export function DebounceSearchExercise() {
                   <span className="text-[10px] text-muted font-mono">{res.categoria}</span>
                 </div>
                 <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-                  Coincidencia
+                  Match
                 </span>
               </div>
             ))}

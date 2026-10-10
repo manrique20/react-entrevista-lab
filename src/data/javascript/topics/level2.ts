@@ -4,27 +4,27 @@ export const level2Topics: JsTopic[] = [
   {
     "id": "P14",
     "level": 2,
-    "levelTitle": "Funciones",
-    "question": "¿Diferencia entre declaración, expresión de función y arrow function?",
-    "shortAnswer": "Una **declaración** se eleva completamente (hoisting), tiene su propio `this` y `arguments`, y puede instanciarse con `new`. Una **expresión** se asigna a una variable y solo se eleva la variable. Una **arrow function** tiene `this` léxico heredado de su contexto padre, carece de `arguments`, `prototype` y no puede invocarse con `new`.",
-    "explanation": `Comparativa técnica detallada:
+    "levelTitle": "Functions",
+    "question": "What is the difference between a function declaration, a function expression, and an arrow function?",
+    "shortAnswer": "A **declaration** is fully hoisted, has its own `this` and `arguments`, and can be instantiated with `new`. An **expression** is assigned to a variable, hoisting only the variable binding. An **arrow function** has a lexical `this` inherited from its enclosing context, lacks `arguments` and `prototype`, and cannot be invoked with `new`.",
+    "explanation": `Detailed technical comparison:
 
-| Característica | Declaración (\`function f(){}\`) | Expresión (\`const f = function(){}\`) | Arrow Function (\`const f = () => {}\`) |
+| Feature | Declaration (\`function f(){}\`) | Expression (\`const f = function(){}\`) | Arrow Function (\`const f = () => {}\`) |
 |---|---|---|---|
-| Hoisting | Completo (cuerpo y nombre utilizables antes) | Solo elevación de variable (TDZ con \`let\`/\`const\`) | Solo elevación de variable (TDZ con \`let\`/\`const\`) |
-| Enlace \`this\` | Dinámico (determinado por el llamador) | Dinámico (determinado por el llamador) | **Léxico** (captura el \`this\` del ámbito contenedor) |
-| Objeto \`arguments\` | Presente (\`arguments[0]\`) | Presente (\`arguments[0]\`) | **Ausente** (se debe usar \`...rest\`) |
-| Constructor (\`new\`) | Sí (posee propiedad \`.prototype\`) | Sí (posee propiedad \`.prototype\`) | **No** (lanza \`TypeError: not a constructor\`) |
-| Generadores | Sí (\`function*\`) | Sí (\`function*\`) | No |
+| Hoisting | Full (body and name usable prior to declaration) | Variable declaration only (TDZ with \`let\`/\`const\`) | Variable declaration only (TDZ with \`let\`/\`const\`) |
+| \`this\` Binding | Dynamic (determined by caller) | Dynamic (determined by caller) | **Lexical** (captures enclosing scope's \`this\`) |
+| \`arguments\` Object | Available (\`arguments[0]\`) | Available (\`arguments[0]\`) | **Absent** (must use \`...rest\`) |
+| Constructor (\`new\`) | Yes (has \`.prototype\` property) | Yes (has \`.prototype\` property) | **No** (throws \`TypeError: not a constructor\`) |
+| Generator Support | Yes (\`function*\`) | Yes (\`function*\`) | No |
 
-¿Por qué importa en producción?
-1. Las **arrow functions** eliminan los clásicos bugs de pérdida de contexto en callbacks y métodos asíncronos (como \`setTimeout\` o handlers de eventos en React/DOM).
-2. Las **declaraciones** son útiles para organizar archivos exportando funciones arriba y definiendo implementaciones abajo gracias al hoisting completo.`,
-    "codeSnippet": "function suma(a, b) { return a + b; }          // declaración\nconst resta = function (a, b) { return a - b; }; // expresión\nconst mult = (a, b) => a * b;                   // arrow (return implícito)\nconst crear = (id) => ({ id });                 // para devolver un objeto, paréntesis",
-    "seniorTip": "En entrevistas, no te limites a decir 'la flecha es más corta'. Resalta que las arrow functions carecen de slot interno [[Construct]] (por eso consumen menos memoria por instancia al no crear un objeto prototype) y que jamás debes usar arrow functions como métodos de objetos literales si planeas acceder a propiedades hermanas mediante this.",
+Why this matters in production:
+1. **Arrow functions** eliminate classic context-loss bugs in callbacks and asynchronous handlers (such as \`setTimeout\` or React / DOM event listeners).
+2. **Declarations** allow clean file organization, letting you export high-level functions at the top while locating implementation details below, thanks to complete hoisting.`,
+    "codeSnippet": "function sum(a, b) { return a + b; }            // declaration\nconst subtract = function (a, b) { return a - b; }; // expression\nconst multiply = (a, b) => a * b;               // arrow (implicit return)\nconst create = (id) => ({ id });                 // parenthesize to return an object literal",
+    "seniorTip": "In interviews, do not stop at saying 'arrows are shorter syntax'. Emphasize that arrow functions lack an internal [[Construct]] method (saving memory per instance by not constructing a prototype object) and that you should never use arrow functions as object methods if they need to access sibling properties via this.",
     "tags": [
       "hoisting",
-      "nivel-2",
+      "level-2",
       "this",
       "javascript"
     ],
@@ -33,59 +33,59 @@ export const level2Topics: JsTopic[] = [
   {
     "id": "P15",
     "level": 2,
-    "levelTitle": "Funciones",
-    "question": "¿Qué son parámetros por defecto, *rest* y *spread*?",
-    "shortAnswer": "Los **parámetros por defecto** asignan valores cuando un argumento es `undefined`. El operador **rest (`...`)** agrupa múltiples argumentos sobrantes en un array genuino al final de los parámetros. El operador **spread (`...`)** expande elementos de un iterable u objeto en llamadas, arrays u objetos literales.",
-    "explanation": `Desglose profundo de los tres mecanismos de ES6+:
+    "levelTitle": "Functions",
+    "question": "What are default parameters, rest parameters, and spread syntax?",
+    "shortAnswer": "**Default parameters** assign fallback values when an argument is `undefined`. The **rest parameter (`...`)** gathers remaining surplus arguments into a genuine array at the end of the parameter list. The **spread operator (`...`)** expands iterable elements or object properties in function calls, array literals, and object literals.",
+    "explanation": `Deep breakdown of the three ES6+ features:
 
-1. **Parámetros por defecto (\`param = valorDefault\`):**
-- Se evalúan en **tiempo de ejecución** cada vez que se llama a la función, no en tiempo de parseo.
-- **Trampa crítica:** Solo se activan si el valor pasado es estrictamente \`undefined\`. Pasar \`null\`, \`false\`, \`0\` o \`""\` se considera un valor explícito y **no** dispara el default.
-- Tienen su propio ámbito léxico intermedio (parámetro scope): \`function f(a = 1, b = a * 2)\` es válido, pero \`function f(a = b, b = 2)\` lanza un \`ReferenceError\` por la Zona Muerta Temporal (TDZ) entre parámetros.
+1. **Default Parameters (\`param = defaultValue\`):**
+- Evaluated at **call time** on each function invocation, not at parse time.
+- **Critical Gotcha:** They are triggered exclusively when the passed argument is strictly \`undefined\`. Passing \`null\`, \`false\`, \`0\`, or \`""\` is treated as an explicit value and will **not** trigger the default.
+- They have their own intermediate lexical scope (parameter scope): \`function f(a = 1, b = a * 2)\` is valid, but \`function f(a = b, b = 2)\` throws a \`ReferenceError\` due to parameter TDZ.
 
-2. **Parámetro Rest (\`...args\`):**
-- Agrupa todos los argumentos no asignados en una instancia real de \`Array\`.
-- Debe situarse obligatoriamente como el **último parámetro** de la función (\`(a, b, ...resto)\`).
-- Reemplaza por completo al antiguo objeto \`arguments\`, permitiendo aplicar directamente métodos de array como \`.reduce()\`, \`.map()\` o \`.filter()\` y funcionando limpiamente con TypeScript.
+2. **Rest Parameters (\`...args\`):**
+- Gathers all unassigned arguments into an actual \`Array\` instance.
+- Must strictly be the **last parameter** in the function signature (\`(a, b, ...rest)\`).
+- Completely replaces the legacy \`arguments\` object, enabling direct usage of array methods like \`.reduce()\`, \`.map()\`, and \`.filter()\`, and typing cleanly in TypeScript.
 
-3. **Operador Spread (\`...iterable\` / \`...objeto\`):**
-- Realiza una expansión en caliente de colecciones iterables (arrays, strings, sets, maps) o propiedades enumerables propias de un objeto.
-- **Copia superficial (*Shallow Copy*):** Duplica referencias en objetos anidados, no genera copias profundas.
-- En objetos, el orden de escritura define la precedencia: \`{ ...base, activo: true }\` sobrescribe la propiedad si ya existía en \`base\`.`,
-    "codeSnippet": "// Por defecto (se evalúan solo si el argumento es undefined)\nfunction saludar(nombre = 'invitado') { return `Hola ${nombre}`; }\nsaludar();            // 'Hola invitado'\nsaludar(null);        // 'Hola null' (null NO activa el default)\n\n// Rest: agrupa argumentos restantes en un array real\nfunction sumar(...nums) { return nums.reduce((a, b) => a + b, 0); }\nsumar(1, 2, 3);       // 6\n\n// Spread: expande un iterable\nconst a = [1, 2], b = [3];\nconst c = [...a, ...b];             // [1, 2, 3]\nMath.max(...c);                      // 3\nconst o2 = { ...{ x: 1 }, y: 2 };   // { x: 1, y: 2 }",
-    "seniorTip": "En una entrevista Senior, subraya que saludar(null) NO activa el default porque null representa una ausencia de valor deliberada (truthy/falsy check vs undefined check). Asimismo, advierte que el spread masivo en arrays gigantes dentro de llamadas como Math.max(...granArray) puede desbordar la pila de llamadas (Maximum call stack size exceeded) por exceder el límite de argumentos del motor.",
+3. **Spread Operator (\`...iterable\` / \`...object\`):**
+- Performs inline unpacking of iterable collections (arrays, strings, sets, maps) or own enumerable object properties.
+- **Shallow Copy:** Copies references for nested objects; it does not perform deep cloning.
+- In object literals, property order determines precedence: \`{ ...base, active: true }\` overwrites \`active\` if it already existed in \`base\`.`,
+    "codeSnippet": "// Default parameters (evaluated only if argument is undefined)\nfunction greet(name = 'guest') { return `Hello ${name}`; }\ngreet();            // 'Hello guest'\ngreet(null);        // 'Hello null' (null does NOT trigger default)\n\n// Rest: gathers remaining arguments into a real array\nfunction sum(...nums) { return nums.reduce((a, b) => a + b, 0); }\nsum(1, 2, 3);       // 6\n\n// Spread: unpacks an iterable or object\nconst a = [1, 2], b = [3];\nconst c = [...a, ...b];             // [1, 2, 3]\nMath.max(...c);                      // 3\nconst o2 = { ...{ x: 1 }, y: 2 };   // { x: 1, y: 2 }",
+    "seniorTip": "In a Senior interview, highlight that greet(null) does NOT trigger the default because null represents an explicit, intentional absence of value. Additionally, warn that spreading massive arrays into function calls like Math.max(...giantArray) can crash with 'Maximum call stack size exceeded' by exceeding the engine's argument limit.",
     "tags": [
-      "nivel-2",
+      "level-2",
       "javascript",
       "es6",
-      "funciones"
+      "functions"
     ],
     "interactiveDemo": "console"
   },
   {
     "id": "P16",
     "level": 2,
-    "levelTitle": "Funciones",
-    "question": "¿Qué es una función de orden superior?",
-    "shortAnswer": "Una **función de orden superior** (HOF) es una función que recibe una o más funciones como argumentos, o devuelve una función como resultado. Esto es posible porque en JavaScript las funciones son ciudadanos de primera clase (*first-class citizens*).",
-    "explanation": `Mecanismo y aplicaciones esenciales:
+    "levelTitle": "Functions",
+    "question": "What is a higher-order function?",
+    "shortAnswer": "A **higher-order function** (HOF) is a function that accepts one or more functions as arguments, returns a function as its result, or both. This is possible because in JavaScript, functions are **first-class citizens**.",
+    "explanation": `Mechanics and key applications:
 
-1. **Ciudadanos de primera clase (*First-Class Citizens*):**
-En JavaScript, las funciones son objetos ordinarios que pueden asignarse a variables, guardarse en estructuras de datos, enviarse como parámetros a otras funciones y retornarse como valores.
+1. **First-Class Citizens:**
+In JavaScript, functions are ordinary objects that can be assigned to variables, stored in data structures, passed as arguments to other functions, and returned as values.
 
-2. **Tipos de Funciones de Orden Superior:**
-- **Consumidoras de callbacks:** Métodos nativos de Array como \`.map()\`, \`.filter()\`, \`.reduce()\`, \`.find()\`, \`.some()\`, y temporizadores como \`setTimeout()\`.
-- **Fábricas de funciones (*Function Factories*):** Funciones que retornan nuevas funciones configuradas a través de closures (como decoradores, middlewares, o generadores de multiplicadores).
+2. **Types of Higher-Order Functions:**
+- **Callback consumers:** Native array methods such as \`.map()\`, \`.filter()\`, \`.reduce()\`, \`.find()\`, \`.some()\`, and timer utilities like \`setTimeout()\`.
+- **Function factories:** Functions that return newly configured functions closed over lexical environments (decorators, middlewares, or multiplier generators).
 
-3. **Beneficios en Arquitectura:**
-- **Abstracción declarativa:** Oculta bucles imperativos manuales y mutaciones de estado intermedio.
-- **Composabilidad y reutilización:** Permite crear pipelines de procesamiento de datos desacoplados y predecibles (fundamento de la programación funcional y de librerías como RxJS, Redux y lodash/fp).`,
-    "codeSnippet": "const numeros = [1, 2, 3, 4, 5];\n\nnumeros.map((n) => n * 2);               // [2, 4, 6, 8, 10]\nnumeros.filter((n) => n % 2 === 0);      // [2, 4]\nnumeros.reduce((acc, n) => acc + n, 0);  // 15\n\n// Devuelve una función (factory)\nconst multiplicadorDe = (factor) => (n) => n * factor;\nconst doble = multiplicadorDe(2);\ndoble(7); // 14",
-    "seniorTip": "Los evaluadores técnicos buscan que distingas entre una HOF y un callback: el callback es la función pasada; la HOF es la receptora o productora. En términos de rendimiento, advierte que crear HOFs y callbacks en línea dentro de bucles o renders de React crea nuevas asignaciones de memoria y referencias en cada ciclo.",
+3. **Architectural Benefits:**
+- **Declarative abstraction:** Replaces manual imperative loops and intermediate mutable state tracking.
+- **Composability and reusability:** Enables building decoupled, predictable data processing pipelines (the foundation of functional programming, RxJS, Redux, and lodash/fp).`,
+    "codeSnippet": "const numbers = [1, 2, 3, 4, 5];\n\nnumbers.map((n) => n * 2);               // [2, 4, 6, 8, 10]\nnumbers.filter((n) => n % 2 === 0);      // [2, 4]\nnumbers.reduce((acc, n) => acc + n, 0);  // 15\n\n// Returns a function (factory)\nconst multiplierOf = (factor) => (n) => n * factor;\nconst double = multiplierOf(2);\ndouble(7); // 14",
+    "seniorTip": "Technical evaluators look for the distinction between an HOF and a callback: the callback is the function passed in; the HOF is the receiver or producer. In terms of performance, note that creating inline HOFs and callbacks inside tight loops or React render bodies creates new allocations and references on every cycle.",
     "tags": [
-      "nivel-2",
+      "level-2",
       "javascript",
-      "funcional",
+      "functional",
       "hof"
     ],
     "interactiveDemo": "console"
@@ -93,26 +93,26 @@ En JavaScript, las funciones son objetos ordinarios que pueden asignarse a varia
   {
     "id": "P17",
     "level": 2,
-    "levelTitle": "Funciones",
-    "question": "¿Qué es un callback?",
-    "shortAnswer": "Un **callback** es una función que se pasa como argumento a otra función para ser invocada posteriormente (síncrona o asíncronamente) una vez que se completa una rutina o evento.",
-    "explanation": `Diferenciación y evolución en JavaScript:
+    "levelTitle": "Functions",
+    "question": "What is a callback?",
+    "shortAnswer": "A **callback** is a function passed as an argument to another function, intended to be executed later (either synchronously or asynchronously) once an operation completes or an event occurs.",
+    "explanation": `Distinction and evolution in JavaScript:
 
-1. **Callbacks Síncronos vs Asíncronos:**
-- **Síncronos:** Se ejecutan de inmediato en el mismo turno del hilo de ejecución (ej. \`[1, 2].forEach(callback)\`).
-- **Asíncronos:** Se colocan en la cola de tareas del Event Loop para ejecutarse tras la resolución de una operación I/O, temporizador o evento del DOM (ej. \`fetch\`, \`setTimeout\`).
+1. **Synchronous vs Asynchronous Callbacks:**
+- **Synchronous:** Executed immediately within the same call stack turn (e.g., \`[1, 2].forEach(callback)\`).
+- **Asynchronous:** Dispatched to the Event Loop task queue to run after an I/O operation, timer, or DOM event resolves (e.g., \`fetch\`, \`setTimeout\`).
 
-2. **El problema del *Callback Hell* (Pirámide de la Perdición):**
-Cuando múltiples tareas asíncronas dependen secuencialmente del resultado de la anterior, anidar callbacks crea código piramidal difícil de leer, con manejo de errores fragmentado e inversión de control (el llamador confía ciegamente en cuándo y cuántas veces el callback será ejecutado).
+2. **The Problem of Callback Hell (Pyramid of Doom):**
+When multiple asynchronous operations depend sequentially on preceding results, nesting callbacks creates deep pyramid code that is brittle, has fragmented error handling, and suffers from **Inversion of Control** (the caller blindly trusts third-party code on when and how many times the callback will be invoked).
 
-3. **Solución moderna:**
-- ES6 introdujo **Promesas** (garantizan que la resolución ocurrirá una sola vez y unifican el manejo de errores con \`.catch()\`).
-- ES2017 consolidó **\`async/await\`**, permitiendo estructurar lógica asíncrona de forma lineal y con bloques \`try/catch\` nativos.`,
-    "codeSnippet": "// Síncrono\n[1, 2, 3].forEach((n) => console.log(n));\n\n// Asíncrono\nsetTimeout(() => console.log('después de 1s'), 1000);\n\n// Convención Node.js: error-first callback\nleerArchivo('a.txt', (err, datos) => {\n  if (err) return console.error(err);\n  console.log(datos);\n});",
-    "seniorTip": "Menciona el concepto de 'Inversión de Control' (Inversion of Control): cuando pasas un callback a una librería de terceros, pierdes la certeza de si lo llamarán cero, una o diez veces, o si tragarán las excepciones. Las Promesas devuelven el control de la resolución a tu código.",
+3. **Modern Solution:**
+- ES6 introduced **Promises** (guaranteeing one-time resolution and unified error handling with \`.catch()\`).
+- ES2017 consolidated **\`async/await\`**, enabling linear asynchronous logic with native \`try/catch\` control flow.`,
+    "codeSnippet": "// Synchronous\n[1, 2, 3].forEach((n) => console.log(n));\n\n// Asynchronous\nsetTimeout(() => console.log('after 1s'), 1000);\n\n// Node.js convention: error-first callback\nreadFile('a.txt', (err, data) => {\n  if (err) return console.error(err);\n  console.log(data);\n});",
+    "seniorTip": "Highlight the concept of 'Inversion of Control': when you pass a callback to a third-party library, you surrender control over whether it is called zero, once, or multiple times, or whether exceptions are swallowed. Promises return control of resolution back to your own code.",
     "tags": [
       "async",
-      "nivel-2",
+      "level-2",
       "javascript",
       "callbacks"
     ],
@@ -121,28 +121,28 @@ Cuando múltiples tareas asíncronas dependen secuencialmente del resultado de l
   {
     "id": "P18",
     "level": 2,
-    "levelTitle": "Funciones",
-    "question": "¿Qué es una IIFE y para qué sirve?",
-    "shortAnswer": "Una **IIFE** (*Immediately Invoked Function Expression*) es una función de JavaScript que se declara y se ejecuta en el mismo instante en que se define: `(function() { ... })()`. Se utilizaba históricamente para crear un ámbito local privado y evitar la contaminación del objeto global.",
-    "explanation": `Anatomía y contexto histórico vs moderno:
+    "levelTitle": "Functions",
+    "question": "What is an IIFE and what is it used for?",
+    "shortAnswer": "An **IIFE** (*Immediately Invoked Function Expression*) is a JavaScript function that is defined and executed simultaneously: `(function() { ... })()`. Historically, it was used to create a private local scope and prevent polluting the global object.",
+    "explanation": `Anatomy and historical vs modern context:
 
-1. **Sintaxis:**
-- El primer par de paréntesis \`(function() { ... })\` convierte la declaración de función en una **expresión**, evitando un error sintáctico.
-- El segundo par \`()\` al final ejecuta inmediatamente dicha expresión.
-- Puede recibir parámetros: \`((window, document) => { ... })(window, document)\`.
+1. **Syntax:**
+- The first pair of parentheses \`(function() { ... })\` transforms the function declaration into an **expression**, avoiding a syntax parse error.
+- The second pair \`()\` immediately invokes that expression.
+- It can receive arguments: \`((window, document) => { ... })(window, document)\`.
 
-2. **Problema que resolvía en la era pre-ES6:**
-Antes de la llegada de \`let\`, \`const\` y los módulos ES (ESM), JavaScript solo tenía ámbito global y ámbito de función (\`var\`). Cualquier variable declarada en un script podía colisionar con variables de otros scripts en el objeto \`window\`. Las IIFE creaban una 'burbuja' de scope aislada (patrón Módulo clásico).
+2. **The Pre-ES6 Problem It Solved:**
+Before \`let\`, \`const\`, and ES modules (ESM), JavaScript only had global and function scope (\`var\`). Any variable declared in a script could clash with variables in other scripts on the shared \`window\` object. IIFEs created an isolated scope 'sandbox' (the classic Module Pattern).
 
-3. **Relevancia actual:**
-Con los módulos ESM (\`import\`/\`export\`) donde cada archivo tiene su propio ámbito cerrado, las IIFE rara vez son necesarias. Sin embargo, aún se usan para:
-- Ejecutar código asíncrono inmediato en el nivel superior (*top-level await* en entornos legacy).
-- Empaquetadores y bundlers (generación de bundles UMD/IIFE para etiquetas \`<script>\`).`,
-    "codeSnippet": "(function () {\n  const secreto = 'no accesible desde fuera';\n  console.log('me ejecuto ya');\n})();\n\nconst contador = (() => {\n  let n = 0;\n  return { inc: () => ++n, valor: () => n };\n})();\ncontador.inc();\ncontador.valor(); // 1",
-    "seniorTip": "En una entrevista, explica que con ESM y top-level await nativo, las IIFE han pasado a ser una técnica de compatibilidad legacy. Si te piden un caso moderno, menciona la inicialización atómica de variables complejas en una sola expresión: const config = (() => { if (...) return a; return b; })();",
+3. **Modern Relevance:**
+With ESM (\`import\`/\`export\`) providing file-level scope isolation, IIFEs are rarely necessary today. However, they are still used for:
+- Immediate asynchronous logic at the top level in environments without top-level await.
+- Bundlers and build tools (generating UMD/IIFE bundles for \`<script>\` tags).`,
+    "codeSnippet": "(function () {\n  const secret = 'not accessible from outside';\n  console.log('executes immediately');\n})();\n\nconst counter = (() => {\n  let count = 0;\n  return { inc: () => ++count, value: () => count };\n})();\ncounter.inc();\ncounter.value(); // 1",
+    "seniorTip": "In an interview, explain that with native ESM and top-level await, IIFEs have become largely a legacy compatibility technique. If asked for a modern use case, mention atomic one-line complex variable initialization: const config = (() => { if (...) return a; return b; })();",
     "tags": [
       "scope",
-      "nivel-2",
+      "level-2",
       "javascript",
       "iife"
     ],
@@ -151,90 +151,90 @@ Con los módulos ESM (\`import\`/\`export\`) donde cada archivo tiene su propio 
   {
     "id": "P19",
     "level": 2,
-    "levelTitle": "Funciones",
-    "question": "¿Qué es una función pura y por qué importa?",
-    "shortAnswer": "Una **función pura** es aquella que, dado el mismo conjunto de argumentos, siempre devuelve el mismo resultado y **no produce efectos secundarios** observables (no muta variables externas, no altera sus argumentos y no hace I/O).",
-    "explanation": `Principios fundamentales y beneficios en producción:
+    "levelTitle": "Functions",
+    "question": "What is a pure function and why does it matter?",
+    "shortAnswer": "A **pure function** is a function that, given the same arguments, always returns the same result and produces **no observable side effects** (it does not mutate external state, does not modify its arguments, and performs no I/O).",
+    "explanation": `Core principles and production benefits:
 
-1. **Determinismo (Transparencia Referencial):**
-\`f(x)\` siempre producirá exactamente \`y\`. Una llamada a la función puede ser reemplazada directamente por su valor de retorno sin cambiar el comportamiento del programa.
+1. **Determinism (Referential Transparency):**
+\`f(x)\` will always yield \`y\`. A call to the function can be replaced by its return value without altering the behavior of the program.
 
-2. **Ausencia de efectos secundarios (*Side Effects*):**
-Una función pura NO realiza:
-- Mutaciones de variables globales o en ámbitos superiores.
-- Mutaciones de los argumentos recibidos por referencia (\`arr.push()\` o \`arr.sort()\` son impuros; \`[...arr].sort()\` es puro).
-- Solicitudes HTTP, lecturas/escrituras en disco o almacenamiento (\`localStorage\`).
-- Invocaciones a funciones no deterministas (\`Math.random()\`, \`Date.now()\`).
-- Modificaciones directas en el DOM.
+2. **Absence of Side Effects:**
+A pure function does NOT perform:
+- Mutations of global or outer-scope variables.
+- Mutations of arguments received by reference (\`arr.push()\` and \`arr.sort()\` are impure; \`[...arr].sort()\` is pure).
+- HTTP requests, disk I/O, or storage writes (\`localStorage\`).
+- Invocations of non-deterministic functions (\`Math.random()\`, \`Date.now()\`).
+- Direct DOM mutations.
 
-3. **Por qué es el pilar de React y Redux:**
-- **Previsibilidad y tests triviales:** No requiere mocks de servicios externos ni restablecimiento de estado global.
-- **Memoización segura:** Como el resultado depende solo de los inputs, se puede cachear con \`useMemo\`, \`React.memo\` o selectores de Redux sin temor a datos desactualizados.
-- **Concurrencia:** Al no compartir estado mutable, se evitan condiciones de carrera (*race conditions*).`,
-    "codeSnippet": "// Impura (muta estado externo)\nlet total = 0;\nfunction agregar(n) { total += n; return total; }\n\n// Pura (determinista sin efectos colaterales)\nconst agregarPura = (total, n) => total + n;\n\n// Impura por mutar el argumento recibido\nconst ordenarMal = (arr) => arr.sort();\n// Pura (copia previa o métodos ES2023 toSorted)\nconst ordenarBien = (arr) => [...arr].sort();",
-    "seniorTip": "Cita trampas comunes de impureza inadvertida en JavaScript: Array.prototype.sort(), splice() y reverse() mutan el array original en sitio (in-place). Para mantener pureza sin librerías externas en ES2023+, usa los nuevos métodos inmutables: toSorted(), toSpliced(), toReversed() y with().",
+3. **Why It is the Core Pillar of React and Redux:**
+- **Predictability and trivial testing:** No external mocks or global state resets required.
+- **Safe memoization:** Since outputs depend solely on inputs, results can be cached with \`useMemo\`, \`React.memo\`, or Redux selectors without stale-state bugs.
+- **Concurrency:** Without shared mutable state, race conditions are avoided.`,
+    "codeSnippet": "// Impure (mutates external state)\nlet total = 0;\nfunction add(n) { total += n; return total; }\n\n// Pure (deterministic without side effects)\nconst addPure = (total, n) => total + n;\n\n// Impure: mutates argument in place\nconst sortBad = (arr) => arr.sort();\n// Pure: copies first or uses ES2023 toSorted\nconst sortGood = (arr) => [...arr].sort();",
+    "seniorTip": "Call out common accidental impurity pitfalls in JavaScript: Array.prototype.sort(), splice(), and reverse() mutate the original array in place. To preserve purity without external libraries in ES2023+, use the new immutable methods: toSorted(), toSpliced(), toReversed(), and with().",
     "tags": [
-      "nivel-2",
+      "level-2",
       "javascript",
-      "funcional",
-      "inmutabilidad"
+      "functional",
+      "immutability"
     ],
     "interactiveDemo": "console"
   },
   {
     "id": "P20",
     "level": 2,
-    "levelTitle": "Funciones",
-    "question": "¿Qué es *currying* y qué es composición?",
-    "shortAnswer": "**Currying** descompone una función de múltiples argumentos `f(a, b, c)` en una secuencia de funciones unarias anidadas `f(a)(b)(c)`. La **composición** une dos o más funciones de modo que la salida de una sea la entrada de la siguiente: `(f ∘ g)(x) = f(g(x))`.",
-    "explanation": `Detalles técnicos y aplicación práctica:
+    "levelTitle": "Functions",
+    "question": "What are currying and function composition?",
+    "shortAnswer": "**Currying** transforms a multi-argument function `f(a, b, c)` into a sequence of nested unary functions `f(a)(b)(c)`. **Composition** combines two or more functions such that the output of one serves as the input to the next: `(f ∘ g)(x) = f(g(x))`.",
+    "explanation": `Technical details and practical application:
 
 1. **Currying:**
-Permite la **aplicación parcial** de argumentos: puedes preconfigurar parámetros fijos (ej. un logger con un prefijo predefinido o un conversor de divisas con una tasa fijada) y reutilizar la función resultante pasando solo los argumentos variables restantes.
+Enables **partial application** of arguments: you can pre-configure fixed parameters (e.g., a logger with a predefined prefix or a currency converter with a fixed exchange rate) and reuse the resulting function with the remaining variable arguments.
 
-2. **Composición de funciones:**
-- **Composición matemática (\`compose\`):** Se evalúa de derecha a izquierda: \`compose(f, g)(x) => f(g(x))\`.
-- **Pipeline (\`pipe\`):** Se evalúa de izquierda a derecha (más intuitivo): \`pipe(f, g)(x) => g(f(x))\`.
-- En JavaScript se implementa limpiamente combinando *rest parameters* con \`Array.prototype.reduceRight\` (para compose) o \`Array.prototype.reduce\` (para pipe).
+2. **Function Composition:**
+- **Mathematical composition (\`compose\`):** Evaluates from right to left: \`compose(f, g)(x) => f(g(x))\`.
+- **Pipeline (\`pipe\`):** Evaluates from left to right (more intuitive): \`pipe(f, g)(x) => g(f(x))\`.
+- Implemented cleanly in JavaScript by combining rest parameters with \`Array.prototype.reduceRight\` (for compose) or \`Array.prototype.reduce\` (for pipe).
 
-3. **Ventajas en arquitectura:**
-Fomenta el principio de responsabilidad única (SRP), permitiendo construir utilidades complejas ensamblando pequeñas funciones puras y reutilizables sin crear variables temporales intermedias.`,
-    "codeSnippet": "const sumar = (a) => (b) => (c) => a + b + c;\nsumar(1)(2)(3); // 6\n\nconst compose = (...fns) => (x) => fns.reduceRight((acc, fn) => fn(acc), x);\nconst pipe = (...fns) => (x) => fns.reduce((acc, fn) => fn(acc), x);\n\nconst limpiar = pipe(\n  (s) => s.trim(),\n  (s) => s.toLowerCase(),\n  (s) => s.replace(/\\s+/g, '-')\n);\nlimpiar('  Hola Mundo JS '); // 'hola-mundo-js'",
-    "seniorTip": "Explica la diferencia entre currying estricto (que siempre transforma en funciones de 1 solo argumento a la vez) y aplicación parcial (que permite fijar algunos argumentos arbitrarios dejando otros pendientes). Menciona cómo librerías como Ramda o lodash/fp automatizan el auto-currying.",
+3. **Architectural Benefits:**
+Promotes the Single Responsibility Principle (SRP), allowing complex utilities to be built by snapping together small, reusable pure functions without polluting scopes with intermediate variables.`,
+    "codeSnippet": "const sum = (a) => (b) => (c) => a + b + c;\nsum(1)(2)(3); // 6\n\nconst compose = (...fns) => (x) => fns.reduceRight((acc, fn) => fn(acc), x);\nconst pipe = (...fns) => (x) => fns.reduce((acc, fn) => fn(acc), x);\n\nconst clean = pipe(\n  (s) => s.trim(),\n  (s) => s.toLowerCase(),\n  (s) => s.replace(/\\s+/g, '-')\n);\nclean('  Hello JS World '); // 'hello-js-world'",
+    "seniorTip": "Explain the difference between strict currying (which always breaks down into 1-argument functions) and partial application (which binds any number of fixed arguments, leaving the rest open). Mention how libraries like Ramda or lodash/fp provide auto-currying utilities.",
     "tags": [
-      "nivel-2",
+      "level-2",
       "javascript",
       "currying",
-      "composicion"
+      "composition"
     ],
     "interactiveDemo": "console"
   },
   {
     "id": "P21",
     "level": 2,
-    "levelTitle": "Funciones",
-    "question": "¿Qué es el objeto `arguments`?",
-    "shortAnswer": "`arguments` es un objeto *array-like* implícito disponible dentro de funciones tradicionales (declaraciones y expresiones) que contiene todos los argumentos pasados a la llamada. En JavaScript moderno ha sido reemplazado por `...rest`.",
-    "explanation": `Características técnicas y razones de su obsolescencia:
+    "levelTitle": "Functions",
+    "question": "What is the `arguments` object?",
+    "shortAnswer": "`arguments` is an implicit array-like object available inside non-arrow functions containing all arguments passed to the call. In modern JavaScript, it has been superseded by rest parameters (`...rest`).",
+    "explanation": `Technical characteristics and reasons for obsolescence:
 
-1. **Naturaleza *Array-like* (Similar a un Array):**
-- Posee la propiedad \`.length\` y acceso por índices numéricos (\`arguments[0]\`, \`arguments[1]\`), pero **no hereda de \`Array.prototype\`**.
-- Carece de métodos nativos como \`.map()\`, \`.filter()\`, \`.forEach()\` o \`.reduce()\`. Para utilizarlos en código heredado, era obligatorio convertirlo manualmente: \`Array.from(arguments)\` o \`Array.prototype.slice.call(arguments)\`.
+1. **Array-like Nature:**
+- Has a \`.length\` property and indexed access (\`arguments[0]\`, \`arguments[1]\`), but **does not inherit from \`Array.prototype\`**.
+- Lacks native array methods like \`.map()\`, \`.filter()\`, \`.forEach()\`, or \`.reduce()\`. In legacy code, developers had to convert it manually: \`Array.from(arguments)\` or \`Array.prototype.slice.call(arguments)\`.
 
-2. **Incompatibilidad con Arrow Functions:**
-Las arrow functions **no tienen objeto \`arguments\` propio**. Si intentas acceder a \`arguments\` dentro de una arrow function, resolverá la referencia en el scope léxico exterior (si existe).
+2. **Incompatibility with Arrow Functions:**
+Arrow functions **do not possess their own \`arguments\` object**. Accessing \`arguments\` inside an arrow function resolves to the enclosing lexical scope (if one exists).
 
-3. **Vínculo bizarro con parámetros nombrados (sin strict mode):**
-En modo no estricto, mutar \`arguments[0]\` alteraba el valor del primer parámetro nombrado y viceversa, lo que impedía optimizaciones del compilador JIT (V8).
+3. **Bizarre Link to Named Parameters (in Sloppy Mode):**
+In non-strict mode, mutating \`arguments[0]\` mutated the corresponding named parameter and vice versa, which thwarted JIT compiler optimizations in V8.
 
-4. **Por qué \`...rest\` es la solución definitiva:**
-- Produce una instancia genuina de \`Array\`.
-- Funciona uniformemente en funciones tradicionales y arrow functions.
-- Admite tipado directo en TypeScript (\`(...args: number[]) => ...\`).`,
-    "codeSnippet": "function vieja() {\n  console.log(arguments.length);          // 3\n  console.log(Array.from(arguments));     // [1, 2, 3] (convertir a array)\n  // arguments.map(...) → TypeError: no es un array\n}\nvieja(1, 2, 3);\n\nconst flecha = () => { /* arguments no existe aquí; usar ...args */ };",
-    "seniorTip": "Menciona que el uso de arguments desoptimizaba funciones en versiones tempranas del motor V8 (evitaba el inlining por parte de Crankshaft/TurboFan). Hoy en día, escribir ...args no solo es sintácticamente más limpio, sino que permite al compilador JIT asignar memoria para arrays tipados de forma predecible.",
+4. **Why \`...rest\` is the Superior Replacement:**
+- Produces a genuine \`Array\` instance.
+- Operates consistently across both regular and arrow functions.
+- Integrates seamlessly with TypeScript typing (\`(...args: number[]) => ...\`).`,
+    "codeSnippet": "function legacy() {\n  console.log(arguments.length);          // 3\n  console.log(Array.from(arguments));     // [1, 2, 3] (converted to array)\n  // arguments.map(...) → TypeError: arguments.map is not a function\n}\nlegacy(1, 2, 3);\n\nconst arrow = () => { /* arguments does not exist here; use ...args */ };",
+    "seniorTip": "Mention that using the arguments object prevented function inlining optimizations in earlier versions of V8 (Crankshaft/TurboFan). Today, writing ...args is not just cleaner syntax; it allows the JIT compiler to allocate memory for typed arrays with predictable shapes.",
     "tags": [
-      "nivel-2",
+      "level-2",
       "javascript",
       "array",
       "arguments"

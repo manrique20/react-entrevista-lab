@@ -51,13 +51,13 @@ export default function ExercisesPage() {
       <div className="p-6 sm:p-8 border rounded-3xl bg-card space-y-3 shadow-sm">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
           <Code2 className="w-3.5 h-3.5" />
-          <span>Laboratorio de Pruebas de Código</span>
+          <span>Code Challenges Lab</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">
-          Ejercicios de Código Frecuentes en Entrevistas
+          Frequent Technical Interview Coding Challenges
         </h1>
         <p className="text-xs sm:text-sm text-muted max-w-4xl leading-relaxed break-words">
-          Los {EXERCISES.length} ejercicios prácticos que los entrevistadores solicitan construir en vivo durante pruebas técnicas (Live Coding y Take-Home). Interactúa con las implementaciones completas y analiza sus conceptos clave.
+          The {EXERCISES.length} practical challenges interviewers ask you to build live during technical rounds (Live Coding and Take-Home). Interact with full implementations and analyze key underlying concepts.
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export default function ExercisesPage() {
         {/* Barra lateral de ejercicios */}
         <div className="lg:col-span-4 space-y-2 border rounded-2xl bg-card p-3 shadow-sm">
           <span className="text-xs font-semibold text-muted px-2 py-1 block">
-            Selecciona un ejercicio:
+            Select a challenge:
           </span>
           <div className="space-y-1">
             {EXERCISES.map((ex, idx) => {
@@ -89,9 +89,9 @@ export default function ExercisesPage() {
                     className={`text-[10px] font-mono px-2 py-0.5 rounded ${
                       esActivo
                         ? 'bg-white/20 text-white'
-                        : ex.difficulty === 'Básico'
+                        : ex.difficulty === 'Basic'
                         ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                        : ex.difficulty === 'Intermedio'
+                        : ex.difficulty === 'Intermediate'
                         ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
                         : 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
                     }`}
@@ -113,7 +113,7 @@ export default function ExercisesPage() {
                 {ejercicioActivo.id.toUpperCase()}
               </span>
               <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-muted">
-                Dificultad: {ejercicioActivo.difficulty}
+                Difficulty: {ejercicioActivo.difficulty}
               </span>
             </div>
 
@@ -121,7 +121,7 @@ export default function ExercisesPage() {
             <p className="text-xs sm:text-sm text-muted">{ejercicioActivo.description}</p>
 
             <div className="pt-3 border-t border-border/60">
-              <span className="text-xs font-semibold text-foreground block mb-1.5">Tópicos evaluados:</span>
+              <span className="text-xs font-semibold text-foreground block mb-1.5">Evaluated topics:</span>
               <div className="flex flex-wrap gap-1.5">
                 {ejercicioActivo.topicsTested.map(t => (
                   <span
@@ -137,7 +137,7 @@ export default function ExercisesPage() {
             {ejercicioActivo.hints.length > 0 && (
               <div className="p-3 bg-primary/5 border border-primary/20 rounded-xl space-y-1.5 mt-3">
                 <span className="text-xs font-bold text-primary flex items-center gap-1.5">
-                  <Lightbulb className="w-3.5 h-3.5" /> Pistas para la prueba técnica:
+                  <Lightbulb className="w-3.5 h-3.5" /> Hints for the technical round:
                 </span>
                 <ul className="text-xs text-foreground/90 space-y-1 pl-4 list-disc">
                   {ejercicioActivo.hints.map((h, i) => (

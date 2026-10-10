@@ -35,17 +35,17 @@ export function CodeBlock({ code, language = 'tsx', title }: CodeBlockProps) {
         <button
           onClick={handleCopy}
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-md hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
-          title="Copiar código"
+          title="Copy code"
         >
           {copied ? (
             <>
               <Check className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400 text-xs">¡Copiado!</span>
+              <span className="text-emerald-400 text-xs">Copied!</span>
             </>
           ) : (
             <>
               <Copy className="w-3.5 h-3.5" />
-              <span className="text-xs">Copiar</span>
+              <span className="text-xs">Copy</span>
             </>
           )}
         </button>

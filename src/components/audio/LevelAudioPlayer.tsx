@@ -47,7 +47,7 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
                 ? 'bg-primary text-white hover:bg-primary/90'
                 : 'bg-gradient-to-tr from-primary to-indigo-600 text-white hover:opacity-95'
             }`}
-            title={narrator.isPlaying ? 'Pausar audio-guía' : 'Reproducir audio-guía'}
+            title={narrator.isPlaying ? 'Pause audio guide' : 'Play audio guide'}
           >
             {narrator.isPlaying ? (
               <Pause className="w-5 h-5 fill-current" />
@@ -60,7 +60,7 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
             <div className="flex items-center gap-2 mb-0.5">
               <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
                 <Volume2 className="w-3 h-3" />
-                <span>Audio-Guía de Estudio</span>
+                <span>Audio Study Guide</span>
               </span>
 
               {narrator.isPlaying && (
@@ -73,17 +73,17 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
               )}
 
               <span className="text-[11px] text-muted font-medium">
-                Tema {narrator.currentIndex + 1} de {narrator.totalItems}
+                Topic {narrator.currentIndex + 1} of {narrator.totalItems}
               </span>
               {narrator.isLoadingAudio && (
                 <span className="text-[10px] text-primary font-bold animate-pulse">
-                  (Cargando audio...)
+                  (Loading audio...)
                 </span>
               )}
             </div>
 
             <p className="text-xs sm:text-sm font-bold text-foreground truncate">
-              {narrator.activeItem ? narrator.activeItem.title : `Escuchar ${levelTitle} completo`}
+              {narrator.activeItem ? narrator.activeItem.title : `Listen to full ${levelTitle}`}
             </p>
           </div>
         </div>
@@ -95,7 +95,7 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
             onClick={narrator.prev}
             disabled={narrator.currentIndex === 0}
             className="p-2 rounded-xl border border-border/80 hover:bg-muted text-muted hover:text-foreground transition-colors disabled:opacity-40"
-            title="Tema anterior"
+            title="Previous topic"
           >
             <SkipBack className="w-3.5 h-3.5" />
           </button>
@@ -105,7 +105,7 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
             onClick={narrator.stop}
             disabled={!narrator.isPlaying && !narrator.isPaused}
             className="p-2 rounded-xl border border-border/80 hover:bg-muted text-muted hover:text-foreground transition-colors disabled:opacity-40"
-            title="Detener lectura"
+            title="Stop reading"
           >
             <Square className="w-3.5 h-3.5" />
           </button>
@@ -115,7 +115,7 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
             onClick={narrator.next}
             disabled={narrator.currentIndex >= narrator.totalItems - 1}
             className="p-2 rounded-xl border border-border/80 hover:bg-muted text-muted hover:text-foreground transition-colors disabled:opacity-40"
-            title="Siguiente tema"
+            title="Next topic"
           >
             <SkipForward className="w-3.5 h-3.5" />
           </button>
@@ -145,10 +145,10 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
                 : 'border-border/80 text-muted hover:bg-muted'
             }`}
-            title="Desplazamiento automático al tema que se está narrando"
+            title="Auto-scroll to currently narrated topic"
           >
             <ArrowDownCircle className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Scroll automático</span>
+            <span className="hidden md:inline">Auto-scroll</span>
           </button>
 
         </div>
@@ -158,14 +158,14 @@ export function LevelAudioPlayer({ narrator, levelTitle }: LevelAudioPlayerProps
       {narrator.errorMessage && (
         <div className="p-3 bg-amber-500/10 border-t border-amber-500/30 text-xs text-amber-700 dark:text-amber-300 flex items-start justify-between gap-3 animate-in fade-in">
           <p className="flex-1 leading-relaxed">
-            <span className="font-bold block mb-0.5">Aviso del motor de audio:</span>
+            <span className="font-bold block mb-0.5">Audio engine notification:</span>
             {narrator.errorMessage}
           </p>
           <button
             onClick={narrator.clearError}
             className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 transition-colors shrink-0"
           >
-            Cerrar
+            Dismiss
           </button>
         </div>
       )}

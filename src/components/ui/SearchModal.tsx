@@ -68,9 +68,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         matches.push({
           id: `react-riddle-${rr.id}`,
           title: `${rr.id}: ${rr.title}`,
-          subtitle: `Acertijo React • ${rr.topicCategory || 'Mental Model'}`,
+          subtitle: `React Riddle • ${rr.topicCategory || 'Mental Model'}`,
           href: `/react/acertijos`,
-          badge: 'Acertijo React',
+          badge: 'React Riddle',
           badgeStyle: 'bg-blue-600/10 text-blue-600 dark:text-blue-400 border-blue-600/20'
         });
       }
@@ -87,9 +87,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         matches.push({
           id: `react-exercise-${re.id}`,
           title: re.title,
-          subtitle: `Ejercicio React • ${re.difficulty}`,
+          subtitle: `React Challenge • ${re.difficulty}`,
           href: `/ejercicios`,
-          badge: 'Ejercicio React',
+          badge: 'React Code',
           badgeStyle: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20'
         });
       }
@@ -106,9 +106,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         matches.push({
           id: `question-${q.id}`,
           title: q.question,
-          subtitle: `Pregunta Senior • ${q.category}`,
+          subtitle: `Senior Interview • ${q.category}`,
           href: `/preguntas`,
-          badge: 'Pregunta Senior',
+          badge: 'Senior Question',
           badgeStyle: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
         });
       }
@@ -143,9 +143,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         matches.push({
           id: `riddle-${r.id}`,
           title: `${r.id}: ${r.title}`,
-          subtitle: `Acertijo ¿Qué imprime? • ${r.expectedOutput}`,
+          subtitle: `Output Riddle • ${r.expectedOutput}`,
           href: `/javascript/acertijos`,
-          badge: 'Acertijo JS',
+          badge: 'JS Riddle',
           badgeStyle: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
         });
       }
@@ -161,18 +161,115 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         matches.push({
           id: `exercise-${e.id}`,
           title: `${e.id}: ${e.title}`,
-          subtitle: `Reto de código • ${e.category}`,
+          subtitle: `Coding Challenge • ${e.category}`,
           href: `/javascript/ejercicios`,
-          badge: 'Reto JS',
+          badge: 'JS Algorithm',
           badgeStyle: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
         });
       }
     }
 
+    // 8. Search Special Labs (Re-renders & Simulator)
+    if (
+      're-renders visualizer memo usecallback reconciliation render tree children context performance'.includes(term) ||
+      term.includes('render') ||
+      term.includes('memo') ||
+      term.includes('visual')
+    ) {
+      matches.unshift({
+        id: 'tool-rerender-visualizer',
+        title: 'React Re-render Visualizer',
+        subtitle: 'Interactive Lab • React.memo, useCallback & Children Slot Pattern',
+        href: '/react/re-renders',
+        badge: 'Interactive Lab',
+        badgeStyle: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20'
+      });
+    }
+
+    if (
+      'simulator mock interview assessment seniority timer exam test live coding'.includes(term) ||
+      term.includes('simul') ||
+      term.includes('mock') ||
+      term.includes('test') ||
+      term.includes('interview')
+    ) {
+      matches.unshift({
+        id: 'tool-mock-simulator',
+        title: 'Live Technical Mock Interview Simulator',
+        subtitle: 'Timed battery (15/30/45 min) with Seniority Score and live coding test runner',
+        href: '/simulador',
+        badge: 'Mock Simulator',
+        badgeStyle: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20'
+      });
+    }
+
+    // 9. Search Refactorings, System Design, Memory Leaks & Flashcards
+    if (
+      'refactor refactoring code smell pattern compound cascade abortcontroller reducer state machine'.includes(term) ||
+      term.includes('refactor') ||
+      term.includes('smell')
+    ) {
+      matches.unshift({
+        id: 'tool-refactorings',
+        title: 'Code Smells & Senior Refactorings Lab',
+        subtitle: 'Real before vs after cases: useEffect cascade, compound components & state machines',
+        href: '/refactorings',
+        badge: 'Architecture',
+        badgeStyle: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+      });
+    }
+
+    if (
+      'system design architecture feed ecommerce shopify crdt notion figma rsc auth token refresh'.includes(term) ||
+      term.includes('system') ||
+      term.includes('design') ||
+      term.includes('architecture')
+    ) {
+      matches.unshift({
+        id: 'tool-system-design',
+        title: 'Frontend System Design & Architecture at Scale',
+        subtitle: 'Staff-level blueprints: Infinite feed, global e-commerce, real-time editor & auth',
+        href: '/system-design',
+        badge: 'Staff Engineer',
+        badgeStyle: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
+      });
+    }
+
+    if (
+      'memory leak garbage collector v8 heap detached dom listeners closure timer'.includes(term) ||
+      term.includes('leak') ||
+      term.includes('memory') ||
+      term.includes('garbage')
+    ) {
+      matches.unshift({
+        id: 'tool-memory-leaks',
+        title: 'Memory Leaks & V8 Garbage Collection Simulator',
+        subtitle: 'Interactive Heap debugging: Detached DOM, orphan listeners & retained closures',
+        href: '/javascript/memory-leaks',
+        badge: 'V8 Engine',
+        badgeStyle: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+      });
+    }
+
+    if (
+      'flashcard flashcards review spaced repetition memory anki speed retention'.includes(term) ||
+      term.includes('card') ||
+      term.includes('review')
+    ) {
+      matches.unshift({
+        id: 'tool-flashcards',
+        title: 'Fast Review Flashcards',
+        subtitle: 'Spaced repetition to master 160+ React & JS topics with 3D flip cards',
+        href: '/flashcards',
+        badge: 'Quick Review',
+        badgeStyle: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20'
+      });
+    }
+
     setResults(matches.slice(0, 10));
   }, [query]);
 
-  // Listener para Escape
+  // Listener for Escape
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -199,7 +296,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             autoFocus
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Buscar en React y JavaScript (ej: 'hoisting', 'event loop', 'debounce', 'fiber', 'closure')..."
+            placeholder="Search React & JavaScript (e.g. 'hoisting', 'event loop', 'debounce', 'fiber', 'closure')..."
             className="w-full bg-transparent text-sm focus:outline-none placeholder:text-muted"
           />
           <button
@@ -213,7 +310,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         <div className="max-h-96 overflow-y-auto p-2 space-y-1">
           {query.trim() === '' ? (
             <div className="p-8 text-center text-xs text-muted space-y-2">
-              <p>Búsqueda unificada en los 160 temas, 12 acertijos y 28 ejercicios prácticos.</p>
+              <p>Unified search across 160 topics, 28 code exercises, system designs, and riddles.</p>
               <div className="flex flex-wrap justify-center gap-1.5 pt-2">
                 {['Event Loop', 'Debounce', 'Hoisting', 'Fiber', 'useTransition', 'Closures', 'LRU Cache', 'Zustand', 'Promise.all'].map(sug => (
                   <button
@@ -228,7 +325,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             </div>
           ) : results.length === 0 ? (
             <div className="p-8 text-center text-xs text-muted">
-              No se encontraron resultados para &quot;{query}&quot;.
+              No results found for &quot;{query}&quot;.
             </div>
           ) : (
             results.map(item => (

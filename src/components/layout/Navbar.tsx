@@ -17,7 +17,12 @@ import {
   Layers,
   Atom,
   Terminal,
-  Home
+  Home,
+  Award,
+  Split,
+  Cpu,
+  Brain,
+  Trash2
 } from 'lucide-react';
 
 export function Navbar() {
@@ -28,7 +33,7 @@ export function Navbar() {
   const [jsCompletedCount, setJsCompletedCount] = useState(0);
 
   const isJsTrack = pathname.startsWith('/javascript');
-  const isReactTrack = pathname.startsWith('/react') || pathname.startsWith('/nivel') || pathname.startsWith('/preguntas') || pathname === '/ejercicios' || pathname === '/checklist';
+  const isReactTrack = pathname.startsWith('/react') || pathname.startsWith('/nivel') || pathname.startsWith('/preguntas') || pathname === '/ejercicios' || pathname === '/checklist' || pathname === '/refactorings' || pathname === '/system-design';
   const isHub = pathname === '/';
 
   useEffect(() => {
@@ -72,29 +77,35 @@ export function Navbar() {
   const getNavLinks = () => {
     if (isJsTrack) {
       return [
-        { href: '/javascript', label: 'Niveles 1-8', icon: Layers },
-        { href: '/javascript/acertijos', label: 'Acertijos ¿Qué imprime?', icon: HelpCircle },
-        { href: '/javascript/ejercicios', label: 'Retos Algoritmos', icon: Code2 },
-        { href: '/javascript/checklist', label: 'Checklist JS', icon: CheckSquare }
+        { href: '/javascript', label: 'Levels 1-8', icon: Layers },
+        { href: '/javascript/acertijos', label: 'Riddles', icon: HelpCircle },
+        { href: '/javascript/ejercicios', label: 'Coding Challenges', icon: Code2 },
+        { href: '/javascript/memory-leaks', label: 'Memory Leaks', icon: Trash2 },
+        { href: '/simulador', label: 'Mock Simulator', icon: Award },
+        { href: '/flashcards', label: 'Flashcards', icon: Brain }
       ];
     }
 
     if (isReactTrack) {
       return [
-        { href: '/react', label: 'Niveles 1-8', icon: Layers },
-        { href: '/react/acertijos', label: 'Acertijos React', icon: Sparkles },
-        { href: '/preguntas', label: 'Preguntas Senior', icon: HelpCircle },
-        { href: '/ejercicios', label: 'Ejercicios React', icon: Code2 },
-        { href: '/checklist', label: 'Checklist React', icon: CheckSquare }
+        { href: '/react', label: 'Levels 1-8', icon: Layers },
+        { href: '/react/re-renders', label: 'Re-renders', icon: Layers },
+        { href: '/refactorings', label: 'Refactorings', icon: Split },
+        { href: '/system-design', label: 'System Design', icon: Cpu },
+        { href: '/simulador', label: 'Mock Simulator', icon: Award },
+        { href: '/flashcards', label: 'Flashcards', icon: Brain },
+        { href: '/checklist', label: 'Checklist', icon: CheckSquare }
       ];
     }
 
     // Portal Hub links
     return [
-      { href: '/react', label: 'Pista React & Next', icon: Atom },
-      { href: '/javascript', label: 'Pista JavaScript Core', icon: Terminal },
-      { href: '/javascript/acertijos', label: 'Acertijos', icon: HelpCircle },
-      { href: '/javascript/ejercicios', label: 'Ejercicios JS', icon: Code2 }
+      { href: '/simulador', label: 'Mock Simulator', icon: Award },
+      { href: '/refactorings', label: 'Refactorings', icon: Split },
+      { href: '/system-design', label: 'System Design', icon: Cpu },
+      { href: '/flashcards', label: 'Flashcards', icon: Brain },
+      { href: '/react/re-renders', label: 'Re-renders Lab', icon: Layers },
+      { href: '/javascript/memory-leaks', label: 'Memory Leaks', icon: Trash2 }
     ];
   };
 
@@ -104,7 +115,7 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/80 backdrop-blur-md">
         <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 h-16 flex items-center justify-between gap-4">
-          {/* Logo y Switcher de pistas */}
+          {/* Logo and Track Switcher */}
           <div className="flex items-center gap-3 shrink-0">
             <Link href="/" className="flex items-center gap-2.5 font-bold text-foreground hover:opacity-90 transition-opacity shrink-0">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-primary/20 shrink-0">
@@ -127,7 +138,7 @@ export function Navbar() {
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-colors ${
                   isHub ? 'bg-background text-foreground shadow-xs' : 'text-muted hover:text-foreground'
                 }`}
-                title="Portal Hub Principal"
+                title="Main Portal Hub"
               >
                 <Home className="w-3 h-3" />
                 <span>Hub</span>
@@ -137,7 +148,7 @@ export function Navbar() {
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-colors ${
                   isReactTrack && !isHub ? 'bg-blue-600 text-white shadow-xs' : 'text-muted hover:text-foreground'
                 }`}
-                title="Pista React 19 & Next.js"
+                title="React 19 & Next.js Track"
               >
                 <Atom className="w-3 h-3" />
                 <span>React</span>
@@ -147,7 +158,7 @@ export function Navbar() {
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-colors ${
                   isJsTrack ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : 'text-muted hover:text-foreground'
                 }`}
-                title="Pista JavaScript Core"
+                title="JavaScript Core Track"
               >
                 <Terminal className="w-3 h-3" />
                 <span>JavaScript</span>
@@ -155,7 +166,7 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Links desktop según contexto */}
+          {/* Desktop Nav Links */}
           <nav className="hidden xl:flex items-center gap-1 shrink-0">
             {navLinks.map(link => {
               const Icon = link.icon;
@@ -177,32 +188,32 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Acciones */}
+          {/* Actions */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* Buscador */}
+            {/* Search Trigger */}
             <button
               onClick={() => setIsSearchOpen(true)}
               className="hidden sm:flex items-center gap-2 px-3 py-1.5 border rounded-xl bg-muted/30 text-xs text-muted hover:text-foreground hover:border-primary/50 transition-colors"
             >
               <Search className="w-3.5 h-3.5" />
-              <span>Buscar...</span>
+              <span>Search...</span>
               <kbd className="text-[10px] font-mono border rounded px-1.5 bg-background text-muted">Ctrl K</kbd>
             </button>
 
             <button
               onClick={() => setIsSearchOpen(true)}
               className="sm:hidden p-2 rounded-xl border hover:bg-muted text-muted"
-              title="Buscar"
+              title="Search"
             >
               <Search className="w-4 h-4" />
             </button>
 
-            {/* Progreso pill contextual */}
+            {/* Contextual Progress Pill */}
             {isJsTrack ? (
               <Link
                 href="/javascript/checklist"
                 className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold border border-amber-500/20"
-                title="Temas de JavaScript dominados"
+                title="Mastered JavaScript topics"
               >
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                 <span>{jsCompletedCount}/81 JS</span>
@@ -211,7 +222,7 @@ export function Navbar() {
               <Link
                 href="/checklist"
                 className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-semibold border border-blue-500/20"
-                title="Temas de React dominados"
+                title="Mastered React topics"
               >
                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                 <span>{reactCompletedCount}/79 React</span>
@@ -220,10 +231,10 @@ export function Navbar() {
               <Link
                 href="/"
                 className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold border border-emerald-500/20"
-                title="Progreso combinado de estudio"
+                title="Combined learning progress"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>{reactCompletedCount + jsCompletedCount}/160 temas</span>
+                <span>{reactCompletedCount + jsCompletedCount}/160 topics</span>
               </Link>
             )}
 

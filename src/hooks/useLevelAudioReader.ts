@@ -12,34 +12,34 @@ export interface NarratorItem {
 export function cleanMarkdownForSpeech(text: string): string {
   if (!text) return '';
   return text
-    // Eliminar bloques de código markdown
-    .replace(/```[\s\S]*?```/g, ' Ejemplo de código en pantalla. ')
-    // Eliminar código inline backticks
+    // Remove markdown code blocks
+    .replace(/```[\s\S]*?```/g, ' Code example on screen. ')
+    // Remove inline backtick code
     .replace(/`([^`]+)`/g, '$1')
-    // Eliminar enlaces [texto](url) -> texto
+    // Remove markdown links [text](url) -> text
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    // Eliminar encabezados #
+    // Remove headers #
     .replace(/^#{1,6}\s+/gm, '')
-    // Eliminar negritas e itálicas
+    // Remove bold and italic
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\*([^*]+)\*/g, '$1')
     .replace(/__([^_]+)__/g, '$1')
     .replace(/_([^_]+)_/g, '$1')
-    // Convertir listas con viñetas en pausas
+    // Convert bullet lists into pauses
     .replace(/^[-*•]\s+/gm, '. ')
     .replace(/^\d+\.\s+/gm, '. ')
-    // Operadores comunes a texto hablado (solo cuando operan sintácticamente, no signos de puntuación)
-    .replace(/\s*!==\s*/g, ' estrictamente diferente de ')
-    .replace(/\s*===\s*/g, ' estrictamente igual a ')
-    .replace(/\s*!=\s*/g, ' diferente de ')
-    .replace(/\s*==\s*/g, ' igual a ')
-    .replace(/\s*&&\s*/g, ' y ')
-    .replace(/\s*\|\|\s*/g, ' o ')
+    // Common operators to spoken words
+    .replace(/\s*!==\s*/g, ' strictly not equal to ')
+    .replace(/\s*===\s*/g, ' strictly equal to ')
+    .replace(/\s*!=\s*/g, ' not equal to ')
+    .replace(/\s*==\s*/g, ' equal to ')
+    .replace(/\s*&&\s*/g, ' and ')
+    .replace(/\s*\|\|\s*/g, ' or ')
     .replace(/(?<=\s)\?\?(?=\s)/g, ' nullish coalescing ')
     .replace(/([a-zA-Z0-9_$)\]])\s*\?\?\s*(?=[a-zA-Z0-9_$([{'"])/g, '$1 nullish coalescing ')
     .replace(/(?<=\s)\?\.(?=\s)/g, ' optional chaining ')
     .replace(/([a-zA-Z0-9_$)\]])\?\.(?=[a-zA-Z0-9_$([{'"])/g, '$1 optional chaining ')
-    // Limpiar saltos de línea excesivos y espacios
+    // Clean excessive line breaks and whitespace
     .replace(/\n+/g, '. ')
     .replace(/\s{2,}/g, ' ')
     .trim();
@@ -144,7 +144,7 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
         });
 
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status} al sintetizar audio`);
+          throw new Error(`HTTP ${res.status} when synthesizing audio`);
         }
 
         blob = await res.blob();
@@ -180,7 +180,7 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
 
       audio.onerror = (e) => {
         setIsLoadingAudio(false);
-        console.warn('[AudioReader] Error en elemento de audio:', e);
+        console.warn('[AudioReader] Error on audio element:', e);
         onFinished();
       };
 
@@ -190,8 +190,8 @@ export function useLevelAudioReader({ items, levelTitle }: UseLevelAudioReaderOp
       setIsPaused(false);
     } catch (err) {
       setIsLoadingAudio(false);
-      console.warn('[AudioReader] Error reproduciendo tema:', err);
-      setErrorMessage('No se pudo cargar el audio para este tema.');
+      console.warn('[AudioReader] Error playing topic audio:', err);
+      setErrorMessage('Could not load audio for this topic.');
       setIsPlaying(false);
       setIsPaused(false);
       setActiveSpeechId(null);

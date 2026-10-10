@@ -36,8 +36,8 @@ export function CounterExercise() {
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
         <div>
-          <h3 className="font-bold text-base">Ejercicio 1: Contador con Historial y Límites</h3>
-          <p className="text-xs text-muted">Evalúa `useState`, actualizaciones funcionales inmutables y límites.</p>
+          <h3 className="font-bold text-base">Exercise 1: Counter with History and Boundaries</h3>
+          <p className="text-xs text-muted">Evaluates `useState`, immutable functional updates, and boundary limits.</p>
         </div>
         <button
           onClick={resetear}
@@ -49,13 +49,13 @@ export function CounterExercise() {
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border rounded-xl bg-background">
         <div className="text-center">
-          <span className="text-xs text-muted block uppercase tracking-wider">Valor Actual</span>
+          <span className="text-xs text-muted block uppercase tracking-wider">Current Value</span>
           <span className={`text-4xl font-extrabold font-mono ${
             cuenta === limiteMax ? 'text-emerald-500' : cuenta === limiteMin ? 'text-red-500' : 'text-primary'
           }`}>
             {cuenta}
           </span>
-          <span className="text-[11px] text-muted block mt-1">Límites: [{limiteMin} ... {limiteMax}]</span>
+          <span className="text-[11px] text-muted block mt-1">Boundaries: [{limiteMin} ... {limiteMax}]</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -63,7 +63,7 @@ export function CounterExercise() {
             onClick={() => modificar(-paso)}
             disabled={cuenta - paso < limiteMin}
             className="p-3 bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white rounded-xl transition-colors"
-            title="Decrementar"
+            title="Decrement"
           >
             <Minus className="w-5 h-5" />
           </button>
@@ -71,22 +71,22 @@ export function CounterExercise() {
             onClick={() => modificar(paso)}
             disabled={cuenta + paso > limiteMax}
             className="p-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white rounded-xl transition-colors"
-            title="Incrementar"
+            title="Increment"
           >
             <Plus className="w-5 h-5" />
           </button>
         </div>
 
         <div className="text-xs space-y-1">
-          <label className="text-muted block">Tamaño del paso:</label>
+          <label className="text-muted block">Step size:</label>
           <select
             value={paso}
             onChange={e => setPaso(Number(e.target.value))}
             className="px-3 py-1.5 border rounded-lg bg-card text-foreground font-mono"
           >
-            <option value={1}>Paso de 1</option>
-            <option value={2}>Paso de 2</option>
-            <option value={5}>Paso de 5</option>
+            <option value={1}>Step of 1</option>
+            <option value={2}>Step of 2</option>
+            <option value={5}>Step of 5</option>
           </select>
         </div>
       </div>
@@ -94,10 +94,10 @@ export function CounterExercise() {
       {/* Historial */}
       <div className="space-y-2">
         <h4 className="text-xs font-semibold text-muted flex items-center gap-1.5">
-          <History className="w-4 h-4" /> Historial de transiciones inmutables:
+          <History className="w-4 h-4" /> Immutable transition history:
         </h4>
         {historial.length === 0 ? (
-          <p className="text-xs text-muted italic">Sin cambios registrados aún.</p>
+          <p className="text-xs text-muted italic">No recorded changes yet.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-xs">
             {historial.map(h => (

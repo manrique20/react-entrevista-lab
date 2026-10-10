@@ -1,129 +1,128 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useTransition } from 'react';
-import { Gauge, Timer, Zap, Cpu, Play, Check } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 
-// Demo 5.1: Profiler en vivo
+// Demo 5.1: Live Profiler
 export function ProfilerDemo() {
-  const [items, setItems] = useState<number[]>([]);
-  const [duracion, setDuracion] = useState<number | null>(null);
+  const [, setItems] = useState<number[]>([]);
+  const [duration, setDuration] = useState<number | null>(null);
 
-  const renderPesado = () => {
+  const renderHeavy = () => {
     const t0 = performance.now();
     const arr = Array.from({ length: 5000 }, (_, i) => i);
     setItems(arr);
     const t1 = performance.now();
-    setDuracion(t1 - t0);
+    setDuration(t1 - t0);
   };
 
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-3">
       <div className="flex items-center justify-between">
-        <button onClick={renderPesado} className="px-3 py-1.5 bg-primary text-white rounded font-medium">
-          Medir Render Pesado (5,000 items)
+        <button onClick={renderHeavy} className="px-3 py-1.5 bg-primary text-white rounded font-medium">
+          Measure Heavy Render (5,000 items)
         </button>
-        {duracion !== null && (
+        {duration !== null && (
           <span className="font-mono text-primary font-bold">
-            actualDuration: {duracion.toFixed(2)}ms
+            actualDuration: {duration.toFixed(2)}ms
           </span>
         )}
       </div>
       <p className="text-muted">
-        El componente <code>&lt;Profiler onRender={'{...}'}&gt;</code> captura el tiempo exacto que tardó el motor de React en calcular el subárbol.
+        The <code>&lt;Profiler onRender={'{...}'}&gt;</code> component captures the exact time the React engine took to calculate and commit the subtree.
       </p>
     </div>
   );
 }
 
-// Demo 5.2: Re-renders innecesarios y técnicas
+// Demo 5.2: Unnecessary Re-renders and Composition Patterns
 export function PreventRerendersDemo() {
-  const [contadorPadre, setContadorPadre] = useState(0);
+  const [parentCount, setParentCount] = useState(0);
 
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-3">
       <div className="flex justify-between items-center">
-        <button onClick={() => setContadorPadre(c => c + 1)} className="px-3 py-1.5 bg-primary text-white rounded">
-          Re-renderizar Contenedor Padre ({contadorPadre})
+        <button onClick={() => setParentCount(c => c + 1)} className="px-3 py-1.5 bg-primary text-white rounded">
+          Re-render Parent Container ({parentCount})
         </button>
       </div>
 
-      <WrapperConChildren>
-        <HijoPesadoSinRerender />
-      </WrapperConChildren>
+      <WrapperWithChildren>
+        <HeavyChildWithoutRerender />
+      </WrapperWithChildren>
     </div>
   );
 }
 
-function WrapperConChildren({ children }: { children: React.ReactNode }) {
+function WrapperWithChildren({ children }: { children: React.ReactNode }) {
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   return (
     <div
       onMouseMove={e => setMouse({ x: e.clientX, y: e.clientY })}
       className="p-3 border rounded bg-background space-y-2"
     >
-      <p className="text-muted text-[11px]">Mouse en wrapper: {mouse.x}, {mouse.y}</p>
-      {/* children NO se re-renderiza con el movimiento del ratón: */}
+      <p className="text-muted text-[11px]">Mouse position in wrapper: {mouse.x}, {mouse.y}</p>
+      {/* children does NOT re-render on parent mouse move: */}
       {children}
     </div>
   );
 }
 
-function HijoPesadoSinRerender() {
+function HeavyChildWithoutRerender() {
   const renders = useRef(0);
   renders.current += 1;
   return (
     <div className="p-2 border rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold">
-      Hijo pasado como `children`: Cero re-renders al mover el ratón. (Renders totales: {renders.current})
+      Child passed via `children`: Zero re-renders on mouse movement. (Total renders: {renders.current})
     </div>
   );
 }
 
 // Demo 5.7: Debounce vs Throttle visual timeline
 export function DebounceThrottleDemo() {
-  const [texto, setTexto] = useState('');
-  const [llamadasDebounce, setLlamadasDebounce] = useState<string[]>([]);
-  const [llamadasThrottle, setLlamadasThrottle] = useState<string[]>([]);
+  const [text, setText] = useState('');
+  const [debounceCalls, setDebounceCalls] = useState<string[]>([]);
+  const [throttleCalls, setThrottleCalls] = useState<string[]>([]);
 
-  // Simulación de debounce
+  // Debounce simulation
   useEffect(() => {
-    if (!texto) return;
+    if (!text) return;
     const timer = setTimeout(() => {
-      setLlamadasDebounce(prev => [`Debounce ejecutó: "${texto}"`, ...prev.slice(0, 3)]);
+      setDebounceCalls(prev => [`Debounce executed: "${text}"`, ...prev.slice(0, 3)]);
     }, 400);
     return () => clearTimeout(timer);
-  }, [texto]);
+  }, [text]);
 
-  // Simulación de throttle
+  // Throttle simulation
   const lastRan = useRef(0);
   useEffect(() => {
-    if (!texto) return;
+    if (!text) return;
     const now = Date.now();
     if (now - lastRan.current >= 800) {
-      setLlamadasThrottle(prev => [`Throttle ejecutó: "${texto}"`, ...prev.slice(0, 3)]);
+      setThrottleCalls(prev => [`Throttle executed: "${text}"`, ...prev.slice(0, 3)]);
       lastRan.current = now;
     }
-  }, [texto]);
+  }, [text]);
 
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-4">
       <input
-        value={texto}
-        onChange={e => setTexto(e.target.value)}
-        placeholder="Escribe rápidamente para comparar la frecuencia..."
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="Type rapidly to compare execution frequency..."
         className="w-full px-3 py-2 border rounded bg-background"
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="p-3 border rounded bg-background">
-          <p className="font-semibold text-blue-500 mb-1">Debounce (Espera 400ms de inactividad):</p>
+          <p className="font-semibold text-blue-500 mb-1">Debounce (Waits for 400ms of inactivity):</p>
           <div className="font-mono text-[11px] text-muted space-y-1">
-            {llamadasDebounce.map((l, i) => <p key={i}>{l}</p>)}
+            {debounceCalls.map((l, i) => <p key={i}>{l}</p>)}
           </div>
         </div>
         <div className="p-3 border rounded bg-background">
-          <p className="font-semibold text-purple-500 mb-1">Throttle (Máximo 1 vez cada 800ms):</p>
+          <p className="font-semibold text-purple-500 mb-1">Throttle (At most once every 800ms):</p>
           <div className="font-mono text-[11px] text-muted space-y-1">
-            {llamadasThrottle.map((l, i) => <p key={i}>{l}</p>)}
+            {throttleCalls.map((l, i) => <p key={i}>{l}</p>)}
           </div>
         </div>
       </div>
@@ -133,24 +132,23 @@ export function DebounceThrottleDemo() {
 
 // Demo 5.8: Web Workers vs Main Thread
 export function WebWorkerDemo() {
-  const [animando, setAnimando] = useState(false);
-  const [resultado, setResultado] = useState<string | null>(null);
+  const [result, setResult] = useState<string | null>(null);
 
-  const calcularEnMainThread = () => {
-    setResultado('Calculando en hilo principal (observa la animación congelarse)...');
+  const calculateOnMainThread = () => {
+    setResult('Calculating on Main Thread (observe the animation freeze)...');
     setTimeout(() => {
-      let suma = 0;
-      for (let i = 0; i < 300_000_000; i++) suma += i % 7;
-      setResultado(`Terminado en Main Thread. Resultado: ${suma}`);
+      let sum = 0;
+      for (let i = 0; i < 300_000_000; i++) sum += i % 7;
+      setResult(`Finished on Main Thread. Result: ${sum}`);
     }, 50);
   };
 
-  const calcularEnWorker = () => {
-    setResultado('Calculando en segundo plano en Web Worker...');
+  const calculateWithWorker = () => {
+    setResult('Calculating in background Web Worker...');
     setTimeout(() => {
-      let suma = 0;
-      for (let i = 0; i < 300_000_000; i++) suma += i % 7;
-      setResultado(`Terminado sin congelar la UI. Resultado: ${suma}`);
+      let sum = 0;
+      for (let i = 0; i < 300_000_000; i++) sum += i % 7;
+      setResult(`Finished without freezing UI. Result: ${sum}`);
     }, 200);
   };
 
@@ -158,29 +156,29 @@ export function WebWorkerDemo() {
     <div className="p-4 border rounded-xl bg-card text-xs space-y-4">
       <div className="flex items-center gap-3">
         <div className="w-6 h-6 rounded-full bg-primary animate-spin border-2 border-primary border-t-transparent" />
-        <span className="text-muted">Animación continua en el hilo principal de la UI</span>
+        <span className="text-muted">Continuous animation on UI main thread</span>
       </div>
 
       <div className="flex gap-2">
-        <button onClick={calcularEnMainThread} className="px-3 py-1.5 bg-red-600 text-white rounded">
-          Calcular en Main Thread (Bloquea)
+        <button onClick={calculateOnMainThread} className="px-3 py-1.5 bg-red-600 text-white rounded">
+          Calculate on Main Thread (Blocks)
         </button>
-        <button onClick={calcularEnWorker} className="px-3 py-1.5 bg-emerald-600 text-white rounded">
-          Calcular con Worker (Fluido)
+        <button onClick={calculateWithWorker} className="px-3 py-1.5 bg-emerald-600 text-white rounded">
+          Calculate with Worker (Smooth)
         </button>
       </div>
 
-      {resultado && <p className="font-mono text-[11px] text-primary">{resultado}</p>}
+      {result && <p className="font-mono text-[11px] text-primary">{result}</p>}
     </div>
   );
 }
 
-// Fallbacks para Nivel 5
+// Level 5 Topics & Concepts
 export function CodeSplittingDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-primary">Code Splitting con React.lazy</p>
-      <p className="text-muted">Divide rutas pesadas y componentes opcionales en fragmentos .js bajo demanda con Suspense.</p>
+      <p className="font-semibold text-primary">Code Splitting with React.lazy</p>
+      <p className="text-muted">Split heavy routes and optional dialogs into on-demand .js chunks with Suspense.</p>
     </div>
   );
 }
@@ -188,8 +186,8 @@ export function CodeSplittingDemo() {
 export function ImageOptimizationDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-primary">Aspect Ratio y Prevención de CLS</p>
-      <p className="text-muted">Fija dimensiones `width`, `height` o `aspect-ratio` para evitar saltos bruscos de diseño.</p>
+      <p className="font-semibold text-primary">Aspect Ratio and CLS Prevention</p>
+      <p className="text-muted">Set explicit `width`, `height`, or `aspect-ratio` to avoid unexpected layout shifts.</p>
     </div>
   );
 }
@@ -197,8 +195,8 @@ export function ImageOptimizationDemo() {
 export function BundleTreeShakingDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-primary">Tree Shaking con ESM</p>
-      <p className="font-mono text-muted">import &#123; debounce &#125; from &apos;lodash-es&apos;; // 2KB en lugar de 75KB</p>
+      <p className="font-semibold text-primary">Tree Shaking with ESM</p>
+      <p className="font-mono text-muted">import &#123; debounce &#125; from &apos;lodash-es&apos;; // 2KB instead of 75KB</p>
     </div>
   );
 }
@@ -219,8 +217,8 @@ export function WebVitalsDemo() {
 export function StateStructureDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-primary">Estado Derivado vs Duplicado</p>
-      <p className="text-muted">Calcula totales y filtros al vuelo durante el render en vez de sincronizar estados duplicados con useEffect.</p>
+      <p className="font-semibold text-primary">Derived State vs Duplicate State</p>
+      <p className="text-muted">Compute totals and filters dynamically during render rather than synchronizing duplicated state with useEffect.</p>
     </div>
   );
 }

@@ -118,10 +118,10 @@ export function JsTopicCard({
                   ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-xs font-bold'
                   : 'border-border/80 hover:bg-muted text-muted hover:text-foreground'
               }`}
-              title={isSpeaking ? 'Detener lectura de esta pregunta' : 'Escuchar esta pregunta con voz asistida'}
+              title={isSpeaking ? 'Stop question audio' : 'Listen with TTS audio'}
             >
               {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-              <span className="text-[11px]">{isSpeaking ? 'Detener' : 'Escuchar'}</span>
+              <span className="text-[11px]">{isSpeaking ? 'Stop' : 'Listen'}</span>
             </button>
           )}
 
@@ -134,22 +134,22 @@ export function JsTopicCard({
             }`}
           >
             <CheckCircle2 className={`w-3.5 h-3.5 ${isStudied ? 'text-emerald-500' : ''}`} />
-            <span>{isStudied ? 'Dominado' : 'Marcar dominado'}</span>
+            <span>{isStudied ? 'Mastered' : 'Mark as mastered'}</span>
           </button>
         </div>
       </div>
 
       <div className="p-5 space-y-4">
-        {/* Respuesta Corta / Directa */}
+        {/* Short / Direct Answer */}
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-extrabold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Respuesta Concisa para la Entrevista</span>
+            <span>Concise Interview Answer</span>
           </div>
           <JsMarkdownView content={topic.shortAnswer} className="text-foreground font-medium" />
         </div>
 
-        {/* Explicación Detallada */}
+        {/* Detailed Explanation */}
         {topic.explanation && (
           <div className="space-y-2">
             <button
@@ -158,7 +158,7 @@ export function JsTopicCard({
             >
               <span className="flex items-center gap-1.5">
                 <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
-                Explicación en Profundidad
+                In-Depth Explanation
               </span>
               {isExplanationOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
@@ -171,25 +171,25 @@ export function JsTopicCard({
           </div>
         )}
 
-        {/* Snippet de Código */}
+        {/* Code Snippet */}
         {topic.codeSnippet && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs text-muted font-medium">
-              <span className="font-mono text-[11px] text-foreground font-semibold">Ejemplo Práctico:</span>
+              <span className="font-mono text-[11px] text-foreground font-semibold">Practical Example:</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleCopyCode}
                   className="flex items-center gap-1 text-[11px] hover:text-foreground transition-colors"
                 >
                   {hasCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                  <span>{hasCopied ? 'Copiado' : 'Copiar'}</span>
+                  <span>{hasCopied ? 'Copied' : 'Copy'}</span>
                 </button>
                 <button
                   onClick={() => setShowConsole(!showConsole)}
                   className="flex items-center gap-1 text-[11px] text-amber-600 dark:text-amber-400 font-semibold hover:underline"
                 >
                   <Terminal className="w-3 h-3" />
-                  <span>{showConsole ? 'Ocultar consola' : 'Ejecutar en consola'}</span>
+                  <span>{showConsole ? 'Hide console' : 'Run in console'}</span>
                 </button>
               </div>
             </div>
@@ -200,23 +200,23 @@ export function JsTopicCard({
           </div>
         )}
 
-        {/* Consola en vivo interactiva */}
+        {/* Interactive Live Console */}
         {showConsole && topic.codeSnippet && (
           <div className="pt-1 animate-in fade-in slide-in-from-top-2">
             <JsConsoleRunner
               initialCode={topic.codeSnippet}
-              title={`Consola: ${topic.id}`}
+              title={`Console: ${topic.id}`}
               autoRun={true}
             />
           </div>
         )}
 
-        {/* Buena Práctica / Senior Tip */}
+        {/* Best Practice / Senior Tip */}
         {topic.seniorTip && (
           <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-2.5 text-xs">
             <Lightbulb className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
             <div className="space-y-1 flex-1">
-              <span className="font-bold text-emerald-700 dark:text-emerald-400 block">Consejo Senior de Entrevista:</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400 block">Senior Interview Tip:</span>
               <JsMarkdownView content={topic.seniorTip} className="text-muted leading-relaxed" />
             </div>
           </div>

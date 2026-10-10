@@ -57,8 +57,8 @@ export function AutocompleteExercise() {
   return (
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="border-b pb-3">
-        <h3 className="font-bold text-base">Ejercicio 9: Autocomplete con Selección por Teclado</h3>
-        <p className="text-xs text-muted">Evalúa navegación completa por teclado (Flechas Arriba/Abajo, Enter, Escape) y gestión de foco.</p>
+        <h3 className="font-bold text-base">Exercise 9: Autocomplete with Keyboard Navigation</h3>
+        <p className="text-xs text-muted">Evaluates complete keyboard navigation (Up/Down Arrows, Enter, Escape) and focus management.</p>
       </div>
 
       <div className="relative">
@@ -73,7 +73,7 @@ export function AutocompleteExercise() {
             }}
             onFocus={() => setAbierto(true)}
             onKeyDown={handleKeyDown}
-            placeholder="Escribe para autocompletar o usa las flechas..."
+            placeholder="Type to autocomplete or use arrow keys..."
             className="w-full pl-9 pr-4 py-2 border rounded-xl bg-background text-foreground text-xs focus:ring-2 focus:ring-primary focus:outline-none"
           />
         </div>
@@ -100,7 +100,7 @@ export function AutocompleteExercise() {
       </div>
 
       <p className="text-[11px] text-muted">
-        Tip: Escribe una letra (ej: &quot;u&quot;) y navega con las flechas del teclado <kbd className="px-1 border rounded bg-muted">↓</kbd> <kbd className="px-1 border rounded bg-muted">↑</kbd> y presiona <kbd className="px-1 border rounded bg-muted">Enter</kbd>.
+        Tip: Type a letter (e.g. &quot;u&quot;) and navigate with the arrow keys <kbd className="px-1 border rounded bg-muted">↓</kbd> <kbd className="px-1 border rounded bg-muted">↑</kbd>, then press <kbd className="px-1 border rounded bg-muted">Enter</kbd>.
       </p>
     </div>
   );

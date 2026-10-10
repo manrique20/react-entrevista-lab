@@ -15,55 +15,55 @@ const cases: CoercionCase[] = [
     expression: "[] + []",
     expectedResult: "''",
     type: "string",
-    explanation: "Ambos arrays se convierten a primitivos vía toString() -> '' + '' = ''."
+    explanation: "Both arrays coerce to primitives via toString() -> '' + '' = ''."
   },
   {
     expression: "[] + {}",
     expectedResult: "'[object Object]'",
     type: "string",
-    explanation: "[] se convierte a '' y {} a '[object Object]'. Con '+' concatena."
+    explanation: "[] coerces to '' and {} to '[object Object]'. The '+' operator concatenates them."
   },
   {
     expression: "'5' + 3",
     expectedResult: "'53'",
     type: "string",
-    explanation: "El operador binario '+' prioriza concatenación si un operando es string."
+    explanation: "Binary '+' prioritizes string concatenation whenever either operand is a string."
   },
   {
     expression: "'5' - 3",
     expectedResult: "2",
     type: "number",
-    explanation: "El operador '-' solo tiene significado aritmético, forzando a '5' a número."
+    explanation: "The '-' operator only possesses arithmetic semantics, coercing '5' to the number 5."
   },
   {
     expression: "true + true",
     expectedResult: "2",
     type: "number",
-    explanation: "Los booleanos se coercionan a 1 numéricamente -> 1 + 1 = 2."
+    explanation: "Booleans coerce numerically to 1 -> 1 + 1 = 2."
   },
   {
     expression: "[] == ![]",
     expectedResult: "true",
     type: "boolean",
-    explanation: "![] es false. Luego [] == false convierte ambos a número: 0 == 0 -> true."
+    explanation: "![] evaluates to false. Then [] == false converts both sides to numbers: 0 == 0 -> true."
   },
   {
     expression: "null >= 0",
     expectedResult: "true",
     type: "boolean",
-    explanation: "Comparaciones relacionales (>=, <=) coercionan null a número (0 >= 0 es true)."
+    explanation: "Relational comparisons (>=, <=) coerce null to number 0 (0 >= 0 is true)."
   },
   {
     expression: "null == 0",
     expectedResult: "false",
     type: "boolean",
-    explanation: "Con '==', null solo es igual a undefined y a sí mismo."
+    explanation: "Under abstract equality '==', null is only equal to undefined and to itself."
   },
   {
     expression: "'b' + 'a' + +'a' + 'a'",
     expectedResult: "'baNaNa'",
     type: "string",
-    explanation: "+'a' intenta convertir 'a' a número resultando en NaN. Concatena: 'b' + 'a' + 'NaN' + 'a'."
+    explanation: "+'a' attempts to parse 'a' as a number, resulting in NaN. Concatenates: 'b' + 'a' + 'NaN' + 'a'."
   }
 ];
 
@@ -75,7 +75,7 @@ export function CoercionMatrix() {
       <div className="flex items-center gap-2 border-b border-border/60 pb-3">
         <Sparkles className="w-4 h-4 text-amber-500" />
         <h3 className="text-sm font-bold text-foreground">
-          Laboratorio de Coerción y Comparaciones Curiosas
+          Type Coercion &amp; Quirks Explorer
         </h3>
       </div>
 
@@ -91,7 +91,7 @@ export function CoercionMatrix() {
             }`}
           >
             <span>{item.expression}</span>
-            <span className="text-[10px] text-muted">evaluar</span>
+            <span className="text-[10px] text-muted">eval</span>
           </button>
         ))}
       </div>
@@ -100,11 +100,11 @@ export function CoercionMatrix() {
         <div className="flex items-center justify-between border-b border-slate-800 pb-2">
           <span className="text-amber-300 font-bold text-sm">{selectedCase.expression}</span>
           <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">
-            Resultado: {selectedCase.expectedResult} ({selectedCase.type})
+            Result: {selectedCase.expectedResult} ({selectedCase.type})
           </span>
         </div>
         <p className="text-slate-300 font-sans text-xs leading-relaxed pt-1">
-          <strong className="text-amber-400 font-sans">Regla ECMAScript: </strong>
+          <strong className="text-amber-400 font-sans">ECMAScript Spec: </strong>
           {selectedCase.explanation}
         </p>
       </div>

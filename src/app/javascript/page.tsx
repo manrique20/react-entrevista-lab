@@ -20,7 +20,9 @@ import {
   CheckSquare,
   ArrowRight,
   Terminal,
-  BookOpen
+  BookOpen,
+  Trash2,
+  Brain
 } from 'lucide-react';
 
 const iconMap: Record<string, React.ElementType> = {
@@ -42,37 +44,37 @@ export default function JavascriptHomePage() {
         <div className="w-full max-w-5xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold tracking-wide uppercase">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>JavaScript Core &amp; Moderno (ES6+)</span>
+            <span>JavaScript Core &amp; Modern (ES6+)</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-foreground leading-tight sm:leading-tight lg:leading-[1.2] break-words pb-1">
-            Domina las Entrevistas Técnicas de{' '}
+            Master Technical Interviews for{' '}
             <span className="bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 bg-clip-text text-transparent">
               JavaScript
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-muted leading-relaxed max-w-3xl">
-            De los fundamentos más oscuros (hoisting, coerción, microtareas y event loop) a patrones de diseño, polyfills canónicos y desafíos de algoritmos exigidos en roles Senior Frontend y Fullstack.
+            From deep engine mechanics (hoisting, coercion, microtasks, and the event loop) to design patterns, canonical polyfills, and algorithm challenges expected in Senior Frontend and Fullstack technical interviews.
           </p>
 
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
             <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-xs">
               <div className="text-2xl font-black text-amber-500">8</div>
-              <div className="text-xs text-muted font-medium">Niveles Progresivos</div>
+              <div className="text-xs text-muted font-medium">Progressive Levels</div>
             </div>
             <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-xs">
               <div className="text-2xl font-black text-amber-500">{allJsTopics.length}</div>
-              <div className="text-xs text-muted font-medium">Preguntas Teóricas (P1–P81)</div>
+              <div className="text-xs text-muted font-medium">Core Topics (P1–P81)</div>
             </div>
             <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-xs">
               <div className="text-2xl font-black text-amber-500">{jsRiddlesData.length}</div>
-              <div className="text-xs text-muted font-medium">Acertijos &quot;¿Qué imprime?&quot;</div>
+              <div className="text-xs text-muted font-medium">&quot;What logs?&quot; Riddles</div>
             </div>
             <div className="p-3.5 rounded-2xl bg-card border border-border/80 shadow-xs">
               <div className="text-2xl font-black text-amber-500">{jsExercisesData.length}</div>
-              <div className="text-xs text-muted font-medium">Retos de Implementación</div>
+              <div className="text-xs text-muted font-medium">Live Challenges</div>
             </div>
           </div>
 
@@ -82,7 +84,7 @@ export default function JavascriptHomePage() {
               href="/javascript/nivel/1"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-extrabold text-xs shadow-md shadow-amber-500/20 hover:opacity-95 transition-all"
             >
-              <span>Comenzar Nivel 1</span>
+              <span>Start Level 1</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -91,7 +93,7 @@ export default function JavascriptHomePage() {
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-amber-500/40 bg-card hover:bg-muted text-xs font-bold text-foreground transition-all"
             >
               <HelpCircle className="w-4 h-4 text-amber-500" />
-              <span>Acertijos &quot;¿Qué imprime?&quot;</span>
+              <span>&quot;What logs?&quot; Riddles</span>
             </Link>
 
             <Link
@@ -99,7 +101,23 @@ export default function JavascriptHomePage() {
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/80 bg-card hover:bg-muted text-xs font-bold text-foreground transition-all"
             >
               <Code2 className="w-4 h-4 text-amber-500" />
-              <span>Ejercicios ({jsExercisesData.length})</span>
+              <span>Challenges ({jsExercisesData.length})</span>
+            </Link>
+
+            <Link
+              href="/javascript/memory-leaks"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-xs font-bold text-rose-600 dark:text-rose-400 transition-all"
+            >
+              <Trash2 className="w-4 h-4 text-rose-500" />
+              <span>Memory Leak Simulator</span>
+            </Link>
+
+            <Link
+              href="/flashcards"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 text-xs font-bold text-cyan-600 dark:text-cyan-400 transition-all"
+            >
+              <Brain className="w-4 h-4 text-cyan-500" />
+              <span>Flashcards (160)</span>
             </Link>
 
             <Link
@@ -107,21 +125,21 @@ export default function JavascriptHomePage() {
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/80 bg-card hover:bg-muted text-xs font-bold text-foreground transition-all"
             >
               <CheckSquare className="w-4 h-4 text-emerald-500" />
-              <span>Checklist de Repaso</span>
+              <span>Checklist</span>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Los 8 Niveles de JavaScript */}
+      {/* The 8 Levels of JavaScript */}
       <section className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
-              Los 8 Niveles de JavaScript
+              The 8 Levels of JavaScript
             </h2>
             <p className="text-xs sm:text-sm text-muted">
-              Organizados desde lo más fundamental hasta arquitectura avanzada del motor y concurrencia.
+              Organized from fundamental type primitives to engine internals, memory management, and concurrency.
             </p>
           </div>
         </div>
@@ -141,7 +159,7 @@ export default function JavascriptHomePage() {
                       <IconComponent className="w-5 h-5" />
                     </div>
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted font-mono">
-                      {lvl.questionIds.length} temas
+                      {lvl.questionIds.length} topics
                     </span>
                   </div>
 
@@ -156,7 +174,7 @@ export default function JavascriptHomePage() {
                 </div>
 
                 <div className="pt-4 mt-2 border-t border-border/60 flex items-center justify-between text-xs font-semibold text-amber-600 dark:text-amber-400">
-                  <span>Estudiar nivel</span>
+                  <span>Study level</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
@@ -165,14 +183,14 @@ export default function JavascriptHomePage() {
         </div>
       </section>
 
-      {/* Laboratorios Visuales Interactivos */}
+      {/* Interactive Visual Labs */}
       <section className="space-y-6 pt-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-foreground">
-            Laboratorios Interactivos en Vivo
+            Live Interactive Laboratories
           </h2>
           <p className="text-xs sm:text-sm text-muted">
-            Experimenta en tiempo real con las trampas y mecanismos internos del motor V8 y browsers.
+            Experiment in real time with V8 engine traps, event loops, call stacks, and coercion matrices.
           </p>
         </div>
 

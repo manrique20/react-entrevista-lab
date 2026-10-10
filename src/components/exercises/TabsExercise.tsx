@@ -5,18 +5,18 @@ import React, { useState } from 'react';
 const TABS_DATA = [
   {
     id: 'fundamentos',
-    titulo: 'Fundamentos',
-    contenido: 'React es declarativo y utiliza el Virtual DOM para reconciliar cambios mínimos en el DOM real.'
+    titulo: 'Fundamentals',
+    contenido: 'React is declarative and uses the Virtual DOM to reconcile minimal changes with the real DOM.'
   },
   {
     id: 'hooks',
-    titulo: 'Hooks & Estado',
-    contenido: 'Los Hooks permiten reutilizar lógica con estado sin clases ni problemas de enlace de this.'
+    titulo: 'Hooks & State',
+    contenido: 'Hooks allow reusing stateful logic without classes or this-binding pitfalls.'
   },
   {
     id: 'moderno',
     titulo: 'React 19 & Next.js',
-    contenido: 'Server Components corren en servidor con cero JavaScript en el cliente, complementados con Server Actions.'
+    contenido: 'Server Components run on the server with zero client-side JavaScript, complemented by Server Actions.'
   }
 ];
 
@@ -26,11 +26,11 @@ export function TabsExercise() {
   return (
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="border-b pb-3">
-        <h3 className="font-bold text-base">Ejercicio 7: Sistema de Tabs Accesible (WAI-ARIA)</h3>
-        <p className="text-xs text-muted">Evalúa atributos semánticos `role=&quot;tablist&quot;`, `role=&quot;tab&quot;` y paneles sincronizados.</p>
+        <h3 className="font-bold text-base">Exercise 7: Accessible Tabs System (WAI-ARIA)</h3>
+        <p className="text-xs text-muted">Evaluates semantic attributes `role=&quot;tablist&quot;`, `role=&quot;tab&quot;`, and synchronized panels.</p>
       </div>
 
-      <div role="tablist" aria-label="Niveles de React" className="flex border-b border-border/80 gap-2">
+      <div role="tablist" aria-label="React proficiency levels" className="flex border-b border-border/80 gap-2">
         {TABS_DATA.map((tab, idx) => (
           <button
             key={tab.id}

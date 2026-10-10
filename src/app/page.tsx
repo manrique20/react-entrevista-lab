@@ -17,7 +17,12 @@ import {
   Search,
   Activity,
   Cpu,
-  GraduationCap
+  GraduationCap,
+  Award,
+  Clock,
+  Split,
+  Brain,
+  Trash2
 } from 'lucide-react';
 import { LEVELS } from '@/data/levelsData';
 import { jsLevelsData } from '@/data/javascript/levelsData';
@@ -59,10 +64,8 @@ export default function UnifiedPortalHub() {
     };
     updateStats();
     window.addEventListener('storage', updateStats);
-    return () => window.removeEventListener('storage', updateProgressSafe);
+    return () => window.removeEventListener('storage', updateStats);
   }, []);
-
-  const updateProgressSafe = () => {};
 
   const totalTopics = TOPICS.length + allJsTopics.length; // 79 + 81 = 160
   const totalCompletedTopics = reactCompleted + jsCompleted;
@@ -70,7 +73,7 @@ export default function UnifiedPortalHub() {
 
   return (
     <div className="space-y-12 pb-20">
-      {/* Hero Principal */}
+      {/* Primary Hero */}
       <section className="relative overflow-hidden rounded-3xl border border-border/80 bg-gradient-to-b from-primary/5 via-card to-card p-6 sm:p-12 text-center space-y-6 shadow-sm">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold tracking-wide uppercase">
           <Sparkles className="w-4 h-4 animate-pulse" />
@@ -79,13 +82,13 @@ export default function UnifiedPortalHub() {
 
         <div className="w-full max-w-5xl mx-auto space-y-4">
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-foreground leading-tight sm:leading-tight lg:leading-[1.15] break-words pb-1">
-            El Laboratorio Definitivo de{' '}
+            The Definitive Frontend{' '}
             <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500 bg-clip-text text-transparent">
-              Entrevistas Frontend
+              Interview Laboratory
             </span>
           </h1>
           <p className="text-sm sm:text-base text-muted leading-relaxed max-w-3xl mx-auto">
-            Preparación intensiva y rigurosa en dos pistas independientes: la arquitectura moderna de <strong>React 19 &amp; Next.js</strong> y los mecanismos profundos de ejecución de <strong>JavaScript Core</strong>.
+            Rigorous, hands-on preparation across two dedicated tracks: modern <strong>React 19 &amp; Next.js</strong> architecture and core <strong>JavaScript V8</strong> runtime internals.
           </p>
         </div>
 
@@ -94,9 +97,9 @@ export default function UnifiedPortalHub() {
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
             <span className="flex items-center gap-1.5 text-foreground">
               <Activity className="w-4 h-4 text-emerald-500" />
-              Progreso Global de Estudio
+              Overall Study Progress
             </span>
-            <span className="text-primary font-mono">{totalCompletedTopics} / {totalTopics} temas dominados ({globalPercent}%)</span>
+            <span className="text-primary font-mono">{totalCompletedTopics} / {totalTopics} topics mastered ({globalPercent}%)</span>
           </div>
           <div className="w-full h-2.5 bg-muted rounded-full overflow-hidden">
             <div
@@ -107,26 +110,26 @@ export default function UnifiedPortalHub() {
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px] text-muted text-center pt-1 font-medium">
             <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">React: {reactCompleted}/79</span>
             <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">JS Core: {jsCompleted}/81</span>
-            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Acertijos JS: {jsRiddlesCompleted}/{jsRiddlesData.length}</span>
-            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Acertijos React: {reactRiddlesCompleted}/{reactRiddlesData.length}</span>
-            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Retos JS: {jsExercisesCompleted}/{jsExercisesData.length}</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">JS Riddles: {jsRiddlesCompleted}/{jsRiddlesData.length}</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">React Riddles: {reactRiddlesCompleted}/{reactRiddlesData.length}</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">JS Challenges: {jsExercisesCompleted}/{jsExercisesData.length}</span>
           </div>
         </div>
       </section>
 
-      {/* Selector de Pistas Principales (Dual Track Cards) */}
+      {/* Dual Track Cards */}
       <section className="space-y-4">
         <div className="text-center sm:text-left space-y-1">
           <h2 className="text-2xl font-black text-foreground">
-            Elige tu Pista de Estudio
+            Choose Your Study Track
           </h2>
           <p className="text-xs sm:text-sm text-muted">
-            Ambas rutas cuentan con niveles estructurados, preguntas de entrevista, código ejecutable y pruebas en vivo.
+            Both learning roadmaps include structured levels, senior questions, runnable code playgrounds, and live test runners.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* PISTA 1: REACT 19 & NEXT.JS */}
+          {/* TRACK 1: REACT 19 & NEXT.JS */}
           <div className="rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-500/10 via-card to-card p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-blue-500/60 transition-all group">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -143,27 +146,27 @@ export default function UnifiedPortalHub() {
                   React 19 &amp; Next.js App Router
                 </h3>
                 <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
-                  De los fundamentos de reconciliación y closures en hooks hasta Server Components (RSC), transiciones concurrentes, Server Actions y arquitectura de producción.
+                  From reconciliation fundamentals and hook closures to Server Components (RSC), concurrent transitions, Server Actions, and enterprise frontend architecture.
                 </p>
               </div>
 
-              {/* Características del track React */}
+              {/* React Track Specs */}
               <div className="grid grid-cols-2 gap-2.5 pt-2 text-xs">
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <Layers className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span><strong>8 Niveles</strong> (79 tópicos)</span>
+                  <span><strong>8 Levels</strong> (79 topics)</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <HelpCircle className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span><strong>{INTERVIEW_QUESTIONS.length} Preguntas</strong> Senior</span>
+                  <span><strong>{INTERVIEW_QUESTIONS.length} Questions</strong> Senior</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <Code2 className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span><strong>{EXERCISES.length} Ejercicios</strong> interactivos</span>
+                  <span><strong>{EXERCISES.length} Exercises</strong> Interactive</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-cyan-500 shrink-0" />
-                  <span><strong>{reactRiddlesData.length} Acertijos</strong> ¿Qué renderiza?</span>
+                  <span><strong>{reactRiddlesData.length} Riddles</strong> What renders?</span>
                 </div>
               </div>
             </div>
@@ -173,28 +176,28 @@ export default function UnifiedPortalHub() {
                 href="/react"
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white font-extrabold text-sm shadow-md shadow-blue-500/25 hover:opacity-95 transition-all"
               >
-                <span>Entrar a React &amp; Next.js</span>
+                <span>Enter React &amp; Next.js</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-muted">
                 <Link href="/react/acertijos" className="text-blue-600 dark:text-blue-400 hover:underline">
-                  Acertijos React &gt;
+                  React Riddles &gt;
                 </Link>
                 <Link href="/preguntas" className="hover:text-foreground hover:underline">
-                  Preguntas Senior &gt;
+                  Senior Questions &gt;
                 </Link>
                 <Link href="/ejercicios" className="hover:text-foreground hover:underline">
-                  Ejercicios ({EXERCISES.length}) &gt;
+                  Exercises ({EXERCISES.length}) &gt;
                 </Link>
                 <Link href="/checklist" className="hover:text-foreground hover:underline">
-                  Checklist React &gt;
+                  React Checklist &gt;
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* PISTA 2: JAVASCRIPT CORE & ES6+ */}
+          {/* TRACK 2: JAVASCRIPT CORE & ES6+ */}
           <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-b from-amber-500/10 via-card to-card p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-amber-500/60 transition-all group">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -208,30 +211,30 @@ export default function UnifiedPortalHub() {
 
               <div>
                 <h3 className="text-xl sm:text-2xl font-black text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                  JavaScript Core &amp; Moderno (ES6+)
+                  JavaScript Core &amp; Modern (ES6+)
                 </h3>
                 <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
-                  De los misterios del motor V8 (hoisting, coerción, microtareas y event loop) a acertijos trampa y los {jsExercisesData.length} retos canónicos de algoritmos y polyfills.
+                  From V8 engine mysteries (hoisting, coercion, microtasks, and the event loop) to tricky riddle execution and {jsExercisesData.length} canonical algorithm &amp; polyfill challenges.
                 </p>
               </div>
 
-              {/* Características del track JavaScript */}
+              {/* JavaScript Track Specs */}
               <div className="grid grid-cols-2 gap-2.5 pt-2 text-xs">
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <Zap className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span><strong>8 Niveles</strong> (81 preguntas)</span>
+                  <span><strong>8 Levels</strong> (81 topics)</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <HelpCircle className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span><strong>{jsRiddlesData.length} Acertijos</strong> ¿Qué imprime?</span>
+                  <span><strong>{jsRiddlesData.length} Riddles</strong> What logs?</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <Code2 className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span><strong>{jsExercisesData.length} Retos</strong> con test suite</span>
+                  <span><strong>{jsExercisesData.length} Challenges</strong> Test Suite</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <CheckSquare className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Checklist con progreso</span>
+                  <span>Progress Checklist</span>
                 </div>
               </div>
             </div>
@@ -241,19 +244,19 @@ export default function UnifiedPortalHub() {
                 href="/javascript"
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-extrabold text-sm shadow-md shadow-amber-500/25 hover:opacity-95 transition-all"
               >
-                <span>Entrar a JavaScript Core</span>
+                <span>Enter JavaScript Core</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
 
               <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-muted">
                 <Link href="/javascript/acertijos" className="text-amber-600 dark:text-amber-400 hover:underline">
-                  Acertijos ({jsRiddlesData.length}) &gt;
+                  JS Riddles ({jsRiddlesData.length}) &gt;
                 </Link>
                 <Link href="/javascript/ejercicios" className="hover:text-foreground hover:underline">
-                  Retos ({jsExercisesData.length}) &gt;
+                  Challenges ({jsExercisesData.length}) &gt;
                 </Link>
                 <Link href="/javascript/checklist" className="hover:text-foreground hover:underline">
-                  Checklist JS &gt;
+                  JS Checklist &gt;
                 </Link>
               </div>
             </div>
@@ -261,13 +264,192 @@ export default function UnifiedPortalHub() {
         </div>
       </section>
 
-      {/* Matriz de Accesos Rápidos */}
+      {/* Interactive Labs Section */}
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-cyan-500" />
+              <span>High-Performance Interactive Labs</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-muted">
+              Visual tools, memory monitors, and simulations engineered to master the most challenging aspects of senior frontend interviews.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Card 1: Mock Interview Simulator */}
+          <div className="relative overflow-hidden rounded-3xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 via-card to-card p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-indigo-500/60 transition-all group">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/30">
+                  <Award className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold font-mono">
+                  Timer &amp; Seniority Score
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  Technical Mock Interview Simulator
+                </h3>
+                <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
+                  Experience a realistic 15, 30, or 45-minute technical round. Answer senior conceptual questions,
+                  solve tricky output riddles, and pass live coding challenges with an in-browser test runner to diagnose your seniority level.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">15/30/45 min</span>
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">React + JS + Algorithms</span>
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">Staff / Senior Diagnosis</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-border/60">
+              <Link
+                href="/simulador"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-600 text-white font-extrabold text-sm shadow-md shadow-indigo-500/25 hover:opacity-95 transition-all"
+              >
+                <span>Start Mock Interview</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 2: Re-renders Visualizer */}
+          <div className="relative overflow-hidden rounded-3xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-card to-card p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-cyan-500/60 transition-all group">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-cyan-600 text-white flex items-center justify-center shadow-md shadow-cyan-500/30">
+                  <Layers className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 text-xs font-bold font-mono">
+                  Real-Time Virtual DOM
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                  React Re-renders Visualizer
+                </h3>
+                <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
+                  Why does a child re-render when its parent updates? Watch live Virtual DOM render pulses and experiment across 6 reconciliation scenarios:
+                  <code className="text-cyan-600 dark:text-cyan-400 font-mono"> React.memo</code>,
+                  <code className="text-cyan-600 dark:text-cyan-400 font-mono"> useCallback</code>, and the
+                  <code className="text-cyan-600 dark:text-cyan-400 font-mono"> children slot pattern</code>.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">6 Live Scenarios</span>
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">Render pulse effects</span>
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">Reconciliation logs</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-border/60">
+              <Link
+                href="/react/re-renders"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-extrabold text-sm shadow-md shadow-cyan-500/25 hover:opacity-95 transition-all"
+              >
+                <span>Open Re-renders Visualizer</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 3: Senior Refactorings */}
+          <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-card to-card p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-emerald-500/60 transition-all group">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/30">
+                  <Split className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold font-mono">
+                  Code Smells &amp; Split Diff
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                  Senior Refactoring Laboratory
+                </h3>
+                <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
+                  What smells do you identify in this component and how would you refactor it? Master production scenarios: cascading useEffects,
+                  compound components, network race conditions, and state machines with split diff viewer.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">5 Case Studies</span>
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">Split Diff Viewer</span>
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">SOLID Reasoning</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-border/60">
+              <Link
+                href="/refactorings"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-extrabold text-sm shadow-md shadow-emerald-500/25 hover:opacity-95 transition-all"
+              >
+                <span>Explore Refactoring Cases</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 4: Frontend System Design */}
+          <div className="relative overflow-hidden rounded-3xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 via-card to-card p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-sm hover:shadow-md hover:border-purple-500/60 transition-all group">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="w-12 h-12 rounded-2xl bg-purple-600 text-white flex items-center justify-center shadow-md shadow-purple-500/30">
+                  <Cpu className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-600 dark:text-purple-400 text-xs font-bold font-mono">
+                  Staff &amp; Principal Tier
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-foreground group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                  Frontend System Design &amp; Architecture
+                </h3>
+                <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
+                  The pivotal round for high-seniority compensation bands. Learn to design 60 FPS infinite feeds,
+                  global e-commerce with RSC, real-time collaborative editors with CRDTs, and silent refresh authentication.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">4 Massive Blueprints</span>
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">Architecture Diagrams</span>
+                <span className="px-2.5 py-1 rounded-lg bg-card border border-border/80 font-medium">Staff Trap Questions</span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-border/60">
+              <Link
+                href="/system-design"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-sm shadow-md shadow-purple-500/25 hover:opacity-95 transition-all"
+              >
+                <span>View System Designs</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Access Matrix */}
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-foreground">
-          Herramientas y Secciones Rápidas
+          Quick Tools &amp; Hub Sections
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3.5">
           <Link
             href="/react/acertijos"
             className="p-5 rounded-2xl border border-border/80 bg-card hover:border-blue-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
@@ -277,14 +459,14 @@ export default function UnifiedPortalHub() {
                 ⚛
               </div>
               <h3 className="text-sm font-bold text-foreground group-hover:text-blue-500 transition-colors">
-                Acertijos React
+                React Riddles
               </h3>
               <p className="text-xs text-muted">
-                {reactRiddlesData.length} enigmas interactivos: batching, keys y closures.
+                {reactRiddlesData.length} interactive puzzles: batching, keys, and closures.
               </p>
             </div>
             <span className="text-[11px] font-bold text-blue-500 flex items-center gap-1 pt-2">
-              Resolver ahora &gt;
+              Solve now &gt;
             </span>
           </Link>
 
@@ -297,14 +479,14 @@ export default function UnifiedPortalHub() {
                 ?
               </div>
               <h3 className="text-sm font-bold text-foreground group-hover:text-amber-500 transition-colors">
-                Acertijos JS &quot;¿Qué imprime?&quot;
+                JS Riddles &quot;What logs?&quot;
               </h3>
               <p className="text-xs text-muted">
-                {jsRiddlesData.length} acertijos: coerción, hoisting y event loop.
+                {jsRiddlesData.length} riddles: coercion, hoisting, and event loop.
               </p>
             </div>
             <span className="text-[11px] font-bold text-amber-500 flex items-center gap-1 pt-2">
-              Probar ahora &gt;
+              Try now &gt;
             </span>
           </Link>
 
@@ -317,14 +499,14 @@ export default function UnifiedPortalHub() {
                 &lt;/&gt;
               </div>
               <h3 className="text-sm font-bold text-foreground group-hover:text-indigo-500 transition-colors">
-                {jsExercisesData.length} Retos Algoritmos JS
+                {jsExercisesData.length} JS Challenges
               </h3>
               <p className="text-xs text-muted">
-                reverseSentence, debounce, deepClone, LRU y polyfills.
+                reverseSentence, debounce, deepClone, LRU, and polyfills.
               </p>
             </div>
             <span className="text-[11px] font-bold text-indigo-500 flex items-center gap-1 pt-2">
-              Ejecutar tests &gt;
+              Run tests &gt;
             </span>
           </Link>
 
@@ -337,14 +519,14 @@ export default function UnifiedPortalHub() {
                 {INTERVIEW_QUESTIONS.length}
               </div>
               <h3 className="text-sm font-bold text-foreground group-hover:text-purple-500 transition-colors">
-                Preguntas Senior React
+                React Senior Q&amp;A
               </h3>
               <p className="text-xs text-muted">
-                Simulador con red flags, Server Actions y trampas.
+                Simulator with red flags, Server Actions, and traps.
               </p>
             </div>
             <span className="text-[11px] font-bold text-purple-500 flex items-center gap-1 pt-2">
-              Simular entrevista &gt;
+              Simulate Q&amp;A &gt;
             </span>
           </Link>
 
@@ -357,14 +539,54 @@ export default function UnifiedPortalHub() {
                 {EXERCISES.length}
               </div>
               <h3 className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">
-                Ejercicios React
+                React Exercises
               </h3>
               <p className="text-xs text-muted">
-                Optimistic UI, Star Rating, Zod, Debounce y Virtualización.
+                Optimistic UI, Star Rating, Zod, Debounce, and Virtualization.
               </p>
             </div>
             <span className="text-[11px] font-bold text-cyan-500 flex items-center gap-1 pt-2">
-              Ver ejercicios &gt;
+              View exercises &gt;
+            </span>
+          </Link>
+
+          <Link
+            href="/flashcards"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-cyan-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
+          >
+            <div className="space-y-1">
+              <div className="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold text-xs">
+                🎴
+              </div>
+              <h3 className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">
+                Flashcards (160)
+              </h3>
+              <p className="text-xs text-muted">
+                Spaced repetition and agile memorization with 3D cards.
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-cyan-500 flex items-center gap-1 pt-2">
+              Review now &gt;
+            </span>
+          </Link>
+
+          <Link
+            href="/javascript/memory-leaks"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-rose-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
+          >
+            <div className="space-y-1">
+              <div className="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-bold text-xs">
+                🧹
+              </div>
+              <h3 className="text-sm font-bold text-foreground group-hover:text-rose-500 transition-colors">
+                V8 Memory Leaks
+              </h3>
+              <p className="text-xs text-muted">
+                Heap memory, detached DOM nodes, and interactive V8 GC.
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-rose-500 flex items-center gap-1 pt-2">
+              Debug leaks &gt;
             </span>
           </Link>
         </div>

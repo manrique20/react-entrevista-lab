@@ -29,15 +29,15 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
   const [filterText, setFilterText] = useState('');
   const [completedTopicIds, setCompletedTopicIds] = useState<string[]>([]);
 
-  // Preparar contenido para audio-guía de JavaScript
+  // Prepare content for JavaScript audio-guide
   const narratorItems: NarratorItem[] = useMemo(() => {
     return topics.map(t => {
       const parts: string[] = [t.shortAnswer];
       if (t.explanation) {
-        parts.push(`Explicación detallada: ${t.explanation}`);
+        parts.push(`Detailed explanation: ${t.explanation}`);
       }
       if (t.seniorTip) {
-        parts.push(`Consejo senior para la entrevista: ${t.seniorTip}`);
+        parts.push(`Senior interview tip: ${t.seniorTip}`);
       }
       return {
         id: t.id,
@@ -50,7 +50,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
 
   const narrator = useLevelAudioReader({
     items: narratorItems,
-    levelTitle: `JavaScript Nivel ${levelNum}: ${levelInfo?.title || ''}`
+    levelTitle: `JavaScript Level ${levelNum}: ${levelInfo?.title || ''}`
   });
 
   useEffect(() => {
@@ -97,7 +97,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Volver al Dashboard JS</span>
+          <span>Back to JS Dashboard</span>
         </Link>
 
         <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-border/70 hover:bg-muted text-xs font-semibold text-muted hover:text-foreground transition-all"
             >
               <ArrowLeft className="w-3 h-3" />
-              <span>Nivel {prevLevel}</span>
+              <span>Level {prevLevel}</span>
             </Link>
           )}
 
@@ -116,7 +116,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
               href={`/javascript/nivel/${nextLevel}`}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-xs font-bold text-amber-700 dark:text-amber-300 transition-all"
             >
-              <span>Nivel {nextLevel}</span>
+              <span>Level {nextLevel}</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           )}
@@ -128,7 +128,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1 flex-1 min-w-0">
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-              JavaScript Core • Nivel {levelNum} de 8
+              JavaScript Core • Level {levelNum} of 8
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-foreground leading-tight break-words">
               {levelInfo.title}
@@ -139,10 +139,10 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
           <div className="p-3 rounded-2xl bg-card border border-border/80 shadow-xs shrink-0 sm:text-right">
             <div className="text-xs text-muted font-medium mb-1 flex items-center gap-1.5 sm:justify-end">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Progreso del nivel</span>
+              <span>Level progress</span>
             </div>
             <div className="text-lg font-black text-foreground">
-              {levelProgress} / {topics.length} dominados ({progressPercent}%)
+              {levelProgress} / {topics.length} mastered ({progressPercent}%)
             </div>
             <div className="w-full sm:w-40 h-1.5 bg-muted rounded-full overflow-hidden mt-1.5">
               <div
@@ -157,7 +157,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
           {levelInfo.description}
         </p>
 
-        {/* Buscador dentro del nivel */}
+        {/* Search inside level */}
         <div className="pt-2">
           <div className="relative max-w-md">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
@@ -165,19 +165,19 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
               type="text"
               value={filterText}
               onChange={(e) => setFilterText(e.target.value)}
-              placeholder={`Filtrar en Nivel ${levelNum} (${topics.length} preguntas)...`}
+              placeholder={`Filter in Level ${levelNum} (${topics.length} questions)...`}
               className="w-full pl-9 pr-4 py-2 rounded-xl border border-border/80 bg-card text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
         </div>
       </div>
 
-      {/* Demos visuales especiales contextuales */}
+      {/* Special contextual visual demos */}
       {levelNum === 1 && (
         <div className="space-y-3">
           <h2 className="text-sm font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            Herramienta Visual del Nivel 1
+            Level 1 Visual Tool
           </h2>
           <CoercionMatrix />
         </div>
@@ -187,25 +187,25 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
         <div className="space-y-3">
           <h2 className="text-sm font-bold uppercase tracking-wider text-muted flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-blue-500" />
-            Simulador de Microtareas y Macrotareas
+            Microtasks and Macrotasks Simulator
           </h2>
           <EventLoopVisualizer />
         </div>
       )}
 
-      {/* Reproductor de Audio del Nivel */}
-      <LevelAudioPlayer narrator={narrator} levelTitle={`JavaScript Nivel ${levelNum}: ${levelInfo.title}`} />
+      {/* Level Audio Player */}
+      <LevelAudioPlayer narrator={narrator} levelTitle={`JavaScript Level ${levelNum}: ${levelInfo.title}`} />
 
-      {/* Listado de preguntas */}
+      {/* Questions list */}
       <div className="space-y-5">
         <div className="flex items-center justify-between text-xs text-muted font-semibold">
-          <span>{filteredTopics.length} de {topics.length} preguntas mostradas</span>
-          <span>Pulsa &quot;Ejecutar en consola&quot; en cualquier ejemplo</span>
+          <span>{filteredTopics.length} of {topics.length} questions displayed</span>
+          <span>Click &quot;Run in console&quot; on any code example</span>
         </div>
 
         {filteredTopics.length === 0 ? (
           <div className="p-8 rounded-2xl border border-dashed text-center text-xs text-muted">
-            No se encontraron preguntas que coincidan con &quot;{filterText}&quot;.
+            No questions found matching &quot;{filterText}&quot;.
           </div>
         ) : (
           filteredTopics.map((topic) => (
@@ -232,7 +232,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
             className="flex items-center gap-2 px-4 py-2 rounded-xl border hover:bg-muted text-xs font-bold text-foreground transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Nivel Anterior ({prevLevel})</span>
+            <span>Previous Level ({prevLevel})</span>
           </Link>
         ) : <div />}
 
@@ -241,7 +241,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
             href={`/javascript/nivel/${nextLevel}`}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 text-xs font-black shadow-md shadow-amber-500/20 hover:opacity-95 transition-all"
           >
-            <span>Siguiente Nivel ({nextLevel})</span>
+            <span>Next Level ({nextLevel})</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         ) : (
@@ -249,7 +249,7 @@ export function JsLevelClientView({ levelNum }: JsLevelClientViewProps) {
             href="/javascript/acertijos"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 text-xs font-black shadow-md shadow-amber-500/20 hover:opacity-95 transition-all"
           >
-            <span>Ir a Acertijos de Entrevista</span>
+            <span>Go to Interview Riddles</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         )}

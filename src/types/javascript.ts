@@ -35,7 +35,7 @@ export interface JsRiddle {
 export interface JsImplementationExercise {
   id: string; // e.g. "E1"
   title: string;
-  category: 'Funcional' | 'Asincronía' | 'Estructuras de Datos' | 'Algoritmos' | 'Polyfills' | 'Objetos';
+  category: 'Functional' | 'Asynchronous' | 'Data Structures' | 'Algorithms' | 'Polyfills' | 'Objects' | 'Funcional' | 'Asincronía' | 'Estructuras de Datos' | 'Objetos';
   description: string;
   solutionCode: string;
   testCasesCode: string;

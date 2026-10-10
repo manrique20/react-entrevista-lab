@@ -3,327 +3,327 @@ import { InterviewQuestion } from '@/types';
 export const INTERVIEW_QUESTIONS: InterviewQuestion[] = [
   {
     id: 'q1',
-    question: '¿Por qué no se debe mutar el estado en React?',
-    category: 'Fundamentos & Estado',
-    seniorAnswer: `React decide si un componente debe re-renderizarse comparando la referencia anterior con la nueva mediante Object.is (comparación superficial). Si mutas un objeto o array existente (ej: user.age = 30), la referencia en memoria sigue siendo exactamente la misma. Por ende, React asume que no hubo cambios y omite el re-renderizado, dejando la interfaz desincronizada.
+    question: 'Why must state never be mutated directly in React?',
+    category: 'Fundamentals & State',
+    seniorAnswer: `React determines whether a component needs to re-render by comparing the previous reference with the next reference using Object.is (shallow comparison). If you mutate an existing object or array in place (e.g., user.age = 30), the reference in memory remains identical. Consequently, React assumes nothing has changed and bails out of re-rendering, leaving the UI completely desynchronized.
 
-Además, mutar el estado rompe:
-1. React.memo y useMemo: que dependen de comparar props previas con las actuales.
-2. DevTools Time Travel: el historial de estados previos se sobrescribe.
-3. El modelo de concurrencia de React: donde diferentes renders pueden evaluar estados anteriores de forma segura.
+Furthermore, direct mutation breaks:
+1. React.memo and useMemo: which rely on comparing previous props with current props.
+2. DevTools Time Travel: the historical snapshot of prior states gets overwritten.
+3. React's Concurrent Model: where different rendering passes must evaluate previous states safely and immutably.
 
-Respuesta Senior en 1 frase: "La inmutabilidad garantiza que el cambio de referencia sea la señal determinista que React necesita para disparar la reconciliación".`,
-    codeExample: `// ❌ ERROR GRAVE: Mutación directa (Misma referencia)
+Senior Answer in One Sentence: "Immutability guarantees that reference changes serve as the deterministic signal React requires to schedule reconciliation."`,
+    codeExample: `// ❌ SEVERE BUG: In-place mutation (Same reference)
 const [user, setUser] = useState({ name: 'Ana', age: 25 });
 user.age = 26;
-setUser(user); // React ve Object.is(user, user) === true -> NO RERENDERIZA
+setUser(user); // React sees Object.is(user, user) === true -> BAILS OUT, NO RE-RENDER
 
-// ✅ FORMA CORRECTA: Creación de nueva referencia inmutable
+// ✅ CORRECT: Producing a fresh immutable reference
 setUser(prev => ({ ...prev, age: 26 }));`,
     trapsAndRedFlags: [
-      'Trampa: Creer que hacer arr.push() y luego setArr(arr) funciona porque "llamaste al setter".',
-      'Bandera roja en entrevista: Decir que la inmutabilidad es solo una "buena práctica de estilo". Es el pilar del diffing algorítmico de React.',
-      'Cuidado con mutaciones anidadas: el spread shallow (...user) no clona objetos internos (user.address requiere copia profunda o Immer).'
+      'Trap: Assuming arr.push() followed by setArr(arr) works simply because "you called the setter".',
+      'Interview Red Flag: Claiming immutability is merely a "coding style preference". It is the foundational pillar of React\'s algorithmic diffing.',
+      'Beware of nested mutations: shallow spreading (...user) does not clone nested objects (user.address requires deep cloning or Immer).'
     ]
   },
   {
     id: 'q2',
-    question: '¿Para qué sirve la prop `key` y qué pasa si usas el índice del array?',
-    category: 'Diffing & Listas',
-    seniorAnswer: `La prop 'key' es un identificador único y estable que el algoritmo de reconciliación de React utiliza para rastrear la identidad de los elementos de una lista a través de diferentes renders. Le permite a React saber con exactitud si un elemento fue agregado, eliminado, movido o modificado.
+    question: 'What is the purpose of the `key` prop and what happens if you use array indices?',
+    category: 'Diffing & Lists',
+    seniorAnswer: `The 'key' prop is a unique, stable identifier that React's reconciliation algorithm uses to track element identity across different render cycles. It informs React precisely whether an item was inserted, removed, reordered, or modified.
 
-Si usas el índice (index) como key:
-1. Si la lista se reordena, filtra o se inserta un elemento al inicio, los índices de los elementos cambian.
-2. El elemento en índice 0 siempre tendrá key="0". Si un componente hijo tiene estado interno (un input con texto no guardado, una animación, o un checkbox marcado), React reasociará ese estado interno al elemento incorrecto.
-3. Se arruina la optimización de reutilización del DOM de React, forzando mutaciones de DOM innecesarias.
+If you use the array index as a key:
+1. If the list is sorted, filtered, or prepended, elements shift their indices.
+2. The item at index 0 will perpetually have key="0". If a child component holds local internal state (an uncommitted input value, a CSS transition, or a checked checkbox), React re-associates that state with the wrong item.
+3. React's DOM node reuse optimization is degraded, triggering unnecessary DOM destructions and mutations.
 
-Cuándo es aceptable el índice: ÚNICAMENTE si la lista es estrictamente estática (nunca se filtra, ni reordena, ni inserta, ni elimina) y sus elementos no tienen estado ni IDs naturales.`,
-    codeExample: `// ❌ PELIGRO: Si eliminas o reordenas, el estado de los inputs se corrompe
+When is index acceptable: ONLY if the list is strictly static (never filtered, reordered, prepended, or truncated) and its elements hold zero internal state and lack natural unique IDs.`,
+    codeExample: `// ❌ DANGER: Removing or sorting corrupts input state
 {items.map((item, index) => (
   <ListItem key={index} item={item} />
 ))}
 
-// ✅ CORRECTO: ID estable que pertenece al dato
+// ✅ CORRECT: Stable ID tied to the underlying domain data
 {items.map(item => (
   <ListItem key={item.id} item={item} />
 ))}`,
     trapsAndRedFlags: [
-      'Trampa: Usar key={Math.random()} o key={Date.now()} en el render. Esto destruye y remonta el componente en CADA render, perdiendo el foco y causando parpadeos masivos.',
-      'Pregunta de seguimiento típica: ¿Cómo reseteas el estado interno de un formulario sin useEffect? Respuesta senior: Pasándole una nueva key (<UserForm key={userId} />).'
+      'Trap: Using key={Math.random()} or key={Date.now()} inside the render pass. This destroys and remounts the component on EVERY single render, losing focus and creating severe flickering.',
+      'Common Follow-up: How do you reset internal form state without useEffect? Senior answer: Pass a changing key prop (<UserForm key={userId} />).'
     ]
   },
   {
     id: 'q3',
-    question: '¿Cuál es la diferencia exacta entre `useMemo` y `useCallback`?',
-    category: 'Rendimiento',
-    seniorAnswer: `Ambos son hooks de memoización basados en un array de dependencias:
-- useMemo(fn, deps): Ejecuta la función fn durante el render y memoiza el VALOR DE RETORNO (el resultado del cálculo).
-- useCallback(fn, deps): Memoiza la INSTANCIA DE LA FUNCIÓN misma entre renders, garantizando una referencia estable en memoria.
+    question: 'What is the exact difference between `useMemo` and `useCallback`?',
+    category: 'Performance',
+    seniorAnswer: `Both are memoization hooks powered by a dependency array:
+- useMemo(fn, deps): Executes fn during render and memoizes the RETURN VALUE (the computational result).
+- useCallback(fn, deps): Memoizes the FUNCTION INSTANCE itself across renders, guaranteeing a stable referential identity.
 
-De hecho, useCallback(fn, deps) es literalmente equivalente a useMemo(() => fn, deps).
+In fact, useCallback(fn, deps) is structurally equivalent to useMemo(() => fn, deps).
 
-¿Cuándo usarlos realmente?:
-No deben colocarse "por si acaso" porque la memoización en sí misma consume memoria y ciclos de CPU para comparar dependencias.
-- useMemo: Para cálculos computacionalmente pesados (miles de iteraciones, filtros grandes) o para evitar recrear objetos de configuración que son dependencias de otros hooks.
-- useCallback: Principalmente cuando pasas una función callback a un componente hijo memoizado con React.memo, o cuando la función se pasa al array de dependencias de un useEffect.`,
-    codeExample: `// useMemo memoiza el resultado de un cálculo pesado
-const datosFiltrados = useMemo(() => {
-  return listaEnorme.filter(item => item.activo).sort((a, b) => b.puntos - a.puntos);
-}, [listaEnorme]);
+When should they actually be used?:
+They should never be sprinkled preemptively because memoization itself carries overhead (memory allocations and dependency comparisons).
+- useMemo: For CPU-heavy computations (sorting thousands of items, intensive matrix calculations) or to stabilize object references used as dependencies for downstream hooks.
+- useCallback: Primarily when passing a callback prop to a child component wrapped in React.memo, or when the function must be included in a useEffect dependency array.`,
+    codeExample: `// useMemo caches the result of an expensive calculation
+const filteredData = useMemo(() => {
+  return hugeList.filter(item => item.active).sort((a, b) => b.score - a.score);
+}, [hugeList]);
 
-// useCallback memoiza la referencia de la función
+// useCallback preserves function reference stability
 const handleClick = useCallback((id: string) => {
-  eliminarItem(id);
-}, [eliminarItem]); // Hijo memoizado con React.memo no se re-renderizará por prop de función nueva`,
+  deleteItem(id);
+}, [deleteItem]); // Child wrapped in React.memo will not re-render due to new function prop`,
     trapsAndRedFlags: [
-      'Error común: Creer que useCallback hace que la función interna se ejecute más rápido. No es así; solo mantiene la misma referencia en memoria.',
-      'Contexto moderno: Mencionar React Compiler. Con React Compiler en React 19, la memoización manual con useMemo y useCallback se automatiza en tiempo de compilación para la gran mayoría de casos.'
+      'Common Misconception: Believing useCallback makes the inner function execute faster. It does not; it only maintains the same memory reference.',
+      'Modern Context: Mention the React Compiler. With React Compiler in React 19, manual useMemo and useCallback memoization is automated at build time for the vast majority of scenarios.'
     ]
   },
   {
     id: 'q4',
-    question: '¿Cuándo usar Context API vs Zustand / Redux Toolkit vs TanStack Query?',
-    category: 'Arquitectura & Estado',
-    seniorAnswer: `Esta es una de las preguntas de arquitectura más evaluadas. La respuesta senior separa claramente el 'Server State' del 'Client State':
+    question: 'When should you use Context API vs Zustand / Redux Toolkit vs TanStack Query?',
+    category: 'Architecture & State',
+    seniorAnswer: `This is a flagship architectural question. A senior answer clearly decouples 'Server State' from 'Client State':
 
 1. TanStack Query (React Query) / SWR:
-Para ESTADO DEL SERVIDOR (datos que provienen de una API remota: usuarios, listados, productos). Provee caché, revalidación en segundo plano, deduplicación de peticiones, reintentos y mutaciones optimistas. En el 80% de los proyectos modernos, usar TanStack Query elimina la necesidad de stores globales complejos.
+For SERVER STATE (data originating from a remote API: users, products, notifications). Provides caching, background revalidation, request deduplication, retries, and optimistic mutations. In modern frontend systems, adopting TanStack Query eliminates ~80% of boilerplate global stores.
 
 2. React Context API:
-Para inyección de dependencias y estado global de BAJA FRECUENCIA DE CAMBIO (tema claro/oscuro, idioma i18n, sesión de usuario autenticado). Desventaja crítica: TODOS los componentes que consumen el contexto se re-renderizan cuando su valor cambia, sin selectores granulares nativos.
+For dependency injection and LOW-FREQUENCY global client state (dark/light theme, active locale, authenticated user profile). Critical caveat: ALL consumer components re-render whenever the context value reference changes, lacking native granular selectors.
 
 3. Zustand / Redux Toolkit:
-Para ESTADO GLOBAL DE UI DE ALTA FRECUENCIA O COMPLEJO (carrito de compras con reglas de negocio locales, editor canvas, reproductores multimedia con tiempo por milisegundos). Permiten 'selectores finos' (solo el componente suscrito al campo exacto se re-renderiza). Zustand es preferido por su mínima fricción y ausencia de Providers.`,
-    codeExample: `// Contexto: Bueno para datos estables
+For HIGH-FREQUENCY OR COMPLEX CLIENT UI STATE (e-commerce shopping cart with local business rules, canvas editors, audio/video players with millisecond scrubbers). Provides fine-grained selectors so only components subscribed to specific slices re-render. Zustand is widely preferred today due to zero boilerplate and provider-less architecture.`,
+    codeExample: `// Context: Ideal for low-frequency configuration
 const ThemeContext = createContext<Theme>('dark');
 
-// TanStack Query: Para estado de servidor
+// TanStack Query: Manages server state lifecycle
 const { data, isLoading } = useQuery({ queryKey: ['users'], queryFn: fetchUsers });
 
-// Zustand: Para estado de cliente con selectores granulares
+// Zustand: Scalable client state with granular selectors
 const useCartStore = create((set) => ({
   items: [],
   addItem: (item) => set((state) => ({ items: [...state.items, item] }))
 }));
-// Solo re-renderiza cuando la cantidad cambia:
+// Only re-renders when count changes:
 const count = useCartStore((state) => state.items.length);`,
     trapsAndRedFlags: [
-      'Bandera roja: Meter datos de API en Redux o Context usando useEffect + dispatch(fetchSuccess(data)). Explica que eso es gestionar estado de servidor manualmente con boilerplate innecesario.',
-      'Trampa: Usar un solo Context masivo para toda la aplicación que guarda tanto el tema como datos que cambian a cada segundo.'
+      'Red Flag: Storing raw API responses in Redux or Context using useEffect + dispatch(fetchSuccess(data)). Explain that this manually reinvents server state management with heavy boilerplate.',
+      'Trap: Using a single giant Context for the entire application that bundles both theme settings and rapidly ticking timers.'
     ]
   },
   {
     id: 'q5',
-    question: '¿Cómo evitar el "Prop Drilling" sin caer inmediatamente en estado global?',
-    category: 'Patrones de Composición',
-    seniorAnswer: `El Prop Drilling ocurre cuando pasas props a través de múltiples niveles de componentes intermedios que no necesitan ese dato y solo actúan como pasarelas.
+    question: 'How do you avoid "Prop Drilling" without immediately reaching for global state?',
+    category: 'Component Composition',
+    seniorAnswer: `Prop Drilling occurs when props are threaded through multiple layers of intermediate components that have no operational interest in the data and merely serve as conduits.
 
-Estrategias en orden de prioridad:
-1. Composición de componentes con 'children' o slots: En lugar de pasar datos al fondo para que el nieto arme un botón, armas el botón en el ancestro y lo pasas como prop (o como children). El componente intermedio simplemente renderiza {children}. Esto elimina el drilling y desacopla la arquitectura.
-2. Colocar el estado más cerca (Colocation): A menudo el estado fue levantado demasiado alto innecesariamente. Moverlo al submódulo donde realmente se utiliza.
-3. Componentes compuestos (Compound Components): Un contenedor padre coordina a sus hijos mediante un Context local limitado solo a ese componente (ej. <Select><Select.Option /></Select>).
-4. Context API: Cuando los datos son globales y estables (tema, autenticación).
-5. Zustand: Si se requiere estado accesible en múltiples pantallas sin anidación.`,
-    codeExample: `// ❌ Prop Drilling: Layout y Sidebar no usan 'user' ni 'logout'
+Hierarchical strategies in priority order:
+1. Component Composition with 'children' or slots: Instead of passing props down several levels so a deep child can build a button, instantiate the button in the shared ancestor and pass it as a prop (or as children). Intermediate components simply render {children}. This eliminates drilling and decouples component contracts.
+2. State Colocation: State was often lifted too high preemptively. Move it down to the closest sub-tree where it is genuinely consumed.
+3. Compound Components: A parent container coordinates its children via an encapsulated, locally-scoped Context (e.g., <Select><Select.Option /></Select>).
+4. Context API: When data represents stable, cross-cutting concerns (theme, auth).
+5. Zustand: When state must be accessed across disparate screens without nesting constraints.`,
+    codeExample: `// ❌ Prop Drilling: Layout and Sidebar do not need 'user' or 'logout'
 <App user={user}>
   <Layout user={user}>
     <Sidebar user={user} onLogout={logout} />
   </Layout>
 </App>
 
-// ✅ Solución con Composición (Children / Slots):
+// ✅ Composition Solution (Children / Slots):
 <Layout
   sidebar={<UserProfile user={user} onLogout={logout} />}
 >
   <MainContent />
 </Layout>`,
     trapsAndRedFlags: [
-      'Bandera roja: Responder que la única solución es instalar Redux o usar Context. Un ingeniero senior prefiere la composición de componentes antes de introducir estado global.'
+      'Red Flag: Responding that the only solution is installing Redux or Context. Senior engineers leverage component composition before introducing global stores.'
     ]
   },
   {
     id: 'q6',
-    question: '¿Cuál es la diferencia entre `useEffect` y `useLayoutEffect`?',
-    category: 'Ciclo de Vida & Render',
-    seniorAnswer: `La diferencia fundamental reside en el momento exacto de ejecución respecto al pintado del navegador (Browser Paint):
+    question: 'What is the fundamental difference between `useEffect` and `useLayoutEffect`?',
+    category: 'Lifecycle & Render',
+    seniorAnswer: `The distinction lies in the precise execution timing relative to the browser painting the frame:
 
 1. useLayoutEffect:
-- Se ejecuta de manera SÍNCRONA inmediatamente después de que React aplica las mutaciones al DOM (fase de Commit), pero ANTES de que el navegador pinte la pantalla en el frame.
-- Bloquea el pintado del navegador hasta que termine.
-- Propósito principal: Realizar mediciones del DOM (getBoundingClientRect, scroll position) y aplicar mutaciones inmediatas antes de que el usuario vea el fotograma, evitando cualquier parpadeo visual (flicker).
-- Advertencia: No corre durante Server-Side Rendering (dispara warning en SSR).
+- Fires SYNCHRONOUSLY immediately after React completes DOM mutations (Commit Phase), but BEFORE the browser paints the frame to the screen.
+- Blocks the browser paint until its execution completes.
+- Primary Purpose: Performing DOM layout measurements (getBoundingClientRect, scroll offsets) and applying immediate layout adjustments before the user sees the frame, eliminating visual layout shifts (flicker).
+- Warning: Disables SSR execution (triggers Next.js hydration warning if not guarded).
 
 2. useEffect:
-- Se ejecuta de manera ASÍNCRONA después de que el navegador ha pintado la pantalla en el monitor.
-- No bloquea la renderización visual de la página.
-- Propósito: El 99% de los efectos secundarios (fetch de datos, suscripciones, event listeners, timers, analíticas).`,
-    codeExample: `// useLayoutEffect: Mide y ajusta antes de pintar (cero parpadeo visual)
+- Fires ASYNCHRONOUSLY after the browser has completed painting pixels to the screen.
+- Never blocks visual rendering.
+- Primary Purpose: 99% of side effects (data fetching, subscriptions, event listeners, analytics).`,
+    codeExample: `// useLayoutEffect: Measures and repositions before painting (zero flicker)
 useLayoutEffect(() => {
   const rect = tooltipRef.current.getBoundingClientRect();
   setPosition({ top: rect.top - 40, left: rect.left });
 }, []);
 
-// useEffect: No bloquea el render visual del usuario
+// useEffect: Non-blocking, runs post-paint
 useEffect(() => {
   const controller = new AbortController();
   fetchData({ signal: controller.signal });
   return () => controller.abort();
 }, []);`,
     trapsAndRedFlags: [
-      'Peligro: Poner tareas pesadas (como fetch o parseo intensivo) en useLayoutEffect congelará el hilo principal antes de pintar.',
-      'Pregunta con trampa: ¿Corre useLayoutEffect en SSR de Next.js? Respuesta: No, porque en el servidor no hay DOM ni layout que pintar.'
+      'Danger: Putting heavy operations (network fetch or JSON parsing) inside useLayoutEffect will freeze the main thread before painting.',
+      'Trick Question: Does useLayoutEffect run on the server during SSR in Next.js? Answer: No, because there is no DOM or layout tree on the server.'
     ]
   },
   {
     id: 'q7',
-    question: '¿Cómo diagnosticarías y optimizarías una aplicación React con problemas de rendimiento?',
-    category: 'Rendimiento & Profiling',
-    seniorAnswer: `Una respuesta senior nunca empieza diciendo "pongo useMemo en todo". Sigue una metodología rigurosa: "Medir primero, optimizar después".
+    question: 'How would you diagnose and optimize performance issues in a slow React app?',
+    category: 'Performance & Profiling',
+    seniorAnswer: `A senior engineer never begins by saying "I wrap everything in useMemo". Follow a disciplined methodology: "Measure first, optimize second".
 
-Paso 1: Medición y Diagnóstico
-- Abrir React DevTools Profiler y marcar "Record why each component rendered".
-- Identificar componentes con renders largos o componentes que se re-renderizan continuamente sin que sus datos visuales hayan cambiado.
-- Inspeccionar las métricas de Web Vitals: LCP (Largest Contentful Paint), INP (Interaction to Next Paint) y CLS (Cumulative Layout Shift).
+Step 1: Measurement & Profiling
+- Open React DevTools Profiler and check "Record why each component rendered".
+- Identify slow rendering passes and components repeatedly re-rendering without prop or state data changes.
+- Inspect Core Web Vitals: LCP (Largest Contentful Paint), INP (Interaction to Next Paint), and CLS (Cumulative Layout Shift).
 
-Paso 2: Optimización a nivel de Componente
-- Bajar el estado (State Colocation): mover inputs y estados rápidos al componente que realmente los necesita para no re-renderizar ramas enteras del árbol.
-- Composición con children: Si un wrapper maneja estado de scroll o mouse, pasar el contenido pesado como {children} (los children no se re-renderizan porque su instancia ya fue creada por el padre).
-- React.memo con dependencias estables (useCallback/useMemo).
+Step 2: Component-Level Optimization
+- State Colocation: Push state down to isolated leaf nodes so typing in a search bar does not re-render the whole page.
+- Children Slot Pattern: If an outer container tracks mouse/scroll coordinates, pass the heavy inner subtree as {children} (children retain identical reference and skip re-renders).
+- React.memo paired with stable props (useCallback/useMemo).
 
-Paso 3: Optimización de listas y datos
-- Si hay listas de más de 100 elementos, aplicar virtualización (TanStack Virtual / react-window).
+Step 3: List & Data Virtualization
+- For lists exceeding 100 items, introduce DOM virtualization (TanStack Virtual or react-window).
 
-Paso 4: Tareas pesadas y Concurrencia
-- Usar useTransition para tareas no urgentes como filtrado de grandes datasets para que el input del usuario no pierda fluidez (INP < 200ms).
-- Delegar cómputos pesados a un Web Worker.
+Step 4: Concurrency & Heavy Computations
+- Leverage useTransition for non-urgent state updates (large dataset filtering) to keep interaction responsive (INP < 200ms).
+- Offload CPU-heavy mathematical computations to Web Workers.
 
-Paso 5: Bundle y Red
-- Code splitting con React.lazy / dynamic imports de Next.js.
-- Tree shaking correcto (reemplazar importaciones masivas por subrutas como lodash-es).`,
-    codeExample: `// Técnica altamente valorada: "Levantar el contenido con Children"
-// Aunque el wrapper cambie su estado interno, 'HeavyTree' no se re-renderiza
+Step 5: Bundle Splitting & Network
+- Route-based code splitting using React.lazy / Next.js dynamic imports.
+- Proper tree shaking (replacing monolithic libraries with sub-path imports like lodash-es).`,
+    codeExample: `// High-impact pattern: "Lifting content via Children"
+// Even when ExpensiveWrapper updates its internal coordinates, HeavyTree does not re-render
 function ExpensiveWrapper({ children }: { children: React.ReactNode }) {
   const [coords, setCoords] = useState({ x: 0, y: 0 });
   return (
     <div onMouseMove={(e) => setCoords({ x: e.clientX, y: e.clientY })}>
       <span>Mouse: {coords.x}, {coords.y}</span>
-      {children} {/* HeavyTree mantiene la misma referencia, no se re-ejecuta */}
+      {children} {/* HeavyTree maintains identical reference, skipped by reconciliation */}
     </div>
   );
 }`,
     trapsAndRedFlags: [
-      'Trampa: Optimización prematura. Llenar el código de useMemo y useCallback donde no hay componentes pesados memoizados añade overhead de memoria innecesario.',
-      'Ignorar el tamaño de los bundles de librerías de terceros (ej: moment.js en lugar de date-fns/Intl).'
+      'Trap: Premature optimization. Littering components with useMemo and useCallback where children are un-memoized introduces pointless memory overhead.',
+      'Ignoring heavy third-party bundle sizes (e.g., using moment.js instead of date-fns or native Intl).'
     ]
   },
   {
     id: 'q8',
-    question: 'Componentes Controlados vs No Controlados: ¿Diferencias, pros, contras y cuándo usar cada uno?',
-    category: 'Formularios & DOM',
-    seniorAnswer: `La diferencia se basa en quién es la "única fuente de verdad" (Single Source of Truth) para el valor del elemento de formulario:
+    question: 'Controlled vs Uncontrolled Components: Differences, pros, cons, and when to use each?',
+    category: 'Forms & DOM',
+    seniorAnswer: `The difference centers on which system holds the "Single Source of Truth" for the form element's current value:
 
-1. Componente Controlado:
-- React controla el valor a través de estado (value={val} y onChange={(e) => setVal(e.target.value)}).
-- Cada pulsación de tecla pasa por el ciclo de render de React.
-- Ventajas: Validación inmediata en cada carácter, deshabilitar botones en tiempo real, formateo dinámico (ej: números de tarjeta con guiones), inputs dependientes entre sí.
-- Desventajas: Provoca un re-render por cada tecla pulsada. En formularios masivos con cientos de campos puede impactar el rendimiento si no se aíslan los campos.
+1. Controlled Component:
+- React state controls the value via props (value={val} and onChange={(e) => setVal(e.target.value)}).
+- Every keystroke triggers a React render cycle.
+- Pros: Immediate character-level validation, live button disabling, dynamic input formatting (credit card spacing), interdependent fields.
+- Cons: Causes a re-render per keystroke. In massive forms with hundreds of inputs, this can degrade performance without isolated leaf state.
 
-2. Componente No Controlado:
-- El DOM del navegador retiene el valor internamente.
-- Se lee el valor bajo demanda usando un 'useRef' o capturando el FormData al enviar el formulario (onSubmit).
-- Ventajas: Rendimiento estelar en formularios extensos (cero re-renders al escribir), integración directa con librerías nativas o APIs de terceros.
-- Es el modelo que utiliza React Hook Form (mediante ref registration) para lograr máximo rendimiento.`,
-    codeExample: `// CONTROLADO: React tiene el control absoluto en cada render
+2. Uncontrolled Component:
+- The browser DOM retains the input value internally.
+- The value is read on demand via useRef or by capturing FormData during onSubmit.
+- Pros: Outstanding performance on huge forms (zero React re-renders while typing), clean integration with non-React third-party DOM widgets.
+- This is the core architectural model behind React Hook Form (using ref registration) to achieve maximum performance.`,
+    codeExample: `// CONTROLLED: React maintains absolute control on every render
 const [query, setQuery] = useState('');
 <input value={query} onChange={(e) => setQuery(e.target.value)} />
 
-// NO CONTROLADO: El DOM gestiona el valor, React lo lee solo al enviar
+// UNCONTROLLED: DOM manages the value; React reads it on submission
 const inputRef = useRef<HTMLInputElement>(null);
 const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
   console.log(inputRef.current?.value);
 };
-<input ref={inputRef} defaultValue="Valor inicial" />`,
+<input ref={inputRef} defaultValue="Initial value" />`,
     trapsAndRedFlags: [
-      'Error común: Cambiar un input de no controlado a controlado pasando primero value={undefined} y luego un string. React disparará un warning en consola: "A component is changing an uncontrolled input to be controlled". Solución: inicializar siempre con string vacío value={value ?? ""}.'
+      'Common Bug: Switching an input from uncontrolled to controlled by passing value={undefined} initially and then a string. React logs: "A component is changing an uncontrolled input to be controlled". Fix: always initialize with an empty string value={value ?? ""}.'
     ]
   },
   {
     id: 'q9',
-    question: 'Explica el ciclo completo desde que ejecutas `setState` hasta que el píxel se pinta en pantalla',
-    category: 'Internos & Reconciliación',
-    seniorAnswer: `Este es el "Santo Grial" de las entrevistas senior de React. Demuestra comprensión profunda de la arquitectura Fiber:
+    question: 'Explain the complete lifecycle from calling `setState` to pixels rendering on screen',
+    category: 'Internals & Reconciliation',
+    seniorAnswer: `This is a flagship senior React question demonstrating deep mastery of Fiber architecture:
 
-Paso 1: Disparo y Encolado (Trigger & Schedule)
-Se ejecuta setVal(nuevo). React no actualiza la variable de inmediato. Crea un objeto de actualización ('Update') y lo encola en la cola de la fibra del componente (updateQueue).
-En React 18/19, opera el Automatic Batching: si ocurren varios setState dentro del mismo ciclo de eventos (incluso en promesas o timeouts), se agrupan en una única pasada.
+Step 1: Trigger & Schedule
+setVal(next) is called. React does not update the variable synchronously. It creates an 'Update' object and enqueues it on the fiber node's updateQueue.
+In React 18/19, Automatic Batching bundles multiple setState calls within the same event tick (even inside promises, timeouts, or native listeners) into a single pass.
 
-Paso 2: Planificación por el Scheduler
-El Scheduler evalúa la prioridad del carril (Lane Priority): ¿Es un evento de usuario inmediato (tecleo, clic) o una transición de baja prioridad (startTransition)? Si hay trabajo urgente, React puede interrumpir renders previos.
+Step 2: Scheduler Lane Evaluation
+The Scheduler evaluates lane priority: Is this an urgent user interaction (typing, clicking) or a low-priority transition (startTransition)? If urgent work arrives, React can interrupt an ongoing non-urgent render pass.
 
-Paso 3: Fase de Render (Reconciliación) - ASÍNCRONA E INTERRUMPIBLE
-React recorre el árbol de trabajo (workInProgress tree) usando la estructura Fiber. Llama a la función del componente con el nuevo estado.
-Compara el nuevo Virtual DOM con el árbol de fibras actual mediante el algoritmo de diffing heurístico O(n).
-Calcula las mutaciones requeridas y marca las banderas de efecto (flags como Placement, Update, Deletion). No se toca el DOM real en esta fase.
+Step 3: Render Phase (Reconciliation) - ASYNCHRONOUS & INTERRUPTIBLE
+React traverses the workInProgress fiber tree. It executes component functions with pending states.
+It compares the new Virtual DOM with current fiber nodes using heuristic O(n) diffing.
+It computes mutations and tags fiber nodes with effect flags (Placement, Update, ChildDeletion). Real DOM is untouched in this phase.
 
-Paso 4: Fase de Commit - SÍNCRONA E ININTERRUMPIBLE
-React toma la lista de cambios del árbol de trabajo y los aplica directamente al DOM real del navegador.
-Cambia el puntero raíz (double buffering de Fiber) para que el workInProgress pase a ser el árbol actual.
+Step 4: Commit Phase - SYNCHRONOUS & UNINTERRUPTIBLE
+React applies the collected mutations directly to the browser DOM.
+It flips the root pointer (Fiber double buffering), turning workInProgress into the current tree.
 
-Paso 5: Efectos de Diseño (Layout Effects)
-React ejecuta síncronamente los hooks 'useLayoutEffect'. Como aún no se ha producido el pintado, cualquier ajuste al DOM aquí no causa parpadeo visible.
+Step 5: Layout Effects
+React synchronously fires useLayoutEffect hooks. Because browser paint has not occurred yet, any DOM adjustments made here prevent visual flicker.
 
-Paso 6: Pintado del Navegador (Browser Paint)
-El navegador ejecuta el reflow, layout, cálculo de estilos y dibuja los píxeles en la pantalla.
+Step 6: Browser Paint
+The browser executes style recalculations, layout reflow, composite layers, and paints pixels to the screen.
 
-Paso 7: Efectos Pasivos (Passive Effects)
-Una vez que el usuario ve el resultado, React ejecuta de forma asíncrona los hooks 'useEffect' y sus funciones de cleanup pendientes.`,
-    codeExample: `// Demostración de Batching y Asincronía
-function ContadorDemo() {
+Step 7: Passive Effects
+Once pixels are displayed, React asynchronously fires useEffect hooks and their pending cleanup routines.`,
+    codeExample: `// Batching & Asynchrony Demonstration
+function CounterDemo() {
   const [count, setCount] = useState(0);
 
   const handleClick = () => {
-    // Ambas lecturas ven count = 0 en el render actual:
+    // Both reads capture count = 0 in current render scope:
     setCount(count + 1);
-    console.log(count); // IMPRIME 0, NO 1
+    console.log(count); // LOGS 0, NOT 1
 
-    setCount(count + 1); // No suma 2, porque usa el mismo count = 0
+    setCount(count + 1); // Does not increment by 2; still uses count = 0
 
-    // Con forma funcional, se encadenan sobre la cola de actualizaciones:
-    setCount(prev => prev + 1); // Esta sí tomará el resultado pendiente
+    // Functional form chains operations on the fiber updateQueue:
+    setCount(prev => prev + 1); // Resolves against latest queue state
   };
   return <button onClick={handleClick}>{count}</button>;
 }`,
     trapsAndRedFlags: [
-      'Bandera roja: Afirmar que setState es una función asíncrona que retorna una Promesa (await setState(...) no existe). setState programa un render, es síncrona en su invocación pero asíncrona en su resolución de render.',
-      'Olvidar mencionar la diferencia entre la fase de Render (pura, interrumpible) y la fase de Commit (mutación de DOM, síncrona).'
+      'Red Flag: Stating that setState is an asynchronous function returning a Promise (await setState(...) does not exist). setState schedules a render; it is synchronous in invocation but asynchronous in rendering completion.',
+      'Failing to distinguish between the Render Phase (pure, interruptible) and Commit Phase (synchronous DOM mutations).'
     ]
   },
   {
     id: 'q10',
-    question: '¿Qué es un "Stale Closure" en React y cuáles son sus 3 soluciones canónicas?',
+    question: 'What is a "Stale Closure" in React and what are its 3 canonical solutions?',
     category: 'Hooks & Closures',
-    seniorAnswer: `Un Stale Closure ocurre cuando una función callback (como las pasadas a setInterval, setTimeout, o event listeners dentro de un useEffect/useCallback) captura variables de estado o props del render en el que fue creada y nunca se actualiza porque el array de dependencias no incluye esa variable o está vacío ([]).
+    seniorAnswer: `A Stale Closure occurs when a callback function (such as those passed to setInterval, setTimeout, or event listeners inside useEffect/useCallback) captures state variables or props from the render cycle in which it was instantiated, and fails to update because the dependency array omits the variable or is empty ([]).
 
-Como las closures en JavaScript capturan variables por referencia a su ámbito léxico original, la función sigue ejecutándose pero "ve" eternamente el valor congelado de ese render inicial.
+Because JavaScript closures capture variables by reference to their original lexical scope, the callback continues executing while referencing stale, frozen values from the initial render.
 
-Solución 1: Actualizaciones funcionales de estado
-En lugar de setCount(count + 1), usa setCount(prev => prev + 1). La función recibe el estado más reciente de la cola de React sin necesidad de capturarlo de su closure léxica.
+Solution 1: Functional State Updates
+Instead of setCount(count + 1), use setCount(prev => prev + 1). The updater receives the freshest state directly from React\'s internal queue without needing to capture it from lexical scope.
 
-Solución 2: Usar useRef como contenedor mutable
-Guarda el callback o valor mutable en una referencia (ref.current = valor). Los refs persisten entre renders con identidad estable y siempre apuntan a la última mutación.
+Solution 2: useRef as a Mutable Container
+Store the callback or mutable value in a reference (ref.current = value). Refs preserve identity across renders and always point to the most recent mutation.
 
-Solución 3: Declarar todas las dependencias o el hook experimental useEffectEvent (React 19)
-Separar la lógica reactiva (que dispara el efecto) de la lógica no reactiva que solo necesita leer el valor más reciente sin re-ejecutar el efecto.`,
-    codeExample: `// ❌ BUG: count se congela en 0, imprime siempre "Tick: 1"
+Solution 3: Comprehensive Dependencies or useEffectEvent (React 19)
+Separate reactive logic (which triggers effect re-runs) from non-reactive logic that only needs to read the freshest value without triggering effect teardown.`,
+    codeExample: `// ❌ BUG: count is trapped at 0; perpetually logs "Tick: 1"
 useEffect(() => {
   const id = setInterval(() => {
-    setCount(count + 1); // count siempre vale 0 aquí
+    setCount(count + 1); // count is frozen at 0 here
   }, 1000);
   return () => clearInterval(id);
-}, []); // deps vacías causan stale closure
+}, []); // Empty deps cause stale closure
 
-// ✅ SOLUCIÓN 1: Actualizador funcional (cero dependencias necesarias)
+// ✅ SOLUTION 1: Functional update (zero dependencies needed)
 useEffect(() => {
   const id = setInterval(() => {
     setCount(prev => prev + 1);
@@ -331,72 +331,72 @@ useEffect(() => {
   return () => clearInterval(id);
 }, []);`,
     trapsAndRedFlags: [
-      'Bandera roja: Desactivar eslint-plugin-react-hooks/exhaustive-deps con un comentario // eslint-disable sin entender por qué faltaba la dependencia.',
-      'Trampa: Poner count en las dependencias sin limpiar el timer causará que el intervalo se destruya y se vuelva a crear cada segundo, degradando rendimiento.'
+      'Red Flag: Suppressing eslint-plugin-react-hooks/exhaustive-deps with // eslint-disable without understanding the missing dependency.',
+      'Trap: Adding count to dependencies without clearing the timer causes the interval to tear down and recreate every second, degrading timer accuracy.'
     ]
   },
   {
     id: 'q11',
-    question: '¿En qué se diferencian `useTransition` y `useDeferredValue` y cuándo usar cada uno?',
-    category: 'Rendimiento Concurrente',
-    seniorAnswer: `Ambos hooks pertenecen al Concurrent Mode de React y permiten marcar actualizaciones de UI como "no urgentes" (transiciones), evitando que bloqueen el hilo principal durante interacciones críticas de usuario como teclear en un input (priorizando la métrica INP):
+    question: 'How do `useTransition` and `useDeferredValue` differ and when should each be used?',
+    category: 'Concurrent Performance',
+    seniorAnswer: `Both hooks belong to React\'s Concurrent Mode and mark UI updates as "non-urgent" (transitions), preventing them from blocking the main thread during high-priority user interactions like typing (optimizing the INP metric):
 
 1. useTransition:
-- Se utiliza cuando TÚ controlas el código que llama al setState.
-- Envuelve la actualización: startTransition(() => setFiltro(nuevoValor)).
-- Provee un flag booleano isPending para mostrar spinners o estados atenuados mientras React renderiza en segundo plano.
+- Used when YOU control the code that calls setState.
+- Wraps state setter invocations: startTransition(() => setFilter(nextValue)).
+- Provides an isPending boolean flag to render loading indicators or dimmed UI while background rendering proceeds.
 
 2. useDeferredValue:
-- Se utiliza cuando NO controlas el setter, sino que RECIBES un valor como prop o desde una librería externa.
-- Toma un valor y difiere la actualización de su copia diferida: const deferredQuery = useDeferredValue(query).
-- React primero renderiza el input con el valor inmediato y luego programa un render en segundo plano con el valor diferido.
+- Used when you DO NOT control the setter, but RECEIVE a value as a prop or from an external library.
+- Takes a value and defers updating its deferred clone: const deferredQuery = useDeferredValue(query).
+- React first renders the immediate value and schedules a background render pass for the deferred value.
 
-¿Cuándo NO usarlos?:
-No reemplazan a debounce o throttle para reducir llamadas a APIs de red. useTransition y useDeferredValue optimizan la CPU en el cliente (re-render de listas pesadas en Virtual DOM), no el tráfico HTTP.`,
-    codeExample: `// useTransition: Controlas el setter
+When NOT to use them:
+They do not replace debounce or throttle for network requests. useTransition and useDeferredValue optimize client-side CPU rendering (heavy Virtual DOM tree diffing), not network HTTP traffic.`,
+    codeExample: `// useTransition: You own the state setter
 const [isPending, startTransition] = useTransition();
 function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-  setInputVal(e.target.value); // Urgente: se pinta de inmediato
+  setInputVal(e.target.value); // Urgent: immediate feedback
   startTransition(() => {
-    setQuery(e.target.value); // No urgente: si hay lag, el usuario sigue tecleando fluido
+    setQuery(e.target.value); // Non-urgent: deferred background render
   });
 }
 
-// useDeferredValue: Recibes el prop
-function ListaFiltrada({ filtro }: { filtro: string }) {
-  const deferredFiltro = useDeferredValue(filtro);
-  return <HeavyList search={deferredFiltro} />;
+// useDeferredValue: You consume incoming props
+function FilteredList({ query }: { query: string }) {
+  const deferredQuery = useDeferredValue(query);
+  return <HeavyList search={deferredQuery} />;
 }`,
     trapsAndRedFlags: [
-      'Error común: Pensar que useTransition retrasa la ejecución en el tiempo como un setTimeout. React comienza a renderizar inmediatamente, pero de forma interrumpible.',
-      'Pregunta de entrevista: ¿Por qué useTransition no sirve para una llamada fetch? Porque startTransition solo aplica a actualizaciones de estado síncronas en memoria.'
+      'Common Misconception: Thinking useTransition delays execution like setTimeout. React begins rendering immediately, but in an interruptible, low-priority lane.',
+      'Interview Question: Why can\'t useTransition wrap a fetch call? Because startTransition only applies to synchronous in-memory state updates.'
     ]
   },
   {
     id: 'q12',
-    question: 'React 19 Server Actions & `useActionState`: ¿Cómo cambian el manejo de mutaciones frente a API Routes?',
+    question: 'React 19 Server Actions & `useActionState`: How do they transform mutation handling vs API Routes?',
     category: 'React 19 & Next.js',
-    seniorAnswer: `En arquitecturas tradicionales (React 18 / Pages Router), enviar un formulario implicaba:
-1. Crear una API Route manual (/api/crear-usuario).
-2. Prevenir e.preventDefault().
-3. Manejar manualmente estados booleanos: const [loading, setLoading] = useState(false); const [error, setError] = useState(null).
-4. Hacer fetch('/api/...') y sincronizar estados manualmente.
+    seniorAnswer: `In legacy client-driven workflows (React 18 / Pages Router), submitting a form required:
+1. Creating a dedicated API Route endpoint (/api/create-user).
+2. Manually calling e.preventDefault().
+3. Managing booleans: const [loading, setLoading] = useState(false); const [error, setError] = useState(null).
+4. Calling fetch('/api/...') and manually syncing state transitions.
 
-En React 19 y Next.js App Router:
-- Server Actions ('use server'): Son funciones asíncronas que se ejecutan directamente en el servidor pero se pueden invocar como atributos action de formularios o funciones cliente.
-- useActionState: Hook canónico de React 19 que vincula la acción del servidor con el estado del formulario, proveyendo [state, formAction, isPending] en una sola línea idiomática.
-- Progressive Enhancement: Los formularios con Server Actions funcionan incluso si el JavaScript del cliente no ha terminado de cargar o está deshabilitado.
-- useOptimistic: Permite proyectar en UI el resultado esperado instantáneamente (0ms) mientras la acción del servidor se resuelve en segundo plano.`,
+In React 19 and Next.js App Router:
+- Server Actions ('use server'): Asynchronous functions that execute securely on the server but can be invoked directly as form action attributes or client functions.
+- useActionState: The canonical React 19 hook that binds the server action to form state, exposing [state, formAction, isPending] in a single idiomatic line.
+- Progressive Enhancement: Forms powered by Server Actions function even before client JavaScript finishes downloading or if JavaScript is disabled.
+- useOptimistic: Allows instant UI updates (0ms perceived latency) while the server action processes in the background.`,
     codeExample: `// Server Action (actions/user.ts)
 'use server';
 export async function updateUser(prevState: any, formData: FormData) {
   const name = formData.get('name') as string;
-  if (!name) return { error: 'Nombre requerido' };
+  if (!name) return { error: 'Name is required' };
   await db.user.update({ name });
   return { success: true };
 }
 
-// Cliente (Component.tsx)
+// Client Component (Component.tsx)
 'use client';
 import { useActionState } from 'react';
 import { updateUser } from './actions/user';
@@ -406,36 +406,36 @@ function UserForm() {
   return (
     <form action={formAction}>
       <input name="name" />
-      <button disabled={isPending}>{isPending ? 'Guardando...' : 'Actualizar'}</button>
+      <button disabled={isPending}>{isPending ? 'Saving...' : 'Update'}</button>
       {state?.error && <p className="text-red-500">{state.error}</p>}
     </form>
   );
 }`,
     trapsAndRedFlags: [
-      'Peligro de seguridad crítico: Olvidar autenticar y validar los argumentos dentro de una Server Action. Al ser un endpoint público generado internamente, cualquier usuario puede invocar la función con parámetros alterados.',
-      'Validar siempre con Zod dentro de la Server Action.'
+      'Critical Security Trap: Forgetting to authenticate and validate arguments inside Server Actions. Because they are public HTTP endpoints under the hood, any client can invoke them with arbitrary payloads.',
+      'Always validate input schemas using Zod inside Server Actions.'
     ]
   },
   {
     id: 'q13',
-    question: '¿Por qué `React.StrictMode` ejecuta los efectos y renders dos veces en desarrollo?',
-    category: 'Ciclo de Vida & StrictMode',
-    seniorAnswer: `StrictMode intencionalmente monta, desmonta y vuelve a montar cada componente en desarrollo (Mount -> Unmount -> Mount), además de ejecutar los constructores y cuerpos de componentes dos veces:
+    question: 'Why does `React.StrictMode` execute renders and effects twice in development?',
+    category: 'Lifecycle & StrictMode',
+    seniorAnswer: `StrictMode intentionally mounts, unmounts, and remounts components in development (Mount -> Unmount -> Mount), and invokes component render bodies twice:
 
-¿Por qué hace esto React?:
-1. Detectar efectos sin limpieza (Missing Cleanup): Si suscribes un event listener o un websocket y no lo limpias en el return () => ..., la segunda ejecución revelará la fuga de memoria al duplicar listeners o peticiones.
-2. Garantizar componentes puros e idempotentes: Si tu componente muta variables externas durante el render, la segunda llamada producirá un resultado visiblemente corrupto.
-3. Compatibilidad con Concurrent Rendering: En modo concurrente, React necesita poder pausar, descartar y reiniciar renders sin efectos secundarios destructivos.
+Why does React do this?:
+1. Detecting Missing Cleanups: If you attach an event listener or open a WebSocket without returning a cleanup function (return () => ...), the second mount reveals memory leaks by duplicating active connections.
+2. Enforcing Pure, Idempotent Components: If a component mutates external variables during render, the second run surfaces corrupted state immediately.
+3. Preparing for Concurrent Rendering: In concurrent rendering, React must be able to pause, discard, and restart render passes without destructive side effects.
 
-¿Cómo escribir efectos compatibles?:
-Todo efecto secundario debe ser IDEMPOTENTE: ejecutarlo dos veces seguidas con su correspondiente función de cleanup debe dejar la aplicación en el mismo estado que ejecutarlo una sola vez.`,
-    codeExample: `// ❌ EFECTO ROTO EN STRICTMODE (Duplica listeners)
+Writing Compliant Effects:
+Every side effect must be IDEMPOTENT: running it twice consecutively with its cleanup must leave the application in the exact same state as running it once.`,
+    codeExample: `// ❌ BROKEN UNDER STRICTMODE (Duplicates listeners)
 useEffect(() => {
   window.addEventListener('resize', handleResize);
-  // Falta return () => window.removeEventListener...
+  // Missing return () => window.removeEventListener...
 }, []);
 
-// ✅ EFECTO IDEMPOTENTE LIMPIO
+// ✅ CLEAN IDEMPOTENT EFFECT
 useEffect(() => {
   const controller = new AbortController();
   fetch('/api/data', { signal: controller.signal })
@@ -443,30 +443,30 @@ useEffect(() => {
     .then(setData)
     .catch(err => { if (err.name !== 'AbortError') setError(err); });
 
-  return () => controller.abort(); // Limpieza correcta
+  return () => controller.abort(); // Proper teardown
 }, []);`,
     trapsAndRedFlags: [
-      'Bandera roja en entrevista: Decir "StrictMode es un bug de React que arreglé quitando <StrictMode> de index.tsx". Quitarlo esconderá memory leaks y bugs de producción.',
-      'Usar un ref booleano hasMounted.current para saltarse el segundo montaje es un antipatrón en la gran mayoría de casos.'
+      'Interview Red Flag: Saying "StrictMode is a React bug that I fixed by removing <StrictMode> from index.tsx". Removing it hides memory leaks and production bugs.',
+      'Using a boolean ref (hasMounted.current) to bypass the second mount is an anti-pattern in nearly all scenarios.'
     ]
   },
   {
     id: 'q14',
-    question: '¿Por qué pasar funciones inline (`onClick={() => ...}`) causa re-renders y cuándo es realmente un problema?',
-    category: 'Rendimiento & Diffing',
-    seniorAnswer: `En cada render de un componente padre, una función flecha inline (() => ...) crea una NUEVA INSTANCIA de función en memoria con una referencia hexadecimal distinta.
+    question: 'Why does passing inline functions (`onClick={() => ...}`) cause re-renders and when does it matter?',
+    category: 'Performance & Diffing',
+    seniorAnswer: `On every render of a parent component, an inline arrow function (() => ...) allocates a NEW FUNCTION INSTANCE in memory with a distinct referential address.
 
-¿Cuándo causa un re-render innecesario?:
-ÚNICAMENTE cuando se pasa como prop a un componente hijo que ha sido memoizado explícitamente con React.memo(Child). Como React.memo compara las props previas y nuevas mediante Object.is, al detectar una referencia de función diferente, invalida la memoización y fuerza al hijo a re-renderizarse.
+When does this actually cause an unnecessary re-render?:
+ONLY when passed as a prop to a child component explicitly memoized with React.memo(Child). Because React.memo shallowly compares previous and next props using Object.is, detecting a new function reference invalidates memoization and forces the child to re-render.
 
-¿Cuándo NO es un problema?:
-1. En elementos HTML nativos (<button onClick={() => doSomething()}>): React actualiza el event listener sintético sin recrear el nodo del DOM.
-2. En hijos no memoizados: Si el hijo no tiene React.memo, se va a re-renderizar de todos modos cuando el padre renderice, por lo que memoizar la función con useCallback es un desperdicio de CPU y memoria.
+When is it NOT a problem?:
+1. On native HTML elements (<button onClick={() => doSomething()}>): React updates the synthetic event listener without re-creating DOM nodes.
+2. On un-memoized children: If a child is not wrapped in React.memo, it re-renders whenever the parent renders regardless. Wrapping callbacks in useCallback here wastes CPU and memory.
 
-Respuesta Senior: Solo memoiza funciones con useCallback cuando:
-a) Se pasan a hijos pesados envueltos en React.memo.
-b) La función se incluye en el array de dependencias de un useEffect en otro componente.`,
-    codeExample: `// Caso donde SI importa useCallback:
+Senior Rule: Only memoize callbacks with useCallback when:
+a) Passed to expensive children wrapped in React.memo.
+b) Used inside the dependency array of a downstream useEffect or custom hook.`,
+    codeExample: `// Scenario where useCallback MATTERS:
 const ChildMemo = React.memo(({ onAction }: { onAction: () => void }) => {
   return <HeavyComponent onClick={onAction} />;
 });
@@ -474,9 +474,9 @@ const ChildMemo = React.memo(({ onAction }: { onAction: () => void }) => {
 function Parent() {
   const [text, setText] = useState('');
   
-  // ✅ useCallback previene que ChildMemo renderice cada vez que tecleas en text
+  // ✅ useCallback prevents ChildMemo from re-rendering whenever user types in text
   const handleAction = useCallback(() => {
-    enviarDatos();
+    submitData();
   }, []);
 
   return (
@@ -487,29 +487,29 @@ function Parent() {
   );
 }`,
     trapsAndRedFlags: [
-      'Trampa de sobre-optimización: Envolver absolutamente todas las funciones en useCallback sin que ningún hijo esté memoizado con React.memo.',
-      'Recordar que con React Compiler en React 19, estas memoizaciones de referencias se gestionan automáticamente.'
+      'Over-optimization Trap: Wrapping every single function in useCallback when none of the child components are memoized.',
+      'Keep in mind that React Compiler in React 19 handles referential stability automatically at build time.'
     ]
   },
   {
     id: 'q15',
-    question: '¿Qué es un "Hydration Mismatch" en SSR/Next.js, cuáles son sus causas más frecuentes y cómo resolverlo?',
+    question: 'What is a "Hydration Mismatch" in SSR / Next.js, what causes it, and how do you resolve it?',
     category: 'SSR & Next.js',
-    seniorAnswer: `La hidratación (Hydration) es el proceso en el que React se ejecuta en el navegador del cliente y vincula los event listeners al HTML estático que fue generado previamente por el servidor.
+    seniorAnswer: `Hydration is the process where client-side React runs in the browser and attaches event listeners to the pre-rendered HTML sent by the server.
 
-Un Hydration Mismatch ocurre cuando el árbol de Virtual DOM generado en el cliente no coincide exactamente con el HTML generado en el servidor. React detecta la discrepancia y emite el clásico error: "Text content did not match. Server: '...' Client: '...'".
+A Hydration Mismatch occurs when the client Virtual DOM tree diverges from the server-rendered HTML. React detects the discrepancy and logs: "Text content did not match. Server: '...' Client: '...'".
 
-Causas más frecuentes:
-1. Fechas y horas: Renderizar new Date().toLocaleTimeString() o formatos con zonas horarias distintas entre el servidor (UTC) y el navegador del usuario.
-2. APIs exclusivas del navegador: Leer window.innerWidth, navigator.userAgent o localStorage durante el render inicial.
-3. Extensiones del navegador: Extensiones como Grammarly o Google Translate que inyectan atributos o nodos en el DOM antes de que React hidrate.
-4. HTML inválido: Anidar un <p> dentro de otro <p>, o un <div> dentro de un <p>, lo que causa que el navegador auto-corrija el DOM rompiendo la estructura esperada por React.
+Most common causes:
+1. Dates and Timestamps: Rendering new Date().toLocaleTimeString() where the server uses UTC and the user\'s client uses their local timezone.
+2. Browser-only APIs: Reading window.innerWidth, navigator.userAgent, or localStorage during the initial render pass.
+3. Browser Extensions: Extensions (like Grammarly or Google Translate) mutating or injecting attributes into the DOM before hydration finishes.
+4. Invalid HTML: Nesting a <p> inside another <p>, or a <div> inside a <p>, causing the browser parser to auto-correct the DOM structure unexpectedly.
 
-Estrategias de solución:
-- Técnica IsMounted: Usar un estado useState(false) y cambiarlo a true dentro de un useEffect para renderizar contenido cliente dependiente solo tras montar.
-- suppressHydrationWarning: Útil para timestamps donde la diferencia de segundos es aceptable en un elemento específico.
-- dynamic imports con ssr: false para componentes que dependen 100% de APIs de cliente.`,
-    codeExample: `// Solución canónica para componentes dependientes de browser APIs:
+Resolution Strategies:
+- Mounted Guard Technique: Use a useState(false) flag set to true inside useEffect to render client-specific content only after mounting.
+- suppressHydrationWarning: Acceptable for timestamps on specific text elements where second-level divergence is benign.
+- Next.js dynamic imports with ssr: false for components that rely strictly on browser APIs.`,
+    codeExample: `// Canonical solution for components relying on browser APIs:
 function UserGreeting() {
   const [mounted, setMounted] = useState(false);
 
@@ -518,17 +518,17 @@ function UserGreeting() {
   }, []);
 
   if (!mounted) {
-    // Renderiza placeholder idéntico al generado por el servidor
-    return <span className="opacity-0">Cargando...</span>;
+    // Render placeholder identical to server output
+    return <span className="opacity-0">Loading...</span>;
   }
 
-  // Ahora es 100% seguro leer localStorage o window
+  // Safe to read localStorage or window now
   const theme = localStorage.getItem('theme');
-  return <span>Tema actual: {theme}</span>;
+  return <span>Active Theme: {theme}</span>;
 }`,
     trapsAndRedFlags: [
-      'Peligro: Abusar de suppressHydrationWarning en nodos raíz (<body suppressHydrationWarning>). Solo oculta bugs reales de sincronización.',
-      'Next.js 14+ emite diffs visuales muy claros en consola que muestran la discrepancia exacta entre Server y Client.'
+      'Danger: Abusing suppressHydrationWarning on root tags (<body suppressHydrationWarning>). This masks real synchronization defects.',
+      'Next.js 14+ provides clear visual console diffs showing the exact character mismatch between server and client.'
     ]
   }
 ];

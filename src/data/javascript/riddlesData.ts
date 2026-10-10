@@ -3,26 +3,26 @@ import { JsRiddle } from '@/types/javascript';
 export const jsRiddlesData: JsRiddle[] = [
   {
     id: 'A1',
-    title: 'Hoisting y Temporal Dead Zone (TDZ)',
+    title: 'Hoisting & Temporal Dead Zone (TDZ)',
     codeSnippet: `console.log(a);
 var a = 1;
 console.log(b);
 let b = 2;`,
-    expectedOutput: 'undefined y luego ReferenceError (TDZ de b)',
+    expectedOutput: 'undefined then ReferenceError (TDZ for b)',
     explanation:
-      'var se eleva e inicializa en undefined durante la fase de creación. let se eleva pero permanece en la Zona Muerta Temporal (TDZ) sin inicializar hasta que la ejecución llega a su declaración.',
+      'var is hoisted and initialized to undefined during the creation phase. let is hoisted but remains in the Temporal Dead Zone (TDZ) uninitialized until execution reaches its declaration line.',
     trapExplanation:
-      'Trampa clásica de entrevista: Creer que let y const no sufren hoisting. Sí son hoisted, pero acceder a ellos antes de su línea de inicialización lanza ReferenceError.',
+      'Classic interview trap: Believing let and const are not hoisted. They are hoisted, but accessing them before their declaration line throws a ReferenceError.',
     options: [
-      'undefined y luego ReferenceError (TDZ de b)',
-      'undefined y luego undefined',
-      'ReferenceError inmediatamente en la primera línea',
-      '1 y luego 2'
+      'undefined then ReferenceError (TDZ for b)',
+      'undefined then undefined',
+      'ReferenceError immediately on line 1',
+      '1 then 2'
     ]
   },
   {
     id: 'A2',
-    title: 'Coerciones Clásicas de Tipos',
+    title: 'Classic Type Coercions',
     codeSnippet: `console.log([] + []);
 console.log([] + {});
 console.log('5' + 3);
@@ -31,9 +31,9 @@ console.log(true + true);
 console.log([] == ![]);`,
     expectedOutput: `"" , "[object Object]" , "53" , 2 , 2 , true`,
     explanation:
-      '1. [] + [] convierte ambos arrays a strings vacíos: "" + "" = "".\n2. [] + {} convierte [] a "" y {} a "[object Object]".\n3. \'5\' + 3 prioriza concatenación binaria: "53".\n4. \'5\' - 3 solo admite resta numérica, coercionando \'5\' a 5: 5 - 3 = 2.\n5. true + true se convierten a 1: 1 + 1 = 2.\n6. ![] es false. Luego [] == false convierte ambos a número: 0 == 0 -> true.',
+      '1. [] + [] converts both arrays to empty strings: "" + "" = "".\n2. [] + {} converts [] to "" and {} to "[object Object]".\n3. \'5\' + 3 prioritizes string concatenation: "53".\n4. \'5\' - 3 only supports numeric subtraction, coercing \'5\' to 5: 5 - 3 = 2.\n5. true + true coerce to 1: 1 + 1 = 2.\n6. ![] is false. Then [] == false coerces both to numbers: 0 == 0 -> true.',
     trapExplanation:
-      'El operador + concatena si hay strings u objetos convertibles a string; el operador - siempre fuerza números.',
+      'The + operator concatenates if either operand is or coerces to a string; the - operator always forces numeric conversion.',
     options: [
       `"" , "[object Object]" , "53" , 2 , 2 , true`,
       `"[object Object]" , "[object Object]" , 8 , 2 , 2 , false`,
@@ -43,22 +43,22 @@ console.log([] == ![]);`,
   },
   {
     id: 'A3',
-    title: 'Binding de "this": Método Extraído vs Arrow Function',
+    title: '"this" Binding: Detached Method vs Arrow Function',
     codeSnippet: `const obj = {
-  nombre: 'Ana',
-  normal() { return this?.nombre; },
-  flecha: () => this?.nombre,
+  name: 'Ana',
+  normal() { return this?.name; },
+  arrow: () => this?.name,
 };
 const f = obj.normal;
 
 console.log(obj.normal());
 console.log(f());
-console.log(obj.flecha());`,
+console.log(obj.arrow());`,
     expectedOutput: `'Ana', undefined, undefined`,
     explanation:
-      '1. obj.normal() se invoca con obj a la izquierda, this es obj -> "Ana".\n2. f() es una función libre sin objeto receptor, this es undefined en strict mode (o window).\n3. obj.flecha() no tiene this propio y captura el scope léxico exterior (global/module), donde nombre no existe.',
+      '1. obj.normal() is invoked with obj on the left, so this is obj -> "Ana".\n2. f() is a detached function call without a receiver object; this is undefined in strict mode (or window in non-strict).\n3. obj.arrow() has no this of its own and retains the enclosing lexical scope (module/global), where name does not exist.',
     trapExplanation:
-      'Extraer un método de un objeto desvincula su binding implícito de this. Las arrow functions nunca tienen su propio this.',
+      'Detaching a method from an object breaks its implicit this binding. Arrow functions never have their own this.',
     options: [
       `'Ana', undefined, undefined`,
       `'Ana', 'Ana', 'Ana'`,
@@ -68,7 +68,7 @@ console.log(obj.flecha());`,
   },
   {
     id: 'A4',
-    title: 'Closures y Bucles: var vs let',
+    title: 'Closures & Loops: var vs let',
     codeSnippet: `const fns = [];
 for (var i = 0; i < 3; i++) fns.push(() => i);
 console.log(fns.map((f) => f()));
@@ -76,21 +76,21 @@ console.log(fns.map((f) => f()));
 const fns2 = [];
 for (let j = 0; j < 3; j++) fns2.push(() => j);
 console.log(fns2.map((f) => f()));`,
-    expectedOutput: '[3, 3, 3] y luego [0, 1, 2]',
+    expectedOutput: '[3, 3, 3] then [0, 1, 2]',
     explanation:
-      'var tiene ámbito de función; todas las funciones capturan la misma variable mutada i cuyo valor final es 3. let tiene ámbito de bloque, creando un nuevo binding léxico por cada iteración del bucle for.',
+      'var has function scope; every closure captures the identical mutated variable i whose final value is 3. let has block scope, allocating a fresh lexical binding for each loop iteration.',
     trapExplanation:
-      'Las closures capturan variables por referencia, no su valor en el momento en que se definió la función.',
+      'Closures capture variables by reference, not by their snapshot value at the instant the function was defined.',
     options: [
-      '[3, 3, 3] y luego [0, 1, 2]',
-      '[0, 1, 2] y luego [0, 1, 2]',
-      '[3, 3, 3] y luego [3, 3, 3]',
-      '[undefined, undefined, undefined] y luego [0, 1, 2]'
+      '[3, 3, 3] then [0, 1, 2]',
+      '[0, 1, 2] then [0, 1, 2]',
+      '[3, 3, 3] then [3, 3, 3]',
+      '[undefined, undefined, undefined] then [0, 1, 2]'
     ]
   },
   {
     id: 'A5',
-    title: 'Orden de Ejecución con Promesas, Async/Await y Timers',
+    title: 'Execution Order: Promises, Async/Await & Timers',
     codeSnippet: `console.log('A');
 setTimeout(() => console.log('B'), 0);
 new Promise((res) => { console.log('C'); res(); }).then(() => console.log('D'));
@@ -98,9 +98,9 @@ new Promise((res) => { console.log('C'); res(); }).then(() => console.log('D'));
 console.log('G');`,
     expectedOutput: 'A C E G D F B',
     explanation:
-      '1. Código síncrono: Imprime A. Encola timer B en macrotasks. El executor de Promise es síncrono: imprime C y encola D en microtasks. La función async corre síncrona hasta await: imprime E y encola F en microtasks. Imprime G.\n2. Microtareas: D y F se ejecutan en orden de encolado.\n3. Macrotareas: B se ejecuta al final.',
+      '1. Synchronous Code: Logs A. Enqueues timer B as macrotask. Promise executor runs synchronously: logs C and queues D in microtasks. Async function runs synchronously up to await: logs E and queues F in microtasks. Logs G.\n2. Microtask Queue: D and F execute in queued order.\n3. Macrotask Queue: B executes last.',
     trapExplanation:
-      'El executor de una promesa new Promise(fn) corre inmediatamente de forma síncrona, no es una microtarea.',
+      'The executor of new Promise(fn) runs immediately and synchronously on the Call Stack; it is not a microtask.',
     options: [
       'A C E G D F B',
       'A B C D E F G',
@@ -110,13 +110,13 @@ console.log('G');`,
   },
   {
     id: 'A6',
-    title: 'Array.map con parseInt y Argumentos Ocultos',
+    title: 'Array.map with parseInt and Hidden Arguments',
     codeSnippet: `console.log(['1', '2', '3'].map(parseInt));`,
     expectedOutput: '[1, NaN, NaN]',
     explanation:
-      'map pasa tres argumentos: (valor, índice, array). parseInt recibe (string, radix). Por tanto se ejecuta: parseInt("1", 0) -> 1 (radix 0 asume base 10); parseInt("2", 1) -> NaN (base 1 no existe); parseInt("3", 2) -> NaN ("3" es dígito inválido en base binaria 2).',
+      'map passes three arguments: (value, index, array). parseInt accepts (string, radix). Thus map executes: parseInt("1", 0) -> 1 (radix 0 defaults to base 10); parseInt("2", 1) -> NaN (radix 1 is invalid); parseInt("3", 2) -> NaN ("3" is an invalid binary digit).',
     trapExplanation:
-      'Pasar funciones que aceptan múltiples parámetros directamente a .map() provoca efectos secundarios por el argumento de índice.',
+      'Passing functions accepting optional parameters directly into .map() causes unintended side effects due to the index argument.',
     options: [
       '[1, NaN, NaN]',
       '[1, 2, 3]',
@@ -126,24 +126,24 @@ console.log('G');`,
   },
   {
     id: 'A7',
-    title: 'Array.prototype.sort Orden Lexicográfico por Defecto',
+    title: 'Array.prototype.sort Default Lexicographical Ordering',
     codeSnippet: `console.log([10, 9, 1, 100].sort());
 console.log([10, 9, 1, 100].sort((a, b) => a - b));`,
-    expectedOutput: '[1, 10, 100, 9] y luego [1, 9, 10, 100]',
+    expectedOutput: '[1, 10, 100, 9] then [1, 9, 10, 100]',
     explanation:
-      '.sort() sin comparador convierte los elementos a strings y los ordena por su valor UTF-16 lexicográfico: "1" < "10" < "100" < "9". Para orden numérico ascendente debe pasarse la función (a, b) => a - b.',
+      '.sort() without a comparator converts elements to strings and compares UTF-16 code units: "1" < "10" < "100" < "9". For ascending numeric sorting, you must provide (a, b) => a - b.',
     trapExplanation:
-      '.sort() en JavaScript NO ordena números por defecto; los ordena como strings lexicográficos y además muta el array original.',
+      '.sort() does NOT sort numbers numerically by default in JavaScript; it sorts them as lexicographical strings and mutates the original array in place.',
     options: [
-      '[1, 10, 100, 9] y luego [1, 9, 10, 100]',
-      '[1, 9, 10, 100] y luego [1, 9, 10, 100]',
-      '[100, 10, 9, 1] y luego [1, 9, 10, 100]',
-      '[1, 10, 9, 100] y luego [1, 9, 10, 100]'
+      '[1, 10, 100, 9] then [1, 9, 10, 100]',
+      '[1, 9, 10, 100] then [1, 9, 10, 100]',
+      '[100, 10, 9, 1] then [1, 9, 10, 100]',
+      '[1, 10, 9, 100] then [1, 9, 10, 100]'
     ]
   },
   {
     id: 'A8',
-    title: 'Comparaciones de Identidad, NaN y Object.is',
+    title: 'Identity, NaN Comparisons & Object.is',
     codeSnippet: `console.log({} === {});
 console.log([1] == [1]);
 console.log([1] == 1);
@@ -152,9 +152,9 @@ console.log(Object.is(NaN, NaN));
 console.log(Object.is(0, -0));`,
     expectedOutput: 'false, false, true, false, true, false',
     explanation:
-      '1. {} === {} y [1] == [1] son falsos porque comparan referencias de memoria distintas.\n2. [1] == 1 es true porque [1] se convierte a primitivo "1" y luego a 1.\n3. NaN === NaN es false por especificación IEEE 754.\n4. Object.is(NaN, NaN) es true.\n5. Object.is(0, -0) es false (distingue signos de cero).',
+      '1. {} === {} and [1] == [1] are false because they compare distinct memory references.\n2. [1] == 1 is true because [1] coerces to primitive "1" then numeric 1.\n3. NaN === NaN is false per IEEE 754 specification.\n4. Object.is(NaN, NaN) is true.\n5. Object.is(0, -0) is false (it distinguishes signs on zero).',
     trapExplanation:
-      'NaN es el único valor en JavaScript que no es igual a sí mismo con ===.',
+      'NaN is the only value in JavaScript that is not strictly equal (===) to itself.',
     options: [
       'false, false, true, false, true, false',
       'true, true, true, false, true, false',
@@ -164,68 +164,68 @@ console.log(Object.is(0, -0));`,
   },
   {
     id: 'A9',
-    title: 'Pérdida de Contexto "this" en setTimeout Callback',
-    codeSnippet: `const contador = {
+    title: 'Loss of "this" Context in setTimeout Callback',
+    codeSnippet: `const counter = {
   n: 0,
-  conFuncion() { setTimeout(function () { console.log(this?.n); }, 0); },
-  conFlecha() { setTimeout(() => { console.log(this?.n); }, 0); },
+  withFunction() { setTimeout(function () { console.log(this?.n); }, 0); },
+  withArrow() { setTimeout(() => { console.log(this?.n); }, 0); },
 };
-contador.conFuncion();
-contador.conFlecha();`,
-    expectedOutput: 'undefined y luego 0',
+counter.withFunction();
+counter.withArrow();`,
+    expectedOutput: 'undefined then 0',
     explanation:
-      'En conFuncion(), function() común ejecutada por setTimeout es llamada por el entorno global, donde this es window o undefined. En conFlecha(), la arrow function preserva el this léxico de conFlecha (el objeto contador, donde n es 0).',
+      'In withFunction(), standard function() invoked by setTimeout executes in global context where this is undefined (or window). In withArrow(), arrow function inherits lexical this from withArrow (the counter object where n is 0).',
     trapExplanation:
-      'Pasar una función tradicional como callback a setTimeout o event listeners desvincula su this original.',
+      'Passing traditional functions as callbacks to setTimeout or event listeners detaches their receiver object.',
     options: [
-      'undefined y luego 0',
-      '0 y luego 0',
-      'undefined y luego undefined',
-      'TypeError en la primera llamada'
+      'undefined then 0',
+      '0 then 0',
+      'undefined then undefined',
+      'TypeError on first call'
     ]
   },
   {
     id: 'A10',
-    title: 'Bloque finally y Prioridad de Ejecución de Return',
+    title: 'The finally Block & Return Priority',
     codeSnippet: `function f() {
   try { return 'try'; }
   finally { console.log('finally'); }
 }
 console.log(f());`,
-    expectedOutput: `'finally' y luego 'try'`,
+    expectedOutput: `'finally' then 'try'`,
     explanation:
-      'El bloque finally SIEMPRE se ejecuta antes de que la función retorne su valor, incluso si el bloque try ya ejecutó una sentencia return.',
+      'The finally block ALWAYS executes before a function finishes returning its value, even if the try block already encountered a return statement.',
     trapExplanation:
-      'finally no cancela el return del try (a menos que el propio finally contenga su propio return explícito, lo cual sobreescribiría el valor).',
+      'finally does not abort try\'s return value unless the finally block itself issues an explicit return (which would overwrite it).',
     options: [
-      `'finally' y luego 'try'`,
-      `'try' y luego 'finally'`,
-      `'try' únicamente ('finally' no corre tras un return)`,
-      `'finally' únicamente (el return de try se descarta)`
+      `'finally' then 'try'`,
+      `'try' then 'finally'`,
+      `'try' only ('finally' skipped after return)`,
+      `'finally' only (try return discarded)`
     ]
   },
   {
     id: 'A11',
-    title: 'Hoisting de Funciones vs Declaraciones de Variables',
+    title: 'Function Declaration vs Variable Hoisting Precedence',
     codeSnippet: `console.log(typeof foo);
 var foo = 1;
 function foo() {}
 console.log(typeof foo);`,
-    expectedOutput: `'function' y luego 'number'`,
+    expectedOutput: `'function' then 'number'`,
     explanation:
-      'Las declaraciones de función se elevan primero y tienen prioridad sobre var foo (la variable no la sobrescribe hasta que se asigna valor). Luego la asignación foo = 1 sobreescribe la variable con un número.',
+      'Function declarations are hoisted before variable declarations and take precedence over var foo. When foo = 1 executes at runtime, it overwrites the identifier with number 1.',
     trapExplanation:
-      'function foo() se eleva con su cuerpo completo; var foo solo eleva el identificador sin valor.',
+      'function foo() is hoisted along with its full implementation; var foo only hoists the uninitialized identifier.',
     options: [
-      `'function' y luego 'number'`,
-      `'undefined' y luego 'number'`,
-      `'function' y luego 'function'`,
-      `'number' y luego 'number'`
+      `'function' then 'number'`,
+      `'undefined' then 'number'`,
+      `'function' then 'function'`,
+      `'number' then 'number'`
     ]
   },
   {
     id: 'A12',
-    title: 'Spread Operator y Copia Superficial (Shallow Copy)',
+    title: 'Spread Operator & Shallow Cloning',
     codeSnippet: `const a = { x: { y: 1 } };
 const b = { ...a };
 b.x.y = 2;
@@ -233,9 +233,9 @@ b.x.y = 2;
 console.log(a.x.y);`,
     expectedOutput: '2',
     explanation:
-      'El operador spread {...a} crea una copia superficial. Las propiedades primitivas de primer nivel se copian, pero los objetos anidados (como x) conservan la misma referencia en memoria compartida.',
+      'The spread operator {...a} creates a shallow copy. Top-level primitive properties are cloned, but nested objects (like x) retain shared references in heap memory.',
     trapExplanation:
-      'Creer que {...obj} o Object.assign({}, obj) clonan profundamente objetos anidados.',
+      'Assuming {...obj} or Object.assign({}, obj) deeply clones nested objects.',
     options: [
       '2',
       '1',
@@ -245,7 +245,7 @@ console.log(a.x.y);`,
   },
   {
     id: 'A13',
-    title: 'Doble Negación (!!) y Valores Truthy / Falsy',
+    title: 'Double Negation (!!) & Truthy / Falsy Values',
     codeSnippet: `console.log(!![]);
 console.log(!!{});
 console.log(!!0);
@@ -255,9 +255,9 @@ console.log(!!"");
 console.log(!!(() => null));`,
     expectedOutput: 'true, true, false, true, true, false, true',
     explanation:
-      'En JavaScript, TODOS los objetos y arrays (incluso vacíos como [] y {}) son truthy. Cualquier número diferente de 0 (incluyendo números negativos como -1) es truthy. Solo 0, -0, 0n, "", null, undefined y NaN son falsy. Las funciones son objetos y siempre son truthy.',
+      'In JavaScript, ALL objects and arrays (even empty ones like [] and {}) are truthy. Any number other than 0 (including negative numbers like -1) is truthy. Only 0, -0, 0n, "", null, undefined, and NaN are falsy. Functions are objects and always evaluate to truthy.',
     trapExplanation:
-      'En otros lenguajes (como Python) las listas vacías [] o diccionarios {} son falsy. En JavaScript, TODO objeto es truthy sin importar su contenido.',
+      'In languages like Python, empty lists [] or dicts {} are falsy. In JavaScript, EVERY object reference is truthy regardless of contents.',
     options: [
       'true, true, false, true, true, false, true',
       'false, false, false, true, true, false, true',
@@ -267,7 +267,7 @@ console.log(!!(() => null));`,
   },
   {
     id: 'A14',
-    title: 'Mutación de Arrays: Referencia vs Copia Superficial Spread',
+    title: 'Array Mutation: Direct Reference vs Spread Shallow Clone',
     codeSnippet: `const original = [ 1, 2, 3, 4, 5 ];
 
 const copy1 = original;
@@ -280,9 +280,9 @@ console.log(copy1[2]);
 console.log(copy2[2]);`,
     expectedOutput: '9, 9, 3',
     explanation:
-      'copy1 = original no crea un nuevo array, solo copia el puntero de referencia en memoria. Modificar copy1[2] = 9 muta directamente el array original. Por otro lado, copy2 = [...original] creó una nueva instancia de array independiente en memoria, por lo que su posición [2] mantiene intacto el valor 3.',
+      'copy1 = original does not clone the array; it copies the reference pointer. Mutating copy1[2] = 9 directly modifies the original array in heap memory. In contrast, copy2 = [...original] created an independent array instance, so copy2[2] remains 3.',
     trapExplanation:
-      'Asignar una variable de array u objeto a otra mediante = nunca crea una copia; ambas apuntan al mismo bloque de memoria.',
+      'Assigning an array or object variable with = never clones; both variables point to the identical heap address.',
     options: [
       '9, 9, 3',
       '3, 9, 3',
@@ -292,14 +292,14 @@ console.log(copy2[2]);`,
   },
   {
     id: 'A15',
-    title: 'Igualdad Débil (==) vs Igualdad Estricta (===)',
+    title: 'Loose Equality (==) vs Strict Equality (===)',
     codeSnippet: `console.log(2 == "2");
 console.log(3 === "3");`,
     expectedOutput: 'true, false',
     explanation:
-      'El operador == (loose equality) realiza coerción implícita de tipos si los tipos difieren; "2" se convierte al número 2 antes de comparar (2 == 2 es true). El operador === (strict equality) comprueba tanto el tipo como el valor sin coerción; number !== string, resultando en false.',
+      'Loose equality (==) performs type coercion if types differ; "2" coerces to number 2 before comparing (2 == 2 is true). Strict equality (===) checks both type and value without coercion; number !== string, returning false.',
     trapExplanation:
-      'Siempre preferir === en código de producción para evitar comportamientos impredecibles debidos a las reglas complejas del Abstract Equality Comparison Algorithm.',
+      'Always prefer === in production to prevent unexpected coercion behaviors outlined in the Abstract Equality Comparison Algorithm.',
     options: [
       'true, false',
       'true, true',
@@ -309,7 +309,7 @@ console.log(3 === "3");`,
   },
   {
     id: 'A16',
-    title: 'Orden de Ejecución Avanzado: Promise Executor, Microtasks y Timers',
+    title: 'Advanced Execution Order: Promise Executor, Microtasks & Timers',
     codeSnippet: `console.log(1);
 
 new Promise((resolve) => {
@@ -323,9 +323,9 @@ setTimeout(() => console.log(5));
 console.log(6);`,
     expectedOutput: '1, 2, 6, 4, 3, 5',
     explanation:
-      '1. Código síncrono inicial:\n   - console.log(1) imprime 1.\n   - new Promise() ejecuta su función executor SÍNCRONAMENTE: imprime 2.\n   - setTimeout(3) encola macrotarea #1 con timer.\n   - resolve(4) resuelve la promesa.\n   - .then(console.log) encola microtarea con el valor 4.\n   - setTimeout(5) encola macrotarea #2 con timer.\n   - console.log(6) imprime 6.\n2. Se vacía la cola de Microtareas:\n   - La reacción de .then imprime 4.\n3. El Event Loop toma las Macrotareas en orden de encolado:\n   - Callback del primer timer imprime 3.\n   - Callback del segundo timer imprime 5.\nSalida final: 1 -> 2 -> 6 -> 4 -> 3 -> 5.',
+      '1. Synchronous Execution:\n   - console.log(1) logs 1.\n   - new Promise executor runs SYNCHRONOUSLY: logs 2.\n   - setTimeout(3) enqueues macrotask #1.\n   - resolve(4) resolves promise.\n   - .then(console.log) enqueues microtask with 4.\n   - setTimeout(5) enqueues macrotask #2.\n   - console.log(6) logs 6.\n2. Microtask Queue:\n   - .then reaction logs 4.\n3. Macrotask Queue:\n   - First timer callback logs 3.\n   - Second timer callback logs 5.\nFinal order: 1 -> 2 -> 6 -> 4 -> 3 -> 5.',
     trapExplanation:
-      'El executor pasado a new Promise((resolve) => ...) NO es asíncrono; se ejecuta inmediatamente en el Call Stack principal.',
+      'The executor callback passed to new Promise((resolve) => ...) is NOT asynchronous; it executes immediately on the main Call Stack.',
     options: [
       '1, 2, 6, 4, 3, 5',
       '1, 2, 4, 6, 3, 5',
@@ -335,7 +335,7 @@ console.log(6);`,
   },
   {
     id: 'A17',
-    title: 'Claves de Objeto y Coerción a "[object Object]"',
+    title: 'Object Keys & Coercion to "[object Object]"',
     codeSnippet: `const a = {};
 const b = { key: 'b' };
 const c = { key: 'c' };
@@ -346,9 +346,9 @@ a[c] = 456;
 console.log(a[b]);`,
     expectedOutput: '456',
     explanation:
-      'Las claves de los objetos tradicionales en JavaScript son siempre strings (o Symbols). Al usar un objeto como clave (a[b]), JS invoca b.toString() que devuelve "[object Object]". Por ende, a[b] asigna a["[object Object]"] = 123, y luego a[c] sobrescribe exactamente la misma clave con a["[object Object]"] = 456. a[b] lee esa misma clave y retorna 456. Para usar objetos reales como claves debe usarse Map.',
+      'Object keys in JavaScript are strings or Symbols. When using an object as a key (a[b]), JS invokes b.toString() which returns "[object Object]". Thus a[b] sets a["[object Object]"] = 123, and a[c] overwrites the identical key with 456. Reading a[b] returns 456. Use Map if you need objects as distinct keys.',
     trapExplanation:
-      'Los objetos no soportan instancias de objetos como claves directas sin convertirlos a string.',
+      'Plain objects cannot use object references as distinct keys without string coercion.',
     options: [
       '456',
       '123',
@@ -358,23 +358,23 @@ console.log(a[b]);`,
   },
   {
     id: 'A18',
-    title: 'Asignación Encadenada y Fuga al Scope Global',
+    title: 'Chained Assignment & Global Scope Leak',
     codeSnippet: `(function() {
   var a = b = 3;
 })();
 
 console.log(typeof a);
 console.log(typeof b);`,
-    expectedOutput: `'undefined' y 'number'`,
+    expectedOutput: `'undefined' and 'number'`,
     explanation:
-      'La expresión var a = b = 3 se evalúa de derecha a izquierda como b = 3; var a = b;. En modo no estricto, b no tiene declaración var/let/const y se convierte en una variable global (window.b = 3). Sin embargo, a está declarada con var dentro de la función y queda confinada a su scope local, siendo inaccesible fuera.',
+      'The expression var a = b = 3 evaluates right-to-left as b = 3; var a = b;. Without strict mode, b has no var/let/const declaration and leaks into the global object (window.b = 3). However, a is scoped with var inside the function and is unreachable outside.',
     trapExplanation:
-      'Nunca encadenar asignaciones al declarar variables (var x = y = 5) porque la segunda variable se filtrará al objeto global.',
+      'Never chain variable declarations (var a = b = 3) because the second variable leaks to global scope.',
     options: [
-      `'undefined' y 'number'`,
-      `'number' y 'number'`,
-      `'undefined' y 'undefined'`,
-      `ReferenceError en console.log(a)`
+      `'undefined' and 'number'`,
+      `'number' and 'number'`,
+      `'undefined' and 'undefined'`,
+      `ReferenceError on console.log(a)`
     ]
   }
 ];

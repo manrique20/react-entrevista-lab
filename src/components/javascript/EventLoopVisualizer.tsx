@@ -16,7 +16,7 @@ interface Step {
 const steps: Step[] = [
   {
     id: 0,
-    description: 'Estado inicial. El script está listo para ejecutarse en el Call Stack.',
+    description: 'Initial state. The script is ready to execute on the Call Stack.',
     callStack: ['<main script>'],
     webApis: [],
     microtasks: [],
@@ -25,7 +25,7 @@ const steps: Step[] = [
   },
   {
     id: 1,
-    description: "Se ejecuta console.log('1'). Se imprime directamente en consola de forma síncrona.",
+    description: "console.log('1') executes synchronously and prints directly to the console.",
     callStack: ["console.log('1')", '<main script>'],
     webApis: [],
     microtasks: [],
@@ -34,7 +34,7 @@ const steps: Step[] = [
   },
   {
     id: 2,
-    description: "Se llama a setTimeout(..., 0). El navegador registra el timer en Web APIs.",
+    description: "setTimeout(..., 0) is called. Browser registers the timer in Web APIs.",
     callStack: ['setTimeout(...)', '<main script>'],
     webApis: ['Timer (0ms) -> Macrotask'],
     microtasks: [],
@@ -43,7 +43,7 @@ const steps: Step[] = [
   },
   {
     id: 3,
-    description: "El timer de 0ms expira inmediatamente y encola su callback en la MACROTASK QUEUE.",
+    description: "The 0ms timer expires immediately and queues its callback into the MACROTASK QUEUE.",
     callStack: ['<main script>'],
     webApis: [],
     microtasks: [],
@@ -52,7 +52,7 @@ const steps: Step[] = [
   },
   {
     id: 4,
-    description: "Promise.resolve().then(...) encola su reacción en la MICROTASK QUEUE.",
+    description: "Promise.resolve().then(...) queues its reaction callback into the MICROTASK QUEUE.",
     callStack: ['Promise.then(...)', '<main script>'],
     webApis: [],
     microtasks: ["then: console.log('3')"],
@@ -61,7 +61,7 @@ const steps: Step[] = [
   },
   {
     id: 5,
-    description: "Se ejecuta console.log('4') síncrono. Imprime '4'. El script principal finaliza.",
+    description: "console.log('4') executes synchronously, prints '4'. The main script completes.",
     callStack: ["console.log('4')", '<main script>'],
     webApis: [],
     microtasks: ["then: console.log('3')"],
@@ -70,7 +70,7 @@ const steps: Step[] = [
   },
   {
     id: 6,
-    description: "Call Stack vacío. REGLA DE ORO: El Event Loop vacía TODAS las Microtareas antes de la siguiente Macrotarea. Imprime '3'.",
+    description: "Call Stack is empty. GOLDEN RULE: Event Loop drains ALL Microtasks before picking the next Macrotask. Prints '3'.",
     callStack: ["then: console.log('3')"],
     webApis: [],
     microtasks: [],
@@ -79,7 +79,7 @@ const steps: Step[] = [
   },
   {
     id: 7,
-    description: "Microtasks vacías. El Event Loop toma la primera Macrotarea encolada (setTimeout callback) y la ejecuta. Imprime '2'.",
+    description: "Microtasks queue empty. Event Loop picks the first queued Macrotask (setTimeout callback) and executes it. Prints '2'.",
     callStack: ["cb: console.log('2')"],
     webApis: [],
     microtasks: [],
@@ -88,7 +88,7 @@ const steps: Step[] = [
   },
   {
     id: 8,
-    description: "¡Ejecución completa! Salida final: 1 -> 4 -> 3 -> 2.",
+    description: "Execution complete! Final output sequence: 1 -> 4 -> 3 -> 2.",
     callStack: [],
     webApis: [],
     microtasks: [],
@@ -119,11 +119,11 @@ export function EventLoopVisualizer() {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
             <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
-              Simulador Visual del Event Loop (Micro vs Macro)
+              Event Loop Visualizer (Micro vs Macro)
             </h3>
           </div>
           <p className="text-xs text-muted">
-            Paso {currentStepIndex + 1} de {steps.length}: Observa la prioridad entre Stack, Microtasks y Macrotasks.
+            Step {currentStepIndex + 1} of {steps.length}: Observe priority between Stack, Microtasks, and Macrotasks.
           </p>
         </div>
 
@@ -133,22 +133,22 @@ export function EventLoopVisualizer() {
             className="flex items-center gap-1 px-3 py-1.5 rounded-xl border text-xs font-semibold hover:bg-muted text-muted transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reiniciar</span>
+            <span>Reset</span>
           </button>
           <button
             onClick={handleNext}
             disabled={currentStepIndex === steps.length - 1}
             className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-colors disabled:opacity-50"
           >
-            <span>Siguiente Paso</span>
+            <span>Next Step</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Snippet bajo prueba */}
+      {/* Snippet under test */}
       <div className="rounded-xl bg-slate-950 p-3 text-slate-100 font-mono text-xs border border-slate-800">
-        <span className="text-slate-500">{'// Código bajo análisis:'}</span>
+        <span className="text-slate-500">{'// Code under analysis:'}</span>
         <pre className="text-blue-300 mt-1">
 {`console.log('1');
 setTimeout(() => console.log('2'), 0);
@@ -157,12 +157,12 @@ console.log('4');`}
         </pre>
       </div>
 
-      {/* Explicación del paso actual */}
+      {/* Current step explanation */}
       <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-900 dark:text-blue-200 font-medium">
         {step.description}
       </div>
 
-      {/* Diagrama de los 4 cuadrantes */}
+      {/* 4 Quadrants Diagram */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
         {/* Call Stack */}
         <div className="p-3 rounded-xl border border-border/80 bg-muted/20 flex flex-col min-h-[140px]">
@@ -172,7 +172,7 @@ console.log('4');`}
           </div>
           <div className="flex-1 flex flex-col-reverse justify-start gap-1">
             {step.callStack.length === 0 ? (
-              <span className="text-slate-500 italic text-[11px] m-auto">Vacío</span>
+              <span className="text-slate-500 italic text-[11px] m-auto">Empty</span>
             ) : (
               step.callStack.map((item, idx) => (
                 <div key={idx} className="p-1.5 rounded bg-blue-500/20 border border-blue-500/40 font-mono text-[11px] text-foreground text-center animate-in fade-in">
@@ -191,7 +191,7 @@ console.log('4');`}
           </div>
           <div className="flex-1 flex flex-col justify-start gap-1">
             {step.webApis.length === 0 ? (
-              <span className="text-slate-500 italic text-[11px] m-auto">Inactivo</span>
+              <span className="text-slate-500 italic text-[11px] m-auto">Idle</span>
             ) : (
               step.webApis.map((item, idx) => (
                 <div key={idx} className="p-1.5 rounded bg-amber-500/20 border border-amber-500/40 font-mono text-[11px] text-foreground text-center animate-in fade-in">
@@ -206,11 +206,11 @@ console.log('4');`}
         <div className="p-3 rounded-xl border border-purple-500/30 bg-purple-500/5 flex flex-col min-h-[140px]">
           <div className="flex items-center gap-1.5 font-bold text-purple-600 dark:text-purple-400 mb-2 pb-1 border-b border-purple-500/20">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Microtasks (Alta prioridad)</span>
+            <span>Microtasks (High Priority)</span>
           </div>
           <div className="flex-1 flex flex-col justify-start gap-1">
             {step.microtasks.length === 0 ? (
-              <span className="text-slate-500 italic text-[11px] m-auto">Vacía</span>
+              <span className="text-slate-500 italic text-[11px] m-auto">Empty</span>
             ) : (
               step.microtasks.map((item, idx) => (
                 <div key={idx} className="p-1.5 rounded bg-purple-500/20 border border-purple-500/40 font-mono text-[11px] text-foreground text-center animate-in fade-in">
@@ -229,7 +229,7 @@ console.log('4');`}
           </div>
           <div className="flex-1 flex flex-col justify-start gap-1">
             {step.macrotasks.length === 0 ? (
-              <span className="text-slate-500 italic text-[11px] m-auto">Vacía</span>
+              <span className="text-slate-500 italic text-[11px] m-auto">Empty</span>
             ) : (
               step.macrotasks.map((item, idx) => (
                 <div key={idx} className="p-1.5 rounded bg-emerald-500/20 border border-emerald-500/40 font-mono text-[11px] text-foreground text-center animate-in fade-in">
@@ -241,12 +241,12 @@ console.log('4');`}
         </div>
       </div>
 
-      {/* Salida acumulada */}
+      {/* Cumulative Output */}
       <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-100 flex items-center justify-between">
-        <span className="text-slate-400">Salida en Consola:</span>
+        <span className="text-slate-400">Console Output:</span>
         <div className="flex items-center gap-2">
           {step.output.length === 0 ? (
-            <span className="text-slate-600 italic">(sin salida aún)</span>
+            <span className="text-slate-600 italic">(no output yet)</span>
           ) : (
             step.output.map((out, idx) => (
               <span key={idx} className="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">

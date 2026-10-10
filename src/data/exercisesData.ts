@@ -3,162 +3,162 @@ import { ExerciseItem } from '@/types';
 export const EXERCISES: ExerciseItem[] = [
   {
     id: 'ex1',
-    title: '1. Contador Avanzado con Historial y Límites',
-    description: 'Implementa un contador con incremento, decremento, reset, límites máximo/mínimo configurables e historial paso a paso de cambios.',
-    difficulty: 'Básico',
-    topicsTested: ['useState', 'Actualizaciones funcionales', 'Inmutabilidad de arrays', 'Props'],
+    title: '1. Advanced Counter with History and Boundaries',
+    description: 'Build a counter featuring increment, decrement, reset, configurable min/max limits, and step-by-step history logs.',
+    difficulty: 'Basic',
+    topicsTested: ['useState', 'Functional updates', 'Array immutability', 'Props'],
     componentKey: 'CounterExercise',
     hints: [
-      'Usa setCount(prev => ...) para evitar valores obsoletos.',
-      'Guarda el historial como un array de objetos con timestamp y delta.',
-      'Controla los límites antes de actualizar el estado.'
+      'Use setCount(prev => ...) to avoid stale state closures.',
+      'Persist history as an array of objects with timestamps and deltas.',
+      'Enforce min/max boundaries prior to state updates.'
     ]
   },
   {
     id: 'ex2',
-    title: '2. To-do List Completo (CRUD + Filtros + Persistencia)',
-    description: 'Lista de tareas con creación, marcado de completado, eliminación, edición rápida, filtros (Todas / Pendientes / Completadas) y persistencia en localStorage.',
-    difficulty: 'Básico',
-    topicsTested: ['useState', 'Listas y prop key', 'useEffect / localStorage', 'Eventos de formulario'],
+    title: '2. Complete To-do List (CRUD + Filters + Persistence)',
+    description: 'Task management list with creation, completion toggling, deletion, inline editing, status filters (All / Active / Completed), and localStorage sync.',
+    difficulty: 'Basic',
+    topicsTested: ['useState', 'Lists and key prop', 'useEffect / localStorage', 'Form events'],
     componentKey: 'TodoExercise',
     hints: [
-      'Genera IDs únicos estables usando crypto.randomUUID().',
-      'Nunca uses el índice del array como key de la tarea.',
-      'Usa actualización inmutable con .map() para toggle y .filter() para borrar.'
+      'Generate stable unique IDs using crypto.randomUUID().',
+      'Never use array indices as task keys.',
+      'Use immutable transformations with .map() for toggles and .filter() for deletions.'
     ]
   },
   {
     id: 'ex3',
-    title: '3. Buscador en Tiempo Real con Debounce y Cancelación',
-    description: 'Input de búsqueda que retrasa las peticiones a una API simulada mediante un custom hook `useDebounce`, con estados de carga (loading), error, indicador de debounce y cancelación de peticiones desfasadas.',
-    difficulty: 'Intermedio',
-    topicsTested: ['Custom hooks', 'useDebounce', 'useEffect cleanup', 'Manejo de peticiones asíncronas'],
+    title: '3. Real-Time Search with Debounce and Cancellation',
+    description: 'Search input throttling requests against a simulated API via a custom `useDebounce` hook, with loading states, error handling, active debounce indicators, and out-of-order request cancellation.',
+    difficulty: 'Intermediate',
+    topicsTested: ['Custom hooks', 'useDebounce', 'useEffect cleanup', 'Async request handling'],
     componentKey: 'DebounceSearchExercise',
     hints: [
-      'Implementa un timeout en el hook useDebounce que se limpie en la función de retorno del useEffect.',
-      'Controla condiciones de carrera con una bandera de montaje o AbortController.'
+      'Set up a timeout in useDebounce and clear it inside the useEffect cleanup return.',
+      'Mitigate race conditions using a mounted flag or AbortController.'
     ]
   },
   {
     id: 'ex4',
-    title: '4. Fetch de Datos con Paginación, Loading y Error',
-    description: 'Consume datos simulados con estados explícitos de `isLoading`, `error` y `data`, controles de paginación anterior/siguiente y selector de tamaño de página.',
-    difficulty: 'Intermedio',
-    topicsTested: ['Data Fetching', 'AbortController', 'Manejo de errores', 'Componentes controlados'],
+    title: '4. Paginated Data Fetching with Loading and Error States',
+    description: 'Fetch and display simulated API datasets with explicit `isLoading`, `error`, and `data` states, previous/next pagination controls, and page size selectors.',
+    difficulty: 'Intermediate',
+    topicsTested: ['Data Fetching', 'AbortController', 'Error boundaries', 'Controlled inputs'],
     componentKey: 'PaginatedFetchExercise',
     hints: [
-      'Reinicia el estado de carga antes de iniciar la nueva petición.',
-      'Utiliza AbortController para cancelar la petición pendiente si el usuario cambia de página antes de terminar.'
+      'Reset loading state before initiating each new network call.',
+      'Use AbortController to abort pending requests if the user navigates before completion.'
     ]
   },
   {
     id: 'ex5',
-    title: '5. Infinite Scroll con IntersectionObserver',
-    description: 'Listado que detecta automáticamente cuando el usuario llega al final del scroll mediante la API `IntersectionObserver` y carga un lote adicional de elementos sin parpadeos.',
-    difficulty: 'Intermedio',
-    topicsTested: ['useRef para nodo centinela', 'IntersectionObserver en useEffect', 'Gestión de arrays acumulativos'],
+    title: '5. Infinite Scroll with IntersectionObserver',
+    description: 'Feed list that automatically triggers new batches of items when the user approaches the bottom via the `IntersectionObserver` API without layout jitter.',
+    difficulty: 'Intermediate',
+    topicsTested: ['useRef sentinel node', 'IntersectionObserver in useEffect', 'Cumulative arrays'],
     componentKey: 'InfiniteScrollExercise',
     hints: [
-      'Crea un ref centinela <div ref={sentinelRef} /> al final de la lista.',
-      'Desconecta el observador en la función de limpieza del useEffect.'
+      'Mount a sentinel <div ref={sentinelRef} /> at the bottom of the list.',
+      'Disconnect the observer inside the useEffect cleanup function.'
     ]
   },
   {
     id: 'ex6',
-    title: '6. Modal Accesible con createPortal y Manejo de Teclado',
-    description: 'Modal flotante renderizado directamente en `document.body` mediante `createPortal`, con backdrop desenfocado, cierre con tecla Escape, trap de foco y animación suave.',
-    difficulty: 'Intermedio',
-    topicsTested: ['createPortal', 'useEffect global listeners', 'Accesibilidad (role="dialog", aria-modal)', 'Event bubbling'],
+    title: '6. Accessible Modal with createPortal & Focus Trapping',
+    description: 'Floating dialog rendered directly into `document.body` via `createPortal`, featuring backdrop blur, Escape key dismissal, keyboard focus trapping, and smooth transitions.',
+    difficulty: 'Intermediate',
+    topicsTested: ['createPortal', 'Global useEffect listeners', 'Accessibility (role="dialog", aria-modal)', 'Event bubbling'],
     componentKey: 'PortalModalExercise',
     hints: [
-      'Verifica que el componente esté montado antes de intentar acceder a document.body para evitar errores de SSR.',
-      'Usa e.stopPropagation() en el contenedor del diálogo para evitar cerrar al hacer clic dentro.'
+      'Ensure the component is mounted before querying document.body to avoid SSR hydration mismatches.',
+      'Use e.stopPropagation() on the modal container to prevent backdrop clicks from dismissing.'
     ]
   },
   {
     id: 'ex7',
-    title: '7. Sistema de Tabs Accesible (WAI-ARIA)',
-    description: 'Componente de pestañas con navegación fluida, atributos semánticos `role="tablist"`, `role="tab"` y `role="tabpanel"`, con soporte para flechas de teclado.',
-    difficulty: 'Intermedio',
-    topicsTested: ['Compound components', 'Accesibilidad WAI-ARIA', 'Manejo de eventos de teclado'],
+    title: '7. Accessible Tabs Component (WAI-ARIA)',
+    description: 'Tabbed navigation with smooth panels, semantic `role="tablist"`, `role="tab"`, and `role="tabpanel"` attributes, and full arrow key keyboard navigation.',
+    difficulty: 'Intermediate',
+    topicsTested: ['Compound components', 'WAI-ARIA accessibility', 'Keyboard event management'],
     componentKey: 'TabsExercise',
     hints: [
-      'Asocia cada tab con su panel mediante aria-controls y aria-labelledby.',
-      'Gestiona el tabIndex (0 para la pestaña activa, -1 para las inactivas).'
+      'Link tabs to their panels using aria-controls and aria-labelledby.',
+      'Manage tabIndex dynamically (0 for the selected active tab, -1 for inactive tabs).'
     ]
   },
   {
     id: 'ex8',
-    title: '8. Acordeón Colapsable con Modo Simple y Múltiple',
-    description: 'Componente interactivo tipo FAQ/Acordeón con soporte para modo exclusivo (un ítem abierto a la vez) o modo múltiple (múltiples ítems abiertos simultáneamente).',
-    difficulty: 'Básico',
-    topicsTested: ['Gestión de estado condicional', 'Set / Array de IDs abiertos', 'Animaciones de colapso'],
+    title: '8. Collapsible Accordion with Single and Multiple Expansion',
+    description: 'Interactive FAQ/Accordion supporting exclusive mode (only one item expanded at a time) or multi-expansion mode (multiple panels opened concurrently).',
+    difficulty: 'Basic',
+    topicsTested: ['Conditional state', 'Set / Array of active IDs', 'Collapse animations'],
     componentKey: 'AccordionExercise',
     hints: [
-      'Para modo múltiple, representa el estado como un Set<string> o string[].',
-      'Usa aria-expanded en los botones de encabezado.'
+      'Represent multi-selection state using a Set<string> or string[].',
+      'Apply aria-expanded attributes to header buttons.'
     ]
   },
   {
     id: 'ex9',
-    title: '9. Autocomplete con Selección por Teclado',
-    description: 'Input de autocompletado inteligente con lista desplegable, resaltado de texto coincidente y navegación completa por teclado (Flecha Arriba, Flecha Abajo, Enter para seleccionar, Escape para cerrar).',
-    difficulty: 'Avanzado',
-    topicsTested: ['Gestión de foco', 'Eventos onKeyDown', 'Sincronización de índices activos', 'useRef'],
+    title: '9. Autocomplete Search with Keyboard Navigation',
+    description: 'Intelligent autocomplete combobox featuring a dropdown list, matched substring highlighting, and complete arrow-key navigation (Arrow Up, Arrow Down, Enter to select, Escape to close).',
+    difficulty: 'Advanced',
+    topicsTested: ['Focus management', 'onKeyDown listeners', 'Active index synchronization', 'useRef'],
     componentKey: 'AutocompleteExercise',
     hints: [
-      'Mantén un estado activeIndex para el elemento seleccionado con las flechas.',
-      'Haz scroll automático del elemento activo si la lista desplegable tiene scroll.'
+      'Track activeIndex state for keyboard-highlighted list items.',
+      'Auto-scroll active items into view if the dropdown list overflows.'
     ]
   },
   {
     id: 'ex10',
-    title: '10. Laboratorio de Custom Hooks Esenciales',
-    description: 'Colección interactiva para probar y aprender los 4 hooks más solicitados en entrevistas: `useFetch`, `useLocalStorage`, `usePrevious` y `useDebounce`.',
-    difficulty: 'Avanzado',
-    topicsTested: ['useLocalStorage', 'usePrevious con useRef', 'useDebounce', 'useFetch con abort'],
+    title: '10. Essential Custom Hooks Laboratory',
+    description: 'Interactive sandbox to test and master the 4 most commonly asked custom hooks in senior interviews: `useFetch`, `useLocalStorage`, `usePrevious`, and `useDebounce`.',
+    difficulty: 'Advanced',
+    topicsTested: ['useLocalStorage', 'usePrevious with useRef', 'useDebounce', 'useFetch with abort'],
     componentKey: 'CustomHooksExercise',
     hints: [
-      'usePrevious almacena el valor en ref.current dentro de un useEffect, por lo que durante el render aún tiene el valor anterior.',
-      'useLocalStorage debe manejar excepciones JSON.parse y errores de cuota.'
+      'usePrevious saves values to ref.current within useEffect, meaning it holds the previous value during the current render.',
+      'useLocalStorage must gracefully catch JSON.parse exceptions and quota errors.'
     ]
   },
   {
     id: 'ex11',
-    title: '11. Formulario Profesional con Zod y React Hook Form',
-    description: 'Formulario de registro robusto con validación de esquema en tiempo real usando Zod y React Hook Form, inputs no controlados de alto rendimiento, estados de submit e informes de errores.',
-    difficulty: 'Avanzado',
-    topicsTested: ['React Hook Form', 'Validación Zod', 'Inputs no controlados', 'Accesibilidad de errores'],
+    title: '11. Robust Form Validation with Zod & React Hook Form',
+    description: 'Production registration form featuring real-time schema validation with Zod and React Hook Form, high-performance uncontrolled inputs, submission states, and accessible error alerts.',
+    difficulty: 'Advanced',
+    topicsTested: ['React Hook Form', 'Zod validation', 'Uncontrolled inputs', 'Accessible error states'],
     componentKey: 'ValidatedFormExercise',
     hints: [
-      'Define el schema con z.object({ email: z.string().email(), ... }).',
-      'Usa zodResolver(schema) con useForm para vincular la validación fuertemente tipada.'
+      'Define schemas with z.object({ email: z.string().email(), ... }).',
+      'Pass zodResolver(schema) to useForm to bind strongly typed validation schemas.'
     ]
   },
   {
     id: 'ex12',
-    title: '12. UI Optimista con Rollback ante Fallos de Servidor',
-    description: 'Implementa el patrón de actualización optimista en un post (Like / Bookmark y nuevos comentarios). La interfaz actualiza el estado inmediatamente (0ms) y, si la petición simulada falla tras 1.5s, revierte automáticamente al estado anterior con notificación de error y botón de reintento.',
-    difficulty: 'Avanzado',
-    topicsTested: ['Actualizaciones optimistas', 'Manejo de rollback', 'Simulación de fallos de red', 'useOptimistic'],
+    title: '12. Optimistic UI with Automated Server Rollback',
+    description: 'Implement optimistic updates on social post actions (Like / Bookmark and comments). The UI updates state instantly (0ms); if the simulated network call fails after 1.5s, it rolls back automatically with toast notifications and retry options.',
+    difficulty: 'Advanced',
+    topicsTested: ['Optimistic updates', 'Rollback handling', 'Network failure simulation', 'useOptimistic'],
     componentKey: 'OptimisticUpdateExercise',
     hints: [
-      'Guarda una copia del estado anterior antes de aplicar la actualización optimista para restaurarla en caso de error.',
-      'Usa estados de sincronización visual (ej. badge "Sincronizando...") para transparentar el proceso.',
-      'En React 19 este patrón se simplifica con el hook useOptimistic.'
+      'Snapshot previous state prior to mutating state optimistically to cleanly revert on error.',
+      'Show clear visual sync indicators (e.g., "Syncing..." badges).',
+      'In React 19, this pattern is streamlined natively via the useOptimistic hook.'
     ]
   },
   {
     id: 'ex13',
-    title: '13. Calificación por Estrellas Accesible (WAI-ARIA & Teclado)',
-    description: 'Componente interactivo de rating con estrellas (1 a 5). Incluye previsualización fluida al pasar el mouse (hover), selección persistente, botón para limpiar y soporte completo de teclado (flechas izquierda/derecha, inicio/fin, Enter/Espacio) con roles y atributos aria-checked.',
-    difficulty: 'Intermedio',
-    topicsTested: ['Accesibilidad WAI-ARIA', 'Manejo de eventos onKeyDown', 'role="radiogroup"', 'Gestión de hover vs selection'],
+    title: '13. Accessible Star Rating Component (WAI-ARIA & Keyboard)',
+    description: 'Interactive 5-star rating component with hover previews, persistent selection, reset actions, and complete keyboard controls (Left/Right arrows, Home/End, Enter/Space) with aria-checked states.',
+    difficulty: 'Intermediate',
+    topicsTested: ['WAI-ARIA accessibility', 'onKeyDown event listeners', 'role="radiogroup"', 'Hover vs selection state'],
     componentKey: 'StarRatingExercise',
     hints: [
-      'Separa el estado rating (seleccionado) del estado hoverRating (previsualización momentánea).',
-      'Usa role="radiogroup" en el contenedor y role="radio" en cada estrella con aria-checked y tabIndex.',
-      'Controla ArrowRight/ArrowLeft para decrementar o incrementar la calificación accesiblemente.'
+      'Separate rating (committed value) from hoverRating (transient preview).',
+      'Apply role="radiogroup" to the container and role="radio" to each star with aria-checked and tabIndex.',
+      'Support ArrowRight/ArrowLeft to increment and decrement ratings accessibly.'
     ]
   }
 ];

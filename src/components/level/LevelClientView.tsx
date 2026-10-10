@@ -24,19 +24,19 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
 
   const [completedTopics, setCompletedTopics] = useState<string[]>([]);
 
-  // Preparar contenido para audio-guía
+  // Prepare content for audio-guide
   const narratorItems: NarratorItem[] = useMemo(() => {
     return topics.map(t => {
       const parts: string[] = [t.summary];
-      if (t.whatIsIt) parts.push(`Explicación en profundidad: ${t.whatIsIt}`);
+      if (t.whatIsIt) parts.push(`In-depth explanation: ${t.whatIsIt}`);
       if (t.interviewTips && t.interviewTips.length > 0) {
-        parts.push(`Consejos para la entrevista: ${t.interviewTips.join('. ')}`);
+        parts.push(`Interview tips: ${t.interviewTips.join('. ')}`);
       }
       if (t.commonTraps && t.commonTraps.length > 0) {
-        parts.push(`Trampas comunes a evitar: ${t.commonTraps.join('. ')}`);
+        parts.push(`Common traps to avoid: ${t.commonTraps.join('. ')}`);
       }
       if (t.keyTakeaway) {
-        parts.push(`Conclusión clave: ${t.keyTakeaway}`);
+        parts.push(`Key takeaway: ${t.keyTakeaway}`);
       }
       return {
         id: t.id,
@@ -49,7 +49,7 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
 
   const narrator = useLevelAudioReader({
     items: narratorItems,
-    levelTitle: levelInfo?.title || `Nivel ${levelNum}`
+    levelTitle: levelInfo?.title || `Level ${levelNum}`
   });
 
   useEffect(() => {
@@ -86,8 +86,8 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
 
   return (
     <div className="space-y-8">
-      {/* Navegador horizontal de los 8 niveles */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-border/80 scrollbar-none">
+      {/* Horizontal 8-level navigator */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-border/80 scrollbar-none">
         {LEVELS.map(l => (
           <Link
             key={l.id}
@@ -98,24 +98,24 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
                 : 'bg-muted/40 hover:bg-muted text-muted hover:text-foreground'
             }`}
           >
-            Nivel {l.id}: {l.shortTitle}
+            Level {l.id}: {l.shortTitle}
           </Link>
         ))}
       </div>
 
-      {/* Header del Nivel */}
+      {/* Level Header */}
       <div className="p-6 sm:p-8 border rounded-3xl bg-card space-y-4 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1 flex-1 min-w-0">
             <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-md">
-              Nivel {levelInfo.id} de 8
+              Level {levelInfo.id} of 8
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">{levelInfo.title}</h1>
             <p className="text-xs sm:text-sm text-muted max-w-4xl break-words">{levelInfo.description}</p>
           </div>
 
           <div className="p-4 border rounded-2xl bg-background text-right min-w-[160px] shrink-0">
-            <span className="text-xs text-muted block">Progreso en este Nivel</span>
+            <span className="text-xs text-muted block">Level Progress</span>
             <span className="text-2xl font-extrabold font-mono text-primary">
               {completadosNivel}/{topics.length}
             </span>
@@ -128,9 +128,9 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
           </div>
         </div>
 
-        {/* Tabla rápida de contenidos del nivel */}
+        {/* Quick topic jump table */}
         <div className="pt-4 border-t border-border/60">
-          <span className="text-xs font-semibold text-muted block mb-2">Saltar a un tópico de este nivel:</span>
+          <span className="text-xs font-semibold text-muted block mb-2">Jump to topic in this level:</span>
           <div className="flex flex-wrap gap-2">
             {topics.map(t => {
               const completado = completedTopics.includes(t.id);
@@ -153,10 +153,10 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
         </div>
       </div>
 
-      {/* Reproductor de Audio del Nivel */}
+      {/* Level Audio Player */}
       <LevelAudioPlayer narrator={narrator} levelTitle={levelInfo.title} />
 
-      {/* Listado de TopicCards */}
+      {/* List of TopicCards */}
       <div className="space-y-6">
         {topics.map(topic => (
           <TopicCard
@@ -175,7 +175,7 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
         ))}
       </div>
 
-      {/* Paginación anterior / siguiente nivel */}
+      {/* Pagination previous / next level */}
       <div className="flex items-center justify-between border-t border-border/80 pt-6">
         {prevLevel ? (
           <Link
@@ -183,7 +183,7 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
             className="flex items-center gap-2 px-4 py-2 border rounded-xl hover:bg-muted text-xs font-semibold text-foreground transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>Nivel {prevLevel}: {LEVELS[prevLevel - 1].shortTitle}</span>
+            <span>Level {prevLevel}: {LEVELS[prevLevel - 1].shortTitle}</span>
           </Link>
         ) : <div />}
 
@@ -192,7 +192,7 @@ export function LevelClientView({ levelNum }: LevelClientViewProps) {
             href={`/nivel/${nextLevel}`}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary/90 text-xs font-semibold transition-colors"
           >
-            <span>Nivel {nextLevel}: {LEVELS[nextLevel - 1].shortTitle}</span>
+            <span>Level {nextLevel}: {LEVELS[nextLevel - 1].shortTitle}</span>
             <ChevronRight className="w-4 h-4" />
           </Link>
         ) : <div />}

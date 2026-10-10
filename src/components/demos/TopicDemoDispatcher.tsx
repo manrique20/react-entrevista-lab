@@ -117,10 +117,10 @@ export function TopicDemoDispatcher({ componentKey, topicTitle }: TopicDemoDispa
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
       <div className="flex items-center gap-2 text-primary font-semibold">
         <Sparkles className="w-4 h-4" />
-        <span>Laboratorio Interactivo Activo: {topicTitle}</span>
+        <span>Active Interactive Lab: {topicTitle}</span>
       </div>
       <p className="text-muted">
-        Este concepto se complementa directamente con la suite de ejercicios prácticos de código y las preguntas de simulación de entrevistas.
+        This concept is directly complemented by the practical coding challenges and technical interview simulation questions.
       </p>
     </div>
   );

@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Cpu, Zap, Database, ShieldCheck, Check, Sparkles, AlertCircle } from 'lucide-react';
+import { Database, Check } from 'lucide-react';
 
 // Demo 4.1: Redux Simulator
 export function ReduxSimulatorDemo() {
-  const [estado, setEstado] = useState({ usuarios: ['Juan', 'Lucía'], carga: 'idle' });
-  const [historialAcciones, setHistorialAcciones] = useState<string[]>(['@@INIT']);
+  const [state, setState] = useState({ users: ['John', 'Lucia'], status: 'idle' });
+  const [actionHistory, setActionHistory] = useState<string[]>(['@@INIT']);
 
   const dispatch = (action: { type: string; payload?: any }) => {
-    setHistorialAcciones(prev => [`${action.type} (${JSON.stringify(action.payload ?? {})})`, ...prev]);
-    if (action.type === 'usuarios/agregar') {
-      setEstado(prev => ({ ...prev, usuarios: [...prev.usuarios, action.payload] }));
-    } else if (action.type === 'usuarios/limpiar') {
-      setEstado(prev => ({ ...prev, usuarios: [] }));
+    setActionHistory(prev => [`${action.type} (${JSON.stringify(action.payload ?? {})})`, ...prev]);
+    if (action.type === 'users/add') {
+      setState(prev => ({ ...prev, users: [...prev.users, action.payload] }));
+    } else if (action.type === 'users/clear') {
+      setState(prev => ({ ...prev, users: [] }));
     }
   };
 
@@ -21,28 +21,28 @@ export function ReduxSimulatorDemo() {
     <div className="p-4 border rounded-xl bg-card space-y-4 text-xs">
       <div className="flex gap-2">
         <button
-          onClick={() => dispatch({ type: 'usuarios/agregar', payload: 'NuevoDev' })}
+          onClick={() => dispatch({ type: 'users/add', payload: 'NewDev' })}
           className="px-3 py-1.5 bg-purple-600 text-white rounded font-medium"
         >
-          dispatch(agregar(&apos;NuevoDev&apos;))
+          dispatch(add(&apos;NewDev&apos;))
         </button>
         <button
-          onClick={() => dispatch({ type: 'usuarios/limpiar' })}
+          onClick={() => dispatch({ type: 'users/clear' })}
           className="px-3 py-1.5 bg-muted rounded font-medium"
         >
-          dispatch(limpiar())
+          dispatch(clear())
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="p-3 border rounded bg-background">
-          <p className="font-semibold text-purple-500 mb-1">Estado Global Redux (Store):</p>
-          <pre className="font-mono text-[11px] text-muted">{JSON.stringify(estado, null, 2)}</pre>
+          <p className="font-semibold text-purple-500 mb-1">Global Redux State (Store):</p>
+          <pre className="font-mono text-[11px] text-muted">{JSON.stringify(state, null, 2)}</pre>
         </div>
         <div className="p-3 border rounded bg-background">
-          <p className="font-semibold text-muted mb-1">Historial Redux DevTools (Acciones):</p>
+          <p className="font-semibold text-muted mb-1">Redux DevTools Action History:</p>
           <div className="font-mono text-[11px] space-y-0.5 text-muted max-h-24 overflow-y-auto">
-            {historialAcciones.map((a, i) => <p key={i}>{a}</p>)}
+            {actionHistory.map((a, i) => <p key={i}>{a}</p>)}
           </div>
         </div>
       </div>
@@ -65,40 +65,40 @@ export function ZustandStoreDemo() {
     <div className="p-4 border rounded-xl bg-card space-y-4 text-xs">
       <div className="flex gap-2">
         <button onClick={() => setCountA(c => c + 1)} className="px-3 py-1.5 bg-primary text-white rounded">
-          Mutar Campo A ({countA})
+          Mutate Field A ({countA})
         </button>
         <button onClick={() => setCountB(c => c + 1)} className="px-3 py-1.5 bg-emerald-600 text-white rounded">
-          Mutar Campo B ({countB})
+          Mutate Field B ({countB})
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="p-3 border rounded bg-background">
-          <p className="font-semibold text-primary">Selector A: s =&gt; s.campoA</p>
-          <p className="font-mono text-sm mt-1">Valor: {countA}</p>
-          <p className="text-[10px] text-muted mt-2">Solo re-renderiza cuando A muta. Renders: {rendersSelectorA.current}</p>
+          <p className="font-semibold text-primary">Selector A: s =&gt; s.fieldA</p>
+          <p className="font-mono text-sm mt-1">Value: {countA}</p>
+          <p className="text-[10px] text-muted mt-2">Only re-renders when A mutates. Renders: {rendersSelectorA.current}</p>
         </div>
         <div className="p-3 border rounded bg-background">
-          <p className="font-semibold text-emerald-500">Selector B: s =&gt; s.campoB</p>
-          <p className="font-mono text-sm mt-1">Valor: {countB}</p>
-          <p className="text-[10px] text-muted mt-2">Solo re-renderiza cuando B muta. Renders: {rendersSelectorB.current}</p>
+          <p className="font-semibold text-emerald-500">Selector B: s =&gt; s.fieldB</p>
+          <p className="font-mono text-sm mt-1">Value: {countB}</p>
+          <p className="text-[10px] text-muted mt-2">Only re-renders when B mutates. Renders: {rendersSelectorB.current}</p>
         </div>
       </div>
     </div>
   );
 }
 
-// Demo 4.3: TanStack Query (Caché y staleTime)
+// Demo 4.3: TanStack Query (Cache and staleTime)
 export function TanStackQueryDemo() {
-  const [estadoCache, setEstadoCache] = useState<'fresh' | 'stale' | 'fetching'>('fresh');
-  const [contadorRefetch, setContadorRefetch] = useState(1);
+  const [cacheState, setCacheState] = useState<'fresh' | 'stale' | 'fetching'>('fresh');
+  const [refetchCount, setRefetchCount] = useState(1);
 
-  const invalidarCache = () => {
-    setEstadoCache('fetching');
+  const invalidateCache = () => {
+    setCacheState('fetching');
     setTimeout(() => {
-      setContadorRefetch(c => c + 1);
-      setEstadoCache('fresh');
-      setTimeout(() => setEstadoCache('stale'), 3000);
+      setRefetchCount(c => c + 1);
+      setCacheState('fresh');
+      setTimeout(() => setCacheState('stale'), 3000);
     }, 600);
   };
 
@@ -107,22 +107,22 @@ export function TanStackQueryDemo() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-primary" />
-          <span className="font-semibold">QueryKey: [&apos;usuarios&apos;]</span>
+          <span className="font-semibold">QueryKey: [&apos;users&apos;]</span>
         </div>
         <span className={`px-2 py-0.5 rounded font-mono uppercase text-[10px] ${
-          estadoCache === 'fresh' ? 'bg-emerald-500/20 text-emerald-600' :
-          estadoCache === 'stale' ? 'bg-amber-500/20 text-amber-600' : 'bg-blue-500/20 text-blue-600'
+          cacheState === 'fresh' ? 'bg-emerald-500/20 text-emerald-600' :
+          cacheState === 'stale' ? 'bg-amber-500/20 text-amber-600' : 'bg-blue-500/20 text-blue-600'
         }`}>
-          Estado: {estadoCache}
+          Status: {cacheState}
         </span>
       </div>
 
       <p className="text-muted">
-        Datos en caché: <strong>Versión #{contadorRefetch} de usuarios</strong>. (staleTime: 3s).
+        Cached data: <strong>Version #{refetchCount} of users</strong>. (staleTime: 3s).
       </p>
 
-      <button onClick={invalidarCache} className="px-3 py-1.5 bg-primary text-white rounded text-xs font-semibold">
-        qc.invalidateQueries({`{ queryKey: ['usuarios'] }`})
+      <button onClick={invalidateCache} className="px-3 py-1.5 bg-primary text-white rounded text-xs font-semibold">
+        qc.invalidateQueries({`{ queryKey: ['users'] }`})
       </button>
     </div>
   );
@@ -131,20 +131,20 @@ export function TanStackQueryDemo() {
 // Demo 4.4: React Hook Form + Zod
 export function HookFormZodDemo() {
   const [email, setEmail] = useState('');
-  const [edad, setEdad] = useState('25');
-  const [errorZod, setErrorZod] = useState<string | null>(null);
-  const [valido, setValido] = useState(false);
+  const [age, setAge] = useState('25');
+  const [zodError, setZodError] = useState<string | null>(null);
+  const [isValid, setIsValid] = useState(false);
 
-  const validar = (e: string, ed: string) => {
+  const validate = (e: string, ed: string) => {
     if (!e.includes('@') || !e.includes('.')) {
-      setErrorZod('Zod: Formato de correo inválido');
-      setValido(false);
+      setZodError('Zod: Invalid email format');
+      setIsValid(false);
     } else if (Number(ed) < 18) {
-      setErrorZod('Zod: Debes ser mayor de 18 años');
-      setValido(false);
+      setZodError('Zod: Must be at least 18 years old');
+      setIsValid(false);
     } else {
-      setErrorZod(null);
-      setValido(true);
+      setZodError(null);
+      setIsValid(true);
     }
   };
 
@@ -155,55 +155,55 @@ export function HookFormZodDemo() {
           <label className="text-muted block mb-1">Email</label>
           <input
             value={email}
-            onChange={ev => { setEmail(ev.target.value); validar(ev.target.value, edad); }}
-            placeholder="usuario@dominio.com"
+            onChange={ev => { setEmail(ev.target.value); validate(ev.target.value, age); }}
+            placeholder="user@domain.com"
             className="w-full px-3 py-1.5 border rounded bg-background"
           />
         </div>
         <div>
-          <label className="text-muted block mb-1">Edad</label>
+          <label className="text-muted block mb-1">Age</label>
           <input
             type="number"
-            value={edad}
-            onChange={ev => { setEdad(ev.target.value); validar(email, ev.target.value); }}
+            value={age}
+            onChange={ev => { setAge(ev.target.value); validate(email, ev.target.value); }}
             className="w-full px-3 py-1.5 border rounded bg-background"
           />
         </div>
       </div>
 
-      {errorZod && <p className="text-red-500 text-xs font-medium">{errorZod}</p>}
-      {valido && <p className="text-emerald-500 text-xs font-medium flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Esquema Zod validado correctamente.</p>}
+      {zodError && <p className="text-red-500 text-xs font-medium">{zodError}</p>}
+      {isValid && <p className="text-emerald-500 text-xs font-medium flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Zod schema validated successfully.</p>}
     </div>
   );
 }
 
-// Demo 4.6: TypeScript uniones discriminadas
+// Demo 4.6: TypeScript Discriminated Unions
 export function TypeScriptReactDemo() {
-  const [estado, setEstado] = useState<'loading' | 'success' | 'error'>('success');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('success');
 
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-3">
       <div className="flex gap-2">
-        <button onClick={() => setEstado('loading')} className="px-2.5 py-1 border rounded">Status: &apos;loading&apos;</button>
-        <button onClick={() => setEstado('success')} className="px-2.5 py-1 border rounded">Status: &apos;success&apos;</button>
-        <button onClick={() => setEstado('error')} className="px-2.5 py-1 border rounded">Status: &apos;error&apos;</button>
+        <button onClick={() => setStatus('loading')} className="px-2.5 py-1 border rounded">Status: &apos;loading&apos;</button>
+        <button onClick={() => setStatus('success')} className="px-2.5 py-1 border rounded">Status: &apos;success&apos;</button>
+        <button onClick={() => setStatus('error')} className="px-2.5 py-1 border rounded">Status: &apos;error&apos;</button>
       </div>
 
       <div className="p-3 border rounded bg-background font-mono">
-        {estado === 'loading' && <p className="text-blue-500">⏳ Cargando datos tipados...</p>}
-        {estado === 'success' && <p className="text-emerald-500">✅ Data: {`{ user: "Andrés", id: "usr_10" }`}</p>}
-        {estado === 'error' && <p className="text-red-500">❌ Error: &quot;Fallo en el servicio&quot;</p>}
+        {status === 'loading' && <p className="text-blue-500">⏳ Loading typed payload...</p>}
+        {status === 'success' && <p className="text-emerald-500">✅ Data: {`{ user: "Andrew", id: "usr_10" }`}</p>}
+        {status === 'error' && <p className="text-red-500">❌ Error: &quot;Service unavailable&quot;</p>}
       </div>
     </div>
   );
 }
 
-// Fallbacks para Nivel 4
+// Level 4 Topics & Helpers
 export function UiLibrariesDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold">Criterios de Selección de UI</p>
-      <p className="text-muted">Shadcn UI (copiar código a tu repo con Radix + Tailwind) domina el ecosistema por accesibilidad y compatibilidad con RSC.</p>
+      <p className="font-semibold">UI Library Selection Criteria</p>
+      <p className="text-muted">Shadcn UI (copying code into your repository using Radix + Tailwind) dominates modern React for accessibility and full RSC compatibility.</p>
     </div>
   );
 }
@@ -218,36 +218,36 @@ export function TestingStrategyDemo() {
 }
 
 export function AccessibilityAuditDemo() {
-  const [notificacion, setNotificacion] = useState('');
+  const [notification, setNotification] = useState('');
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-3">
       <button
-        onClick={() => setNotificacion('Nuevo mensaje recibido')}
+        onClick={() => setNotification('New notification received')}
         className="px-3 py-1.5 bg-primary text-white rounded font-medium"
       >
-        Disparar Anuncio aria-live
+        Trigger aria-live Announcement
       </button>
       <div role="status" aria-live="polite" className="p-3 border rounded bg-background font-medium">
-        {notificacion || 'Región aria-live="polite" a la escucha...'}
+        {notification || 'Region aria-live="polite" listening...'}
       </div>
     </div>
   );
 }
 
 export function I18nLocalizationDemo() {
-  const [idioma, setIdioma] = useState<'es-ES' | 'en-US'>('es-ES');
-  const precio = 1250.5;
-  const fecha = new Date();
+  const [locale, setLocale] = useState<'en-US' | 'es-ES'>('en-US');
+  const price = 1250.5;
+  const date = new Date();
 
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-3">
       <div className="flex gap-2">
-        <button onClick={() => setIdioma('es-ES')} className={`px-3 py-1 rounded ${idioma === 'es-ES' ? 'bg-primary text-white' : 'border'}`}>Español (es-ES)</button>
-        <button onClick={() => setIdioma('en-US')} className={`px-3 py-1 rounded ${idioma === 'en-US' ? 'bg-primary text-white' : 'border'}`}>English (en-US)</button>
+        <button onClick={() => setLocale('en-US')} className={`px-3 py-1 rounded ${locale === 'en-US' ? 'bg-primary text-white' : 'border'}`}>English (en-US)</button>
+        <button onClick={() => setLocale('es-ES')} className={`px-3 py-1 rounded ${locale === 'es-ES' ? 'bg-primary text-white' : 'border'}`}>Spanish (es-ES)</button>
       </div>
       <div className="p-3 border rounded bg-background font-mono space-y-1">
-        <p>Moneda Intl: <strong>{new Intl.NumberFormat(idioma, { style: 'currency', currency: idioma === 'es-ES' ? 'EUR' : 'USD' }).format(precio)}</strong></p>
-        <p>Fecha Intl: <strong>{new Intl.DateTimeFormat(idioma, { dateStyle: 'full' }).format(fecha)}</strong></p>
+        <p>Intl Currency: <strong>{new Intl.NumberFormat(locale, { style: 'currency', currency: locale === 'en-US' ? 'USD' : 'EUR' }).format(price)}</strong></p>
+        <p>Intl Date: <strong>{new Intl.DateTimeFormat(locale, { dateStyle: 'full' }).format(date)}</strong></p>
       </div>
     </div>
   );

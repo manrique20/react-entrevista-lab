@@ -4,162 +4,162 @@ export const LEVEL_7_TOPICS: Topic[] = [
   {
     id: '7.1',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.1 Estrategias de Renderizado (CSR, SSR, SSG, ISR) e Hidratación',
-    summary: 'Comparativa profunda de arquitectura web: dónde y cuándo se genera el HTML y el proceso de hidratación.',
-    whatIsIt: `Elegir la estrategia adecuada determina el SEO, la velocidad de carga (LCP) y los costos de infraestructura:
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.1 Rendering Strategies (CSR, SSR, SSG, ISR) & Hydration',
+    summary: 'In-depth web architecture comparison: where and when HTML is generated, and how hydration attaches interactivity.',
+    whatIsIt: `Selecting the right rendering strategy dictates SEO capabilities, load performance (LCP), and infrastructure costs:
 
 1. **CSR (Client-Side Rendering)**:
-- El servidor envía un archivo HTML prácticamente vacío (\`<div id="root"></div>\`) y un bundle JS.
-- El navegador descarga el JS, lo ejecuta y renderiza la interfaz.
-- Ideal para: Paneles de administración privados y dashboards tras login (SEO irrelevante).
+- The server delivers a virtually empty HTML shell (\`<div id="root"></div>\`) alongside a JavaScript bundle.
+- The browser downloads and executes JavaScript to render the interface.
+- Best suited for: Private admin dashboards and authenticated apps (where SEO is irrelevant).
 2. **SSR (Server-Side Rendering)**:
-- El servidor genera el HTML completo con datos frescos **en cada petición HTTP entrante**.
-- Excelente para: Contenido altamente dinámico y personalizado con requerimientos de SEO.
+- The server renders full HTML with fresh data on **every incoming HTTP request**.
+- Ideal for: Highly dynamic, personalized content requiring robust SEO.
 3. **SSG (Static Site Generation)**:
-- El HTML se compila **una sola vez durante el proceso de build**.
-- Se sirve instantáneamente desde CDNs globales con costo casi cero.
-- Ideal para: Blogs, documentación técnica, landing pages de marketing.
+- HTML is generated **once at build time**.
+- Served instantaneously from global CDN edges at near-zero compute cost.
+- Ideal for: Blogs, documentation hubs, and marketing landing pages.
 4. **ISR (Incremental Static Regeneration)**:
-- Permite regenerar páginas estáticas en segundo plano tras un intervalo de tiempo (\`revalidate: 60\`) o bajo demanda, combinando la velocidad de SSG con la frescura de SSR.
+- Regenerates static pages in the background after a time interval (\`revalidate: 60\`) or on demand, combining SSG edge speeds with SSR freshness.
 
-**¿Qué es la Hidratación?**:
-Es el proceso donde el JavaScript del cliente se descarga y React "conecta" los controladores de eventos y el estado reactivo al HTML que el servidor ya envió.`,
-    codeSnippet: `// Matriz de estrategias en Next.js App Router:
+**What is Hydration?**:
+The client-side process where downloaded React JavaScript "wakes up" the static server HTML by attaching event listeners and initializing reactive state to match the DOM tree.`,
+    codeSnippet: `// Next.js App Router rendering strategy matrix:
 
-// 1. SSG (Por defecto si no hay funciones dinámicas):
-export default async function PaginaEstatica() {
-  return <h1>Generado una vez en build time</h1>;
+// 1. SSG (Default when no dynamic server functions are used):
+export default async function StaticPage() {
+  return <h1>Generated once at build time</h1>;
 }
 
-// 2. ISR (Regeneración incremental cada hora):
+// 2. ISR (Incremental regeneration every hour):
 // export const revalidate = 3600;
 
-// 3. SSR (Dinámico en cada request mediante cabeceras dinámicas):
+// 3. SSR (Dynamic per request via dynamic headers or uncached fetch):
 // import { headers } from 'next/headers';
-// export default async function PaginaDinamica() {
+// export default async function DynamicPage() {
 //   const h = await headers(); ...
 // }`,
     interviewTips: [
-      'Explica el concepto de "Hydration Mismatch": ocurre cuando el árbol de HTML generado por el servidor difiere del primer render que calcula el navegador en cliente (ej: usar `new Date()`, `Math.random()` o leer `window.localStorage` en el render). React arrojará un error de mismatch.',
-      'Solución elegante a mismatch de hidratación: mostrar un placeholder seguro o diferir la renderización del dato dependiente del navegador hasta después del montaje con un `useEffect` y bandera `isMounted`.'
+      'Explain "Hydration Mismatch": occurs when the server-rendered HTML tree differs from the first client-rendered virtual DOM tree (e.g., calling `new Date()`, `Math.random()`, or reading `window.localStorage` during render). React will throw a hydration mismatch error.',
+      'Clean resolution for hydration mismatches: display a deterministic placeholder or defer rendering browser-dependent data until after mount using `useEffect` with an `isMounted` flag or dedicated mounted hook.'
     ],
     commonTraps: [
-      'Usar SSR dinámico para páginas que cambian una vez a la semana, sobrecargando los servidores de backend innecesariamente en vez de usar SSG o ISR.',
-      'Renderizar datos dependientes del cliente (`localStorage.getItem()`) directamente en el JSX inicial.'
+      'Defaulting to dynamic SSR for pages that change once a week, straining backend servers when SSG or ISR would provide superior performance and lower costs.',
+      'Reading client-only values (`localStorage.getItem()`) directly in the initial JSX render pass.'
     ],
-    keyTakeaway: 'SSG para velocidad y CDN, SSR para dinamismo por request, ISR para equilibrio híbrido, y CSR para dashboards privados.',
+    keyTakeaway: 'SSG for edge CDN speed, SSR for per-request dynamism, ISR for hybrid caching, and CSR for authenticated portals.',
     componentKey: 'RenderingStrategiesDemo',
-    tags: ['csr', 'ssr', 'ssg', 'isr', 'hidratacion', 'mismatch', 'nextjs']
+    tags: ['csr', 'ssr', 'ssg', 'isr', 'hydration', 'mismatch', 'nextjs']
   },
   {
     id: '7.2',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.2 Next.js App Router (Arquitectura moderna)',
-    summary: 'Enrutamiento basado en archivos con Server Components nativos, layouts anidados persistentes y Route Handlers.',
-    whatIsIt: `Next.js App Router (directorio \`app/\`) es el estándar contemporáneo de arquitectura para aplicaciones React:
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.2 Next.js App Router (Modern Architecture)',
+    summary: 'File-system routing with native Server Components, persistent nested layouts, and Route Handlers.',
+    whatIsIt: `The Next.js App Router (\`app/\` directory) represents the modern architectural standard for scalable React applications:
 
-Convenciones de archivos esenciales:
-- \`layout.tsx\`: Define UI compartida entre rutas (Navbars, Sidebars). **Conserva su estado y no se re-renderiza** al navegar entre páginas hijas.
-- \`page.tsx\`: El contenido único del segmento de ruta visible al usuario.
-- \`loading.tsx\`: Esqueleto de carga automático envuelto en un límite de \`<Suspense>\`.
-- \`error.tsx\`: Límite de error automático envuelto en un Error Boundary de React (debe ser un Client Component).
-- \`not-found.tsx\`: Interfaz para estados HTTP 404.
-- \`route.ts\`: Endpoints de API REST nativos (**Route Handlers**).
-- \`middleware.ts\`: Intercepta peticiones antes de llegar al enrutador (redirecciones, autenticación, cookies).`,
-    codeSnippet: `// app/blog/[slug]/page.tsx (Ruta Dinámica)
+Essential file conventions:
+- \`layout.tsx\`: Defines shared UI across route segments (Navbars, Sidebars). **Preserves state and avoids re-rendering** across child page navigations.
+- \`page.tsx\`: The unique content of a route segment visible to the user.
+- \`loading.tsx\`: Automatic loading UI wrapped in a declarative \`<Suspense>\` boundary.
+- \`error.tsx\`: Automatic error boundary catching runtime exceptions in child segments (must be a Client Component).
+- \`not-found.tsx\`: UI for HTTP 404 responses.
+- \`route.ts\`: Native HTTP REST API endpoints (**Route Handlers**).
+- \`middleware.ts\`: Intercepts requests before reaching routes (redirects, authentication, cookies, rewrites).`,
+    codeSnippet: `// app/blog/[slug]/page.tsx (Dynamic Route)
 interface Params {
   params: Promise<{ slug: string }>;
 }
 
-// 1. Generación de rutas estáticas en build time (SSG dinámico):
+// 1. Static route generation at build time (Dynamic SSG):
 export async function generateStaticParams() {
   return [{ slug: 'react-19' }, { slug: 'nextjs-app-router' }];
 }
 
-// 2. Server Component asíncrono:
-export default async function ArticuloPage({ params }: Params) {
+// 2. Asynchronous Server Component:
+export default async function ArticlePage({ params }: Params) {
   const { slug } = await params;
   return (
     <article className="prose">
-      <h1>Leyendo artículo: {slug}</h1>
-      <p>Contenido renderizado en servidor con cero JS de cliente.</p>
+      <h1>Reading article: {slug}</h1>
+      <p>Content rendered entirely on the server with zero client JS.</p>
     </article>
   );
 }`,
     interviewTips: [
-      'En Next.js 15+, los parámetros de ruta `params` y `searchParams` pasaron a ser Promesas asíncronas (`const { slug } = await params;`). Mencionar este cambio reciente demuestra que estás completamente al día con la última versión de Next.js.',
-      'Explica el sistema de Caché de Next.js de 4 capas: Request Memoization (deduplica fetch en un mismo render), Data Cache (persiste entre requests), Full Route Cache (guarda HTML estático en build) y Router Cache (en memoria del navegador en cliente).'
+      'In Next.js 15+, route parameters `params` and `searchParams` are asynchronous Promises (`const { slug } = await params;`). Citing this recent architectural change shows deep currency with modern Next.js releases.',
+      'Explain Next.js 4-tier caching system: Request Memoization (deduplicates identical fetches within a single render), Data Cache (persists data across requests), Full Route Cache (persists static HTML and RSC payloads at build), and Router Cache (in-memory client-side route cache).'
     ],
     commonTraps: [
-      'Intentar exportar funciones de metadata o `generateStaticParams` dentro de un Client Component (`"use client"`). Estas funciones solo pueden ejecutarse en Server Components.',
-      'Hacer llamadas a endpoints de API de tu propio proyecto Next.js (`fetch("/api/users")`) dentro de un Server Component en vez de consultar la base de datos o servicio directamente.'
+      'Attempting to export metadata or `generateStaticParams` from a Client Component (`"use client"`). These functions must execute strictly in Server Components.',
+      'Calling internal API routes (`fetch("/api/users")`) inside a Server Component instead of directly querying the database or data layer.'
     ],
-    keyTakeaway: 'Next.js App Router unifica layouts persistentes, Server Components asíncronos y convenciones declarativas.',
+    keyTakeaway: 'Next.js App Router unifies persistent layouts, async Server Components, and declarative file conventions.',
     componentKey: 'NextJsArchitectureDemo',
     tags: ['nextjs', 'app-router', 'layouts', 'server-components', 'route-handlers']
   },
   {
     id: '7.3',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.3 Ecosistema: Remix / React Router v7 vs. Next.js vs. Vite',
-    summary: 'Comparativa de filosofía de frameworks: estándares web y loaders/actions de Remix vs Server Components de Next.js vs SPAs con Vite.',
-    whatIsIt: `La elección de framework define la experiencia de desarrollo y el modelo de datos:
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.3 Ecosystem: Remix / React Router v7 vs. Next.js vs. Vite',
+    summary: 'Framework philosophy comparison: Web standards and loaders/actions in Remix vs Server Components in Next.js vs SPAs in Vite.',
+    whatIsIt: `Framework choice determines development experience, mental models, and data architectures:
 
 1. **Next.js (Vercel)**:
-- Filosofía: **React Server Components (RSC) y Server Actions**.
-- Fuerte orientación al servidor, streaming progresivo y computación Edge.
-- Ideal para: Aplicaciones web completas, plataformas de comercio electrónico y contenido global.
+- Philosophy: **React Server Components (RSC) and Server Actions**.
+- Deep server integration, progressive streaming, and edge infrastructure.
+- Ideal for: Full-stack applications, e-commerce platforms, and global content sites.
 
 2. **Remix / React Router v7 (Shopify)**:
-- Filosofía: **Estándares web nativos (Request, Response, FormData)** y mejora progresiva.
-- Utiliza funciones \`loader\` para cargar datos y \`action\` para mutaciones antes de renderizar la ruta.
-- No depende de RSC; mantiene un modelo mental más cercano al protocolo HTTP tradicional.
+- Philosophy: **Native web standards (Request, Response, FormData)** and progressive enhancement.
+- Relies on \`loader\` functions for reading data and \`action\` functions for mutations before route rendering.
+- Avoids RSC dependency; maintains an HTTP-first mental model.
 
 3. **Vite**:
-- Filosofía: Dev server ultrarrápido impulsado por ESM nativo y esbuild.
-- Es el reemplazo definitivo de Create React App (CRA) para **Single Page Applications (SPA) puras**.
-- Ideal para: Paneles de administración internos que no requieren SSR ni SEO.`,
-    codeSnippet: `// Comparativa del modelo de datos:
+- Philosophy: Ultra-fast dev server powered by native ESM and esbuild.
+- The standard successor to Create React App (CRA) for **pure Single Page Applications (SPAs)**.
+- Ideal for: Internal enterprise portals, admin consoles, and apps that don't need SSR or SEO.`,
+    codeSnippet: `// Data model comparison:
 
-// En Remix / React Router v7:
+// In Remix / React Router v7:
 // export async function loader({ request }: LoaderFunctionArgs) {
-//   return json(await obtenerDatos());
+//   return json(await getData());
 // }
 // export async function action({ request }: ActionFunctionArgs) {
 //   const form = await request.formData();
-//   return redirect('/exito');
+//   return redirect('/success');
 // }
 
-// En Next.js App Router:
-// export default async function Pagina() {
-//   const datos = await obtenerDatos(); // Fetch directo en el componente
-//   return <UI datos={datos} />;
+// In Next.js App Router:
+// export default async function Page() {
+//   const data = await getData(); // Direct async data fetch in component
+//   return <UI data={data} />;
 // }`,
     interviewTips: [
-      'Explica la unificación de Remix y React Router: Remix v3 se fusionó oficialmente en **React Router v7**, permitiendo a cualquier proyecto que use React Router habilitar capacidades de servidor (SSR, pre-rendering, loaders) de forma gradual.',
-      'Menciona el fin de Create React App (CRA): CRA está oficialmente descontinuado y la documentación oficial de React recomienda usar frameworks (Next.js, React Router/Remix) o Vite para SPAs.'
+      'Explain the Remix and React Router unification: Remix v3 merged into **React Router v7**, allowing standard React Router applications to incrementally adopt server capabilities (SSR, pre-rendering, loaders) without a rewrite.',
+      'Mention the deprecation of Create React App (CRA): CRA is officially dead, and the React documentation now recommends modern full-stack frameworks (Next.js, React Router/Remix) or Vite for client-only SPAs.'
     ],
     commonTraps: [
-      'Iniciar un proyecto nuevo en 2026 con Create React App (CRA). Es una bandera roja inmediata en cualquier prueba técnica.',
-      'Elegir Next.js con SSR para una herramienta puramente interna detrás de autenticación estricta donde una SPA simple con Vite y TanStack Query hubiera sido más rápida de desplegar y mantener.'
+      'Starting a new project in 2026 using Create React App (CRA)—an instant red flag in any senior technical interview.',
+      'Choosing Next.js with complex SSR for a purely internal admin panel behind authentication when a Vite SPA with TanStack Query would be simpler, faster to ship, and cheaper to host.'
     ],
-    keyTakeaway: 'Next.js lidera en RSC; React Router v7 en estándares web y loaders; Vite es el rey para SPAs puras.',
+    keyTakeaway: 'Next.js leads in RSC; React Router v7 leads in web standards and loaders; Vite is king for client SPAs.',
     componentKey: 'FrameworksComparisonDemo',
-    tags: ['remix', 'react-router-v7', 'vite', 'nextjs', 'frameworks', 'comparativa']
+    tags: ['remix', 'react-router-v7', 'vite', 'nextjs', 'frameworks', 'comparison']
   },
   {
     id: '7.4',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.4 Arquitectura de Carpetas y Organización a Escala',
-    summary: 'Feature-based Architecture vs Atomic Design. Principios de encapsulamiento y modularidad para proyectos grandes.',
-    whatIsIt: `A medida que una base de código supera los 50 componentes, organizarlos simplemente por tipo técnico (\`/components\`, \`/hooks\`, \`/services\`) colapsa la productividad.
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.4 Folder Architecture & Organization at Scale',
+    summary: 'Feature-based Architecture vs Atomic Design. Modular encapsulation principles for large-scale enterprise applications.',
+    whatIsIt: `Once a codebase grows beyond 50 components, organizing purely by technical file type (\`/components\`, \`/hooks\`, \`/services\`) degrades developer velocity and modularity.
 
-**1. Arquitectura orientada a Funcionalidades (Feature-based)**:
-Organiza el código alrededor del dominio del negocio. Cada carpeta representa una característica aislada con su propia API pública:
+**1. Feature-Based Architecture**:
+Organizes code around business domains. Each directory represents an isolated feature exposing a clean public API:
 \`\`\`
 src/
   features/
@@ -168,52 +168,52 @@ src/
       hooks/
       api/
       types.ts
-      index.ts       <- API pública expuesta al resto de la app
-    carrito/
+      index.ts       <- Public API consumed by the rest of the app
+    cart/
       components/
       hooks/
       index.ts
-  shared/            <- Componentes UI primitivos y utilitarios genéricos
+  shared/            <- Primitive reusable UI components and generic utilities
     ui/ (Button, Modal, Input)
     hooks/ (useDebounce)
     utils/
 \`\`\`
-**Regla de oro**: Las features no deben importar archivos internos de otras features directamente. Solo pueden consumir lo exportado en el \`index.ts\` público de otra feature, o elevar código compartido a \`shared/\`.`,
-    codeSnippet: `// Ejemplo de API pública limpia en src/features/auth/index.ts:
-// Exportamos solo lo que el resto de la app tiene permitido usar:
+**Golden Rule**: Features must never import private internal files of other features directly. They should only consume what is exported through the public \`index.ts\` barrier, or promote shared logic into \`shared/\`.`,
+    codeSnippet: `// Clean public API boundary in src/features/auth/index.ts:
+// Export only what the rest of the application is allowed to consume:
 export { AuthProvider, useAuth } from './hooks/useAuth';
 export { LoginForm } from './components/LoginForm';
 export type { UserProfile } from './types';
-// Los detalles de implementación internos permanecen privados dentro de la feature.`,
+// Internal implementation details remain private inside the feature folder.`,
     interviewTips: [
-      'Explica por qué evitar imports cruzados profundos (`import x from "../auth/components/internals/Auxiliar"`): acopla fuertemente los módulos e imposibilita refactorizar o extraer una funcionalidad a un paquete independiente.',
-      'Compara con Atomic Design: Atomic Design (Átomos, Moléculas, Organismos, Plantillas) es excelente para Design Systems puros (`shared/ui`), pero menos práctico para lógica de negocio de gran escala, donde Feature-based resulta superior.'
+      'Explain why deep cross-feature imports (`import x from "../auth/components/internals/Helper"`) should be banned: they create tight coupling, preventing safe refactoring or extracting features into standalone packages.',
+      'Compare with Atomic Design: Atomic Design (Atoms, Molecules, Organisms, Templates) works wonderfully for pure design systems (`shared/ui`), but breaks down when applied to domain-heavy business logic, where Feature-Based architecture shines.'
     ],
     commonTraps: [
-      'Crear una carpeta `utils/` o `helpers/` gigante que se convierte en un basurero de funciones inconexas.',
-      'Tener archivos de 1,500 líneas que mezclan lógica de llamadas HTTP, transformación de datos, estados de UI y JSX.'
+      'Creating a monolithic `utils/` or `helpers/` folder that becomes an unmaintained dumping ground for unrelated helper functions.',
+      'Writing 1,500-line god components that mix HTTP requests, state management, business transformations, and JSX markup.'
     ],
-    keyTakeaway: 'Organiza por funcionalidades (features) con APIs públicas claras en `index.ts` y agrupa componentes primitivos en `shared/`.',
+    keyTakeaway: 'Organize by business features with explicit public APIs via `index.ts`, placing shared primitives in `shared/`.',
     componentKey: 'FolderArchitectureDemo',
-    tags: ['arquitectura-carpetas', 'feature-based', 'atomic-design', 'modularidad', 'escalabilidad']
+    tags: ['folder-architecture', 'feature-based', 'atomic-design', 'modularity', 'scalability']
   },
   {
     id: '7.5',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.5 Monorepos y Espacios de Trabajo (Turborepo, Nx, pnpm)',
-    summary: 'Manejar múltiples aplicaciones y paquetes compartidos en un solo repositorio con builds cacheados y cambios atómicos.',
-    whatIsIt: `Un **Monorepo** es un único repositorio de Git que alberga múltiples proyectos o paquetes relacionados:
-- \`apps/web\`: Sitio público para clientes (Next.js).
-- \`apps/admin\`: Panel de administración interno.
-- \`packages/ui\`: Biblioteca de componentes y Design System compartido.
-- \`packages/tsconfig\`: Configuraciones compartidas de TypeScript y ESLint.
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.5 Monorepos & Workspaces (Turborepo, Nx, pnpm)',
+    summary: 'Manage multiple applications and shared packages in a single repository with cached build pipelines and atomic commits.',
+    whatIsIt: `A **Monorepo** is a single Git repository hosting multiple interrelated projects or packages:
+- \`apps/web\`: Customer-facing web app (Next.js).
+- \`apps/admin\`: Internal admin dashboard.
+- \`packages/ui\`: Shared component library and Design System.
+- \`packages/tsconfig\`: Centralized TypeScript and ESLint configurations.
 
-**Herramientas esenciales del ecosistema**:
-- **pnpm workspaces / npm workspaces**: Enlazan los paquetes locales mediante symlinks sin publicarlos en npm.
-- **Turborepo / Nx**: Orquestadores de tareas con **Caché Inteligente de Builds**.
-  Si ejecutas \`build\` y ningún archivo de \`packages/ui\` cambió, Turborepo recupera el resultado compilado de la caché en milisegundos en lugar de compilarlo de nuevo.`,
-    codeSnippet: `// turborepo.json (Definición de pipeline y caché)
+**Essential Tools**:
+- **pnpm workspaces / npm workspaces**: Link local packages via symlinks without publishing intermediate artifacts to npm.
+- **Turborepo / Nx**: Task orchestrators featuring **Intelligent Build Caching**.
+  If you run \`build\` and no files in \`packages/ui\` have changed, Turborepo retrieves the build artifacts from cache in milliseconds rather than rebuilding.`,
+    codeSnippet: `// turborepo.json (Pipeline definition and caching)
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
@@ -229,38 +229,38 @@ export type { UserProfile } from './types';
   }
 }`,
     interviewTips: [
-      'Ventajas clave de un Monorepo en entrevistas: 1) Cambios atómicos (puedes actualizar una función en el paquete compartido y adaptar ambas aplicaciones consumidoras en un solo commit/pull request), 2) Reutilización inmediata de código sin ciclo de versionado semántico en npm registry.',
-      'Trade-offs: Exige tooling más complejo, CI/CD más sofisticado y requiere estrategias de clonación ligera si el repositorio crece a gigabytes.'
+      'Core Monorepo benefits in interviews: 1) Atomic changes (refactor a shared component and update all consuming apps in a single commit/PR), 2) Immediate code reuse without publishing semantic version cycles to an npm registry.',
+      'Trade-offs: Requires specialized CI/CD infrastructure, complex tooling, and repository scaling considerations (sparse checkouts) as git history expands.'
     ],
     commonTraps: [
-      'Crear paquetes en un monorepo que se importan de forma circular (A depende de B y B depende de A).',
-      'No configurar caché remota en el CI (Remote Caching), perdiendo la principal ventaja de velocidad de Turborepo o Nx.'
+      'Introducing circular package dependencies (Package A imports Package B while Package B imports Package A).',
+      'Failing to configure Remote Caching in CI, forfeiting the primary speed benefit of Turborepo or Nx.'
     ],
-    keyTakeaway: 'Monorepos con Turborepo y pnpm workspaces unifican paquetes y aplicaciones compartiendo código con caché incremental.',
+    keyTakeaway: 'Monorepos with Turborepo and pnpm workspaces streamline multi-package workflows through incremental cached builds.',
     componentKey: 'MonorepoStructureDemo',
-    tags: ['monorepo', 'turborepo', 'nx', 'pnpm-workspaces', 'cache-builds']
+    tags: ['monorepo', 'turborepo', 'nx', 'pnpm-workspaces', 'build-cache']
   },
   {
     id: '7.6',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.6 Micro-frontends y Module Federation',
-    summary: 'Descomponer aplicaciones web en despliegues independientes por equipo mediante carga dinámica de módulos en runtime.',
-    whatIsIt: `Inspirado en la arquitectura de microservicios en el backend, un **Micro-frontend** divide una aplicación frontend monolítica en módulos autónomos desplegados por equipos de ingeniería independientes:
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.6 Micro-frontends & Module Federation',
+    summary: 'Decompose web apps into independently deployable team sub-applications via runtime dynamic module loading.',
+    whatIsIt: `Inspired by backend microservices, **Micro-frontends** break a monolithic frontend into autonomous sub-applications developed and deployed by independent engineering teams:
 
-- **Host (Shell / Contenedor)**: La aplicación principal que orquesta la navegación, layout y autenticación.
-- **Remotes (Micro-apps)**: Aplicaciones secundarias (ej: Checkout, Carrito, Catálogo) que se despliegan en sus propios dominios y servidores.
+- **Host (Shell / Container)**: The primary application orchestrating layout, routing, and shared authentication.
+- **Remotes (Micro-apps)**: Autonomous sub-applications (e.g., Checkout, Cart, Catalog) deployed independently to their own domains.
 
 **Module Federation (Webpack 5 / Rspack)**:
-Es la tecnología que revolucionó los micro-frontends al permitir que una aplicación host descargue dinámicamente en tiempo de ejecución (runtime) componentes exportados por una aplicación remota, **compartiendo dependencias comunes (como React y ReactDOM) como singleton** para no descargarlas por duplicado.`,
-    codeSnippet: `// webpack.config.js (Host consumiendo una micro-app remota)
+The cornerstone technology that enables host applications to dynamically download components exported by remote applications at runtime, while **sharing singleton dependencies (like React and ReactDOM)** so libraries are not duplicated in memory.`,
+    codeSnippet: `// webpack.config.js (Host consuming a remote micro-app)
 // const { ModuleFederationPlugin } = require('webpack').container;
 //
 // plugins: [
 //   new ModuleFederationPlugin({
 //     name: 'shell_app',
 //     remotes: {
-//       carritoApp: 'carrito@https://carrito.empresa.com/remoteEntry.js'
+//       cartApp: 'cart@https://cart.company.com/remoteEntry.js'
 //     },
 //     shared: {
 //       react: { singleton: true, requiredVersion: '^19.0.0' },
@@ -269,100 +269,100 @@ Es la tecnología que revolucionó los micro-frontends al permitir que una aplic
 //   })
 // ]
 
-// Consumo en React con lazy loading dinámico:
-// const CarritoRemoto = lazy(() => import('carritoApp/WidgetCarrito'));`,
+// Consumption in React via dynamic lazy loading:
+// const RemoteCart = lazy(() => import('cartApp/CartWidget'));`,
     interviewTips: [
-      'Enfoque senior crítico sobre Micro-frontends: "Los micro-frontends son una solución organizacional para coordinar decenas de equipos autónomos, NO una optimización técnica". Introduce sobrecarga operativa, fragmentación de dependencias y riesgo de inconsistencias de UX. Si no tienes más de 50 ingenieros en múltiples squads, suele ser sobre-ingeniería innecesaria.',
-      'Explica la importancia de `singleton: true` en las dependencias compartidas: si el Host y el Remote cargan dos instancias distintas de React en la misma pestaña del navegador, los hooks fallarán con errores de dispatcher inválido.'
+      'Senior architectural perspective: "Micro-frontends are an organizational solution for coordinating dozens of autonomous squads, NOT a technical optimization". They introduce operational overhead, dependency complexity, and UX fragmentation risks. Unless you have 50+ engineers across multiple squads, they often represent unnecessary over-engineering.',
+      'Explain `singleton: true` in shared dependencies: if the Host and Remote instantiate separate copies of React in the same browser context, hooks will crash due to multiple dispatcher instances.'
     ],
     commonTraps: [
-      'Adoptar micro-frontends en un equipo pequeño esperando que la web sea "más rápida". Habitualmente aumenta el tiempo de carga por la descarga de múltiples configuraciones.',
-      'No coordinar las versiones compartidas de librerías base, descargando múltiples copias de frameworks.'
+      'Adopting micro-frontends in small teams hoping the website will be "faster". In practice, load times often increase due to downloading multiple bundles and manifests.',
+      'Neglecting version coordination across shared foundational libraries, leaking multiple framework instances.'
     ],
-    keyTakeaway: 'Module Federation carga módulos remotos en runtime con dependencias singleton; es una solución para escala de equipos.',
+    keyTakeaway: 'Module Federation loads remote modules at runtime with shared singletons; it solves organizational team scale.',
     componentKey: 'MicrofrontendsDemo',
-    tags: ['micro-frontends', 'module-federation', 'webpack', 'escalabilidad-equipos', 'remotes']
+    tags: ['micro-frontends', 'module-federation', 'webpack', 'team-scale', 'remotes']
   },
   {
     id: '7.7',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.7 Design Systems y Storybook',
-    summary: 'Tokens de diseño, componentes atómicos testeados en aislamiento y documentación viva para equipos de diseño y desarrollo.',
-    whatIsIt: `Un **Design System** es la fuente única de verdad para el diseño de interfaces de una compañía. Consta de:
-1. **Design Tokens**: Valores primitivos de variables (colores hexadecimales, escalas tipográficas, radios de borde, espaciados y sombras).
-2. **Componentes Accesibles**: Biblioteca de piezas de UI reutilizables fuertemente tipadas.
-3. **Pautas y Documentación**: Guías de tono, accesibilidad y casos de uso.
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.7 Design Systems & Storybook',
+    summary: 'Design tokens, isolated component testing, and living documentation bridging design and engineering teams.',
+    whatIsIt: `A **Design System** serves as the single source of truth for an organization's UI. It comprises:
+1. **Design Tokens**: Primitive style values (hex colors, typography scales, border radii, spacing scales, box shadows).
+2. **Accessible Component Library**: Reusable, strongly typed UI building blocks adhering to WCAG standards.
+3. **Usage Guidelines & Documentation**: Voice, tone, accessibility specs, and implementation patterns.
 
 **Storybook**:
-Es el entorno de desarrollo y catálogo visual estándar de la industria para construir y probar componentes de React **en total aislamiento**, sin necesidad de ejecutar la aplicación completa, bases de datos ni backends.`,
-    codeSnippet: `// Boton.stories.tsx (Historia de Storybook con CSF 3.0)
+The industry-standard development environment and visual catalog for building, testing, and documenting React components in **complete isolation**, without booting up backend servers, databases, or application routes.`,
+    codeSnippet: `// Button.stories.tsx (Storybook CSF 3.0 Story)
 import type { Meta, StoryObj } from '@storybook/react';
-import { Boton } from './Boton';
+import { Button } from './Button';
 
-const meta: Meta<typeof Boton> = {
-  title: 'Design System/Boton',
-  component: Boton,
+const meta: Meta<typeof Button> = {
+  title: 'Design System/Button',
+  component: Button,
   tags: ['autodocs'],
   argTypes: {
-    variante: { control: 'select', options: ['primario', 'secundario', 'peligro'] }
+    variant: { control: 'select', options: ['primary', 'secondary', 'danger'] }
   }
 };
 export default meta;
 
-type Story = StoryObj<typeof Boton>;
+type Story = StoryObj<typeof Button>;
 
-export const Primario: Story = {
-  args: { variante: 'primario', children: 'Aceptar' }
+export const Primary: Story = {
+  args: { variant: 'primary', children: 'Submit' }
 };
 
-export const Deshabilitado: Story = {
-  args: { disabled: true, children: 'No disponible' }
+export const Disabled: Story = {
+  args: { disabled: true, children: 'Unavailable' }
 };`,
     interviewTips: [
-      'Explica las ventajas de Storybook en equipos multidisciplinarios: permite a los diseñadores de UI/UX y a los QA verificar todos los estados de un componente (hover, focus, disabled, loading, responsive) sin tener que reproducir estados complejos en la app real.',
-      'Menciona el testing de regresión visual (Chromatic): toma capturas de pantalla de cada historia en cada pull request y detecta cambios inesperados de píxeles automáticamente.'
+      'Explain Storybook benefits for cross-functional teams: allows designers, QA engineers, and product managers to audit all component permutations (hover, focus, disabled, loading, responsive viewports) without having to reproduce complex states in the production app.',
+      'Mention visual regression testing (Chromatic): captures pixel-perfect snapshots of every story across pull requests to detect unintended visual regressions automatically.'
     ],
     commonTraps: [
-      'Hardcodear colores y valores de espaciado en los componentes en lugar de utilizar tokens de diseño CSS o variables de Tailwind.',
-      'Dejar que la documentación de Storybook quede desactualizada respecto a las props reales del componente.'
+      'Hardcoding hex colors and arbitrary padding in components rather than consuming CSS variables or Tailwind tokens.',
+      'Allowing Storybook stories to drift out of sync with actual component prop interfaces.'
     ],
-    keyTakeaway: 'Storybook permite crear y auditar componentes en aislamiento impulsados por design tokens coherentes.',
+    keyTakeaway: 'Storybook facilitates developing and testing accessible UI components in isolation driven by consistent design tokens.',
     componentKey: 'DesignSystemStoryDemo',
     tags: ['design-system', 'storybook', 'design-tokens', 'ui-catalog', 'chromatic']
   },
   {
     id: '7.8',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.8 Autenticación en Frontend: Cookies HttpOnly vs. LocalStorage',
-    summary: 'Riesgos de XSS con LocalStorage, almacenamiento seguro con Cookies HttpOnly + SameSite y rotación de tokens.',
-    whatIsIt: `La gestión de credenciales y tokens JWT en el frontend es uno de los temas de seguridad más rigurosamente evaluados:
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.8 Frontend Authentication: HttpOnly Cookies vs. LocalStorage',
+    summary: 'XSS risks with LocalStorage, secure session storage using HttpOnly + SameSite cookies, and token rotation.',
+    whatIsIt: `Managing session credentials and JWTs in frontend applications is one of the most rigorously evaluated security topics:
 
-1. **JWT en \`localStorage\` (Práctica vulnerable)**:
-- Vulnerabilidad crítica: **Cualquier script malicioso inyectado (XSS) puede leer \`localStorage.getItem('token')\` y exfiltrar la sesión**.
-- Único pro: Simplicidad para SPAs simples.
-2. **Cookies \`HttpOnly\`, \`Secure\` y \`SameSite=Lax/Strict\` (Estándar de Oro)**:
-- La bandera **\`HttpOnly\`** impide que el código JavaScript (incluso código malicioso) pueda leer la cookie con \`document.cookie\`.
-- La bandera **\`Secure\`** garantiza que solo viaje por conexiones encriptadas HTTPS.
-- La bandera **\`SameSite\`** previene ataques de falsificación de peticiones en sitios cruzados (CSRF).
-3. **Estrategia híbrida (Access Token en memoria + Refresh Token en cookie HttpOnly)**:
-- Access Token corto (ej: 5-15 minutos) almacenado únicamente en memoria de JavaScript (en un estado o variable).
-- Refresh Token largo (días) guardado en cookie HttpOnly. Si el access token expira, un interceptor hace una petición silenciosa para renovarlo.`,
-    codeSnippet: `// Demostración conceptual de interceptor de autenticación con refresco silencioso:
-async function fetchConAuth(url: string, opciones: RequestInit = {}): Promise<Response> {
-  let res = await fetch(url, opciones);
+1. **JWT in \`localStorage\` (Vulnerable Practice)**:
+- Critical vulnerability: **Any injected script (XSS) can execute \`localStorage.getItem('token')\` and exfiltrate user sessions**.
+- Only advantage: Trivial setup for basic client SPAs.
+2. **Cookies with \`HttpOnly\`, \`Secure\`, and \`SameSite=Lax/Strict\` (Gold Standard)**:
+- **\`HttpOnly\`** flag prevents client JavaScript (including malicious XSS scripts) from accessing the cookie via \`document.cookie\`.
+- **\`Secure\`** flag ensures cookies travel only over encrypted HTTPS connections.
+- **\`SameSite\`** flag mitigates Cross-Site Request Forgery (CSRF) attacks.
+3. **Hybrid Strategy (In-memory Access Token + HttpOnly Refresh Token)**:
+- Short-lived Access Token (e.g., 5-15 minutes) kept exclusively in JavaScript memory (React state).
+- Long-lived Refresh Token stored in an HttpOnly cookie. When the access token expires, an interceptor silently requests a fresh token.`,
+    codeSnippet: `// Conceptual auth fetch interceptor with silent token refresh:
+async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
+  let res = await fetch(url, options);
 
-  // Si el token en memoria expiró (401 Unauthorized):
+  // If in-memory token expired (401 Unauthorized):
   if (res.status === 401) {
-    // Intentamos refrescar usando la cookie HttpOnly en el servidor
-    const resRefresco = await fetch('/api/auth/refresh', { method: 'POST' });
+    // Attempt silent refresh using HttpOnly cookie on server
+    const refreshRes = await fetch('/api/auth/refresh', { method: 'POST' });
 
-    if (resRefresco.ok) {
-      // Reintentamos la petición original una sola vez
-      res = await fetch(url, opciones);
+    if (refreshRes.ok) {
+      // Retry original request once
+      res = await fetch(url, options);
     } else {
-      // Sesión expirada por completo -> Redirigir a login
+      // Session fully expired -> redirect to login
       window.location.href = '/login';
     }
   }
@@ -370,64 +370,64 @@ async function fetchConAuth(url: string, opciones: RequestInit = {}): Promise<Re
   return res;
 }`,
     interviewTips: [
-      'Frase clave de seguridad en entrevistas: "La seguridad en el frontend es cosmética para la UX; la autorización real siempre se valida en el backend". Ocultar un botón de eliminar si el usuario no es admin solo evita confusiones visuales, pero el endpoint debe rechazar peticiones no autorizadas.',
-      'Explica el flujo OAuth 2.0 con PKCE (Proof Key for Code Exchange): es el estándar requerido para aplicaciones Single Page sin backend secreto confiable.'
+      'Key interview security tenet: "Frontend security is cosmetic for UX; actual authorization is always enforced on the backend". Hiding a delete button for non-admins improves UI clarity, but the backend API must reject unauthorized requests regardless of frontend state.',
+      'Explain OAuth 2.0 with PKCE (Proof Key for Code Exchange): the required standard authorization flow for public Single Page Applications that cannot securely store client secrets.'
     ],
     commonTraps: [
-      'Guardar tokens sensibles de pago o credenciales de usuario en `localStorage` o `sessionStorage`.',
-      'Confiar en que un middleware de Next.js es la única barrera de seguridad: las Server Actions y Route Handlers también deben validar individualmente la sesión del usuario.'
+      'Storing sensitive payment tokens, credentials, or PII in `localStorage` or `sessionStorage`.',
+      'Relying solely on Next.js middleware for route protection: Server Actions and Route Handlers must also independently verify user sessions and permissions.'
     ],
-    keyTakeaway: 'Usa Cookies HttpOnly con SameSite para neutralizar XSS en la lectura de tokens, complementado con validación en servidor.',
+    keyTakeaway: 'Use HttpOnly SameSite cookies to protect tokens against XSS, complemented by strict server-side authorization.',
     componentKey: 'AuthSecurityFlowDemo',
-    tags: ['autenticacion', 'httponly-cookies', 'localstorage', 'jwt', 'xss-mitigation', 'oauth-pkce']
+    tags: ['authentication', 'httponly-cookies', 'localstorage', 'jwt', 'xss-mitigation', 'oauth-pkce']
   },
   {
     id: '7.9',
     level: 7,
-    levelTitle: 'Frameworks y Arquitectura',
-    title: '7.9 Seguridad Frontend: XSS, `dangerouslySetInnerHTML` y Sanitización',
-    summary: 'Cómo React escapa strings por defecto, los peligros de inyección de HTML crudo y desinfección obligatoria con DOMPurify.',
-    whatIsIt: `Por defecto, React protege contra **Cross-Site Scripting (XSS)** escapando automáticamente cualquier valor insertado dentro de llaves JSX (\`<div>{usuarioInput}</div>\`). Un string como \`<script>alert(1)</script>\` se renderiza como texto plano inofensivo.
+    levelTitle: 'Frameworks & Architecture',
+    title: '7.9 Frontend Security: XSS, `dangerouslySetInnerHTML`, & Sanitization',
+    summary: 'How React escapes strings by default, dangers of raw HTML injection, and mandatory sanitization with DOMPurify.',
+    whatIsIt: `By default, React protects against **Cross-Site Scripting (XSS)** by automatically escaping values rendered inside JSX curly braces (\`<div>{userInput}</div>\`). A string like \`<script>alert(1)</script>\` renders harmlessly as plain text.
 
-**¿Dónde residen los vectores de vulnerabilidad en React?**:
-1. **\`dangerouslySetInnerHTML={{ __html: htmlCrudo }}\`**:
-Diseñado para renderizar HTML proveniente de un CMS (ej: artículos enriquecidos). Si ese HTML contiene entradas no filtradas de usuarios, atacantes pueden inyectar scripts maliciosos.
-**Mitigación obligatoria**: Sanitizar previamente el contenido con **\`DOMPurify\`** (\`DOMPurify.sanitize(html)\`).
-2. **Enlaces con protocolo malicioso**:
-\`<a href={urlUsuario}>Enlace</a>\`. Si el usuario envía \`javascript:alert(document.cookie)\`, el navegador ejecutará el script al hacer clic. Se debe validar que la URL comience por \`https://\` o \`http://\`.
-3. **Inyecciones en evaluadores**:
-Uso de \`eval()\` o \`new Function()\` con datos dinámicos.`,
-    codeSnippet: `// import DOMPurify from 'dompurify'; // Sanitizador estándar de la industria
+**Where do vulnerability vectors arise in React?**:
+1. **\`dangerouslySetInnerHTML={{ __html: rawHtml }}\`**:
+Designed for rendering CMS-authored rich text. If the HTML includes unvetted user input, attackers can inject arbitrary script execution.
+**Mandatory mitigation**: Always sanitize markup using **\`DOMPurify\`** (\`DOMPurify.sanitize(rawHtml)\`).
+2. **Malicious Protocol URLs**:
+\`<a href={userUrl}>Link</a>\`. If a user supplies \`javascript:alert(document.cookie)\`, clicking the link executes the script. Validate that URLs begin strictly with \`https://\` or \`http://\`.
+3. **Dynamic Evaluators**:
+Using \`eval()\` or \`new Function()\` with dynamic strings.`,
+    codeSnippet: `// import DOMPurify from 'dompurify'; // Industry-standard sanitizer
 
-function ContenidoArticuloSeguro({ htmlDelUsuario }: { htmlDelUsuario: string }) {
-  // ❌ PELIGROSO: Permite XSS si el HTML contiene etiquetas maliciosas
-  // <div dangerouslySetInnerHTML={{ __html: htmlDelUsuario }} />
+function SafeArticleContent({ userHtml }: { userHtml: string }) {
+  // ❌ DANGEROUS: Opens XSS vulnerability if HTML contains malicious tags
+  // <div dangerouslySetInnerHTML={{ __html: userHtml }} />
 
-  // ✅ SEGURO: DOMPurify elimina etiquetas <script>, eventos onerror, etc.
-  // const htmlLimpio = DOMPurify.sanitize(htmlDelUsuario);
+  // ✅ SAFE: DOMPurify strips <script> tags, onerror handlers, and dangerous attributes
+  // const cleanHtml = DOMPurify.sanitize(userHtml);
 
-  // Validación de enlaces externos seguros:
-  const esUrlSegura = (url: string) => /^https?:\\/\\//i.test(url);
+  // Validate external URLs:
+  const isSafeUrl = (url: string) => /^https?:\\/\\//i.test(url);
 
   return (
     <div>
       <div className="prose">
-        {/* Renderizado seguro sanitizado */}
-        <p>Siempre sanitiza el HTML con DOMPurify antes de inyectarlo.</p>
+        {/* Render sanitized markup safely */}
+        <p>Always sanitize untrusted HTML with DOMPurify before injecting it.</p>
       </div>
     </div>
   );
 }`,
     interviewTips: [
-      'Explica qué es una política CSP (Content Security Policy): es una cabecera HTTP enviada por el servidor (`Content-Security-Policy: default-src "self"; ...`) que le indica al navegador qué dominios tienen autorización para ejecutar scripts o cargar fuentes, actuando como segunda línea de defensa impenetrable ante fallas de XSS.',
-      'Explica el prefijo deliberado `dangerously`: el equipo de React nombró la propiedad con la palabra `dangerously` para recordar activamente al desarrollador que está abriendo una brecha de seguridad si no sanitiza el contenido.'
+      'Explain Content Security Policy (CSP): an HTTP response header (`Content-Security-Policy: default-src "self"; ...`) that restricts which domains can execute scripts, styles, and fonts, providing a robust defense-in-depth layer against XSS.',
+      'Explain the deliberate naming `dangerously`: the React team purposefully prefixed `dangerouslySetInnerHTML` to alert developers that injecting raw markup bypasses React’s built-in escaping safeguards.'
     ],
     commonTraps: [
-      'Intentar sanitizar HTML usando expresiones regulares caseras (`replace(/<script>/, "")`): los atacantes pueden evadir regexes con variantes ofuscadas (`<img src=x onerror=alert(1)>`, `<svg onload=...>`). Siempre usa librerías dedicadas como DOMPurify.',
-      'Permitir enlaces con protocolo `javascript:...` en elementos `<a>`.'
+      'Attempting to sanitize HTML with custom regular expressions (`replace(/<script>/, "")`): attackers bypass regex filters using obfuscated vectors (`<img src=x onerror=alert(1)>`, `<svg onload=...>`). Always use battle-tested libraries like DOMPurify.',
+      'Allowing links with `javascript:` protocol in dynamic `<a>` tags.'
     ],
-    keyTakeaway: 'React escapa texto por defecto; si usas `dangerouslySetInnerHTML`, desinfecta obligatoriamente con DOMPurify.',
+    keyTakeaway: 'React escapes content by default; when using `dangerouslySetInnerHTML`, sanitize rigorously with DOMPurify.',
     componentKey: 'XssSanitizationDemo',
-    tags: ['seguridad', 'xss', 'dangerouslySetInnerHTML', 'dompurify', 'csp', 'sanitizacion']
+    tags: ['security', 'xss', 'dangerouslySetInnerHTML', 'dompurify', 'csp', 'sanitization']
   }
 ];

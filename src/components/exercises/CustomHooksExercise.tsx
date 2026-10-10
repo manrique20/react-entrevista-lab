@@ -18,50 +18,50 @@ export function CustomHooksExercise() {
   return (
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="border-b pb-3">
-        <h3 className="font-bold text-base">Ejercicio 10: Suite de Custom Hooks Esenciales</h3>
-        <p className="text-xs text-muted">Evalúa la implementación de memoria de los 4 hooks estrella de entrevistas: `usePrevious`, `useToggle`, `useDebounce` y `useLocalStorage`.</p>
+        <h3 className="font-bold text-base">Exercise 10: Essential Custom Hooks Suite</h3>
+        <p className="text-xs text-muted">Evaluates from-memory implementation of the 4 flagship interview hooks: `usePrevious`, `useToggle`, `useDebounce`, and `useLocalStorage`.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* usePrevious */}
         <div className="p-4 border rounded-xl bg-background space-y-2">
           <h4 className="font-semibold text-xs text-primary">1. usePrevious(val)</h4>
-          <p className="text-xs text-muted">Usa `useRef` para guardar el valor en `useEffect` tras el render.</p>
+          <p className="text-xs text-muted">Uses `useRef` to store the value in `useEffect` after render.</p>
           <div className="font-mono text-xs space-y-1 py-1">
-            <p>Actual: <strong>{contador}</strong></p>
-            <p className="text-muted">Anterior: <strong>{valorAnterior ?? 'N/A'}</strong></p>
+            <p>Current: <strong>{contador}</strong></p>
+            <p className="text-muted">Previous: <strong>{valorAnterior ?? 'N/A'}</strong></p>
           </div>
           <button
             onClick={() => setContador(c => c + 1)}
             className="w-full py-1.5 bg-primary text-white text-xs rounded font-medium hover:bg-primary/90"
           >
-            Incrementar
+            Increment
           </button>
         </div>
 
         {/* useToggle */}
         <div className="p-4 border rounded-xl bg-background space-y-2">
           <h4 className="font-semibold text-xs text-emerald-500">2. useToggle(bool)</h4>
-          <p className="text-xs text-muted">Alterna estado booleano sin escribir setters repetitivos.</p>
+          <p className="text-xs text-muted">Toggles boolean state without writing repetitive setters.</p>
           <div className="font-mono text-xs py-2">
-            Estado: <strong className={activo ? 'text-emerald-500' : 'text-muted'}>{activo ? 'TRUE' : 'FALSE'}</strong>
+            State: <strong className={activo ? 'text-emerald-500' : 'text-muted'}>{activo ? 'TRUE' : 'FALSE'}</strong>
           </div>
           <button
             onClick={() => toggleActivo()}
             className="w-full py-1.5 bg-emerald-600 text-white text-xs rounded font-medium hover:bg-emerald-700"
           >
-            Toggle Booleano
+            Toggle Boolean
           </button>
         </div>
 
         {/* useDebounce */}
         <div className="p-4 border rounded-xl bg-background space-y-2">
           <h4 className="font-semibold text-xs text-purple-500">3. useDebounce(val, 500)</h4>
-          <p className="text-xs text-muted">Pospone el valor con `setTimeout` y limpia con `clearTimeout`.</p>
+          <p className="text-xs text-muted">Defers the value using `setTimeout` and cleans up with `clearTimeout`.</p>
           <input
             value={inputVal}
             onChange={e => setInputVal(e.target.value)}
-            placeholder="Escribe algo..."
+            placeholder="Type something..."
             className="w-full px-2 py-1 border rounded bg-card text-xs font-mono"
           />
           <p className="font-mono text-[11px] text-muted truncate">

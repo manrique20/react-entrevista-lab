@@ -15,7 +15,7 @@ interface JsConsoleRunnerProps {
   autoRun?: boolean;
 }
 
-export function JsConsoleRunner({ initialCode, title = 'Consola en Vivo', autoRun = false }: JsConsoleRunnerProps) {
+export function JsConsoleRunner({ initialCode, title = 'Live Console', autoRun = false }: JsConsoleRunnerProps) {
   const [code, setCode] = useState(initialCode);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [isRunning, setIsRunning] = useState(false);
@@ -32,7 +32,7 @@ export function JsConsoleRunner({ initialCode, title = 'Consola en Vivo', autoRu
   const runCode = (codeToRun: string = code) => {
     setIsRunning(true);
     const newLogs: LogEntry[] = [];
-    const now = () => new Date().toLocaleTimeString('es-ES', { minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3 });
+    const now = () => new Date().toLocaleTimeString('en-US', { minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3 });
 
     const originalConsole = {
       log: console.log,
@@ -111,14 +111,14 @@ export function JsConsoleRunner({ initialCode, title = 'Consola en Vivo', autoRu
             if (res !== undefined) {
               setLogs(prev => [
                 ...prev,
-                { type: 'info', content: '=> Promesa resuelta: ' + formatArg(res), timestamp: now() }
+                { type: 'info', content: '=> Promise resolved: ' + formatArg(res), timestamp: now() }
               ]);
             }
           })
           .catch((err: unknown) => {
             setLogs(prev => [
               ...prev,
-              { type: 'error', content: 'Promesa rechazada: ' + String(err), timestamp: now() }
+              { type: 'error', content: 'Promise rejected: ' + String(err), timestamp: now() }
             ]);
           });
       }
@@ -148,7 +148,7 @@ export function JsConsoleRunner({ initialCode, title = 'Consola en Vivo', autoRu
 
   return (
     <div className="rounded-xl border border-border/80 bg-slate-950 text-slate-100 overflow-hidden shadow-lg font-mono text-xs">
-      {/* Barra superior con controles */}
+      {/* Top control bar */}
       <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-900 border-b border-slate-800">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 mr-1.5">
@@ -164,19 +164,19 @@ export function JsConsoleRunner({ initialCode, title = 'Consola en Vivo', autoRu
           <button
             onClick={handleCopy}
             className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-            title="Copiar código"
+            title="Copy code"
           >
             {hasCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-            <span className="text-[10px]">{hasCopied ? 'Copiado' : 'Copiar'}</span>
+            <span className="text-[10px]">{hasCopied ? 'Copied' : 'Copy'}</span>
           </button>
 
           <button
             onClick={() => setLogs([])}
             className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-            title="Limpiar salida"
+            title="Clear output"
           >
             <RotateCcw className="w-3 h-3" />
-            <span className="text-[10px]">Limpiar</span>
+            <span className="text-[10px]">Clear</span>
           </button>
 
           <button
@@ -185,32 +185,32 @@ export function JsConsoleRunner({ initialCode, title = 'Consola en Vivo', autoRu
             className="flex items-center gap-1 px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition-colors shadow-sm disabled:opacity-50"
           >
             <Play className="w-3 h-3 fill-current" />
-            <span className="text-[10px]">Ejecutar</span>
+            <span className="text-[10px]">Run</span>
           </button>
         </div>
       </div>
 
-      {/* Editor de código */}
+      {/* Code Editor */}
       <div className="p-3 bg-slate-950 border-b border-slate-900">
         <textarea
           value={code}
           onChange={(e) => setCode(e.target.value)}
           spellCheck={false}
           className="w-full h-36 bg-transparent text-amber-200/90 focus:outline-none resize-y font-mono text-[12px] leading-relaxed selection:bg-amber-500/30"
-          placeholder="// Escribe o modifica el código de JavaScript aquí..."
+          placeholder="// Write or modify JavaScript code here..."
         />
       </div>
 
       {/* Terminal Output */}
       <div className="p-3 bg-black/90 min-h-[90px] max-h-56 overflow-y-auto space-y-1">
         <div className="text-[10px] text-slate-500 flex items-center justify-between pb-1 border-b border-slate-800/80 mb-1.5">
-          <span>SALIDA DE CONSOLA ({logs.length} registros)</span>
-          <span>DOMINIO: Navegador</span>
+          <span>CONSOLE OUTPUT ({logs.length} logs)</span>
+          <span>ENVIRONMENT: Browser</span>
         </div>
 
         {logs.length === 0 ? (
           <p className="text-slate-600 italic text-[11px] py-2 flex items-center gap-1.5">
-            <span>&gt; Pulsa &quot;Ejecutar&quot; para correr el snippet en vivo.</span>
+            <span>&gt; Click &quot;Run&quot; to execute the live snippet.</span>
           </p>
         ) : (
           logs.map((log, idx) => (

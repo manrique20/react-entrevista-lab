@@ -59,7 +59,7 @@ function splitIntoChunks(text: string, maxLen = 140): string[] {
 }
 
 async function fetchAudioChunk(chunk: string, retries = 1): Promise<ArrayBuffer | null> {
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=es&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(chunk)}`;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const res = await fetch(url, {
@@ -71,9 +71,9 @@ async function fetchAudioChunk(chunk: string, retries = 1): Promise<ArrayBuffer 
       if (res.ok) {
         return await res.arrayBuffer();
       }
-      console.warn(`[TTS] Error HTTP ${res.status} (intento ${attempt + 1}) en fragmento de audio: "${chunk.slice(0, 40)}..."`);
+      console.warn(`[TTS] HTTP Error ${res.status} (attempt ${attempt + 1}) on audio chunk: "${chunk.slice(0, 40)}..."`);
     } catch (err) {
-      console.warn(`[TTS] Excepción de red (intento ${attempt + 1}):`, err);
+      console.warn(`[TTS] Network exception (attempt ${attempt + 1}):`, err);
     }
     if (attempt < retries) {
       await new Promise(r => setTimeout(r, 150));
@@ -92,7 +92,7 @@ async function synthesizeFullAudio(text: string): Promise<Buffer | null> {
     if (ab) {
       buffers.push(Buffer.from(ab));
     } else {
-      console.warn(`[TTS] Se omitió fragmento fallido tras reintentos: "${chunk.slice(0, 40)}..."`);
+      console.warn(`[TTS] Skipped failed chunk after retries: "${chunk.slice(0, 40)}..."`);
     }
   }
 
@@ -105,12 +105,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const text = body.text;
     if (!text || typeof text !== 'string' || text.trim().length === 0) {
-      return new NextResponse('Texto requerido', { status: 400 });
+      return new NextResponse('Text is required', { status: 400 });
     }
 
     const combinedMp3 = await synthesizeFullAudio(text.trim());
     if (!combinedMp3) {
-      return new NextResponse('Error al sintetizar audio', { status: 500 });
+      return new NextResponse('Error synthesizing audio', { status: 500 });
     }
 
     return new NextResponse(new Uint8Array(combinedMp3), {
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     console.error('[API TTS POST] Error:', err);
-    return new NextResponse('Error interno', { status: 500 });
+    return new NextResponse('Internal server error', { status: 500 });
   }
 }
 
@@ -130,12 +130,12 @@ export async function GET(req: NextRequest) {
   const text = searchParams.get('text');
 
   if (!text || text.trim().length === 0) {
-    return new NextResponse('Texto requerido', { status: 400 });
+    return new NextResponse('Text is required', { status: 400 });
   }
 
   const combinedMp3 = await synthesizeFullAudio(text.trim());
   if (!combinedMp3) {
-    return new NextResponse('Error al sintetizar audio', { status: 500 });
+    return new NextResponse('Error synthesizing audio', { status: 500 });
   }
 
   return new NextResponse(new Uint8Array(combinedMp3), {

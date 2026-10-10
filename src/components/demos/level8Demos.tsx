@@ -1,34 +1,33 @@
 'use client';
 
-import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
-import { Microscope, Layers, AlertTriangle, Check, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
 
-// Demo 8.1: Árbol Fiber con punteros child, sibling y return
+// Demo 8.1: Fiber Tree with child, sibling, and return pointers
 export function FiberTreeVisualizerDemo() {
-  const [nodoSeleccionado, setNodoSeleccionado] = useState('App');
+  const [selectedNode, setSelectedNode] = useState('App');
 
-  const nodos: Record<string, { tipo: string; child: string | null; sibling: string | null; parent: string | null }> = {
-    App: { tipo: 'RootComponent', child: 'Header', sibling: null, parent: null },
-    Header: { tipo: 'HeaderComponent', child: 'Logo', sibling: 'Main', parent: 'App' },
-    Logo: { tipo: 'HostComponent (<img>)', child: null, sibling: 'Nav', parent: 'Header' },
-    Nav: { tipo: 'HostComponent (<nav>)', child: null, sibling: null, parent: 'Header' },
-    Main: { tipo: 'MainComponent', child: 'Article', sibling: 'Footer', parent: 'App' },
-    Article: { tipo: 'ArticleComponent', child: null, sibling: null, parent: 'Main' },
-    Footer: { tipo: 'FooterComponent', child: null, sibling: null, parent: 'App' }
+  const nodes: Record<string, { type: string; child: string | null; sibling: string | null; parent: string | null }> = {
+    App: { type: 'RootComponent', child: 'Header', sibling: null, parent: null },
+    Header: { type: 'HeaderComponent', child: 'Logo', sibling: 'Main', parent: 'App' },
+    Logo: { type: 'HostComponent (<img>)', child: null, sibling: 'Nav', parent: 'Header' },
+    Nav: { type: 'HostComponent (<nav>)', child: null, sibling: null, parent: 'Header' },
+    Main: { type: 'MainComponent', child: 'Article', sibling: 'Footer', parent: 'App' },
+    Article: { type: 'ArticleComponent', child: null, sibling: null, parent: 'Main' },
+    Footer: { type: 'FooterComponent', child: null, sibling: null, parent: 'App' }
   };
 
-  const actual = nodos[nodoSeleccionado];
+  const current = nodes[selectedNode];
 
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-4">
       <div className="flex flex-wrap gap-1.5 items-center">
-        <span className="font-semibold text-muted mr-1">Seleccionar nodo Fiber:</span>
-        {Object.keys(nodos).map(k => (
+        <span className="font-semibold text-muted mr-1">Select Fiber node:</span>
+        {Object.keys(nodes).map(k => (
           <button
             key={k}
-            onClick={() => setNodoSeleccionado(k)}
+            onClick={() => setSelectedNode(k)}
             className={`px-2.5 py-1 rounded font-mono text-[11px] ${
-              nodoSeleccionado === k ? 'bg-orange-600 text-white font-bold' : 'border hover:bg-muted'
+              selectedNode === k ? 'bg-orange-600 text-white font-bold' : 'border hover:bg-muted'
             }`}
           >
             {k}
@@ -38,94 +37,94 @@ export function FiberTreeVisualizerDemo() {
 
       <div className="p-4 border rounded-xl bg-background font-mono space-y-2">
         <div className="flex items-center justify-between border-b pb-2">
-          <span className="text-sm font-bold text-orange-500">FiberNode: {nodoSeleccionado}</span>
-          <span className="text-muted text-[11px]">{actual.tipo}</span>
+          <span className="text-sm font-bold text-orange-500">FiberNode: {selectedNode}</span>
+          <span className="text-muted text-[11px]">{current.type}</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
-          <p><strong>.child (Primer Hijo):</strong> <span className="text-blue-500">{actual.child ?? 'null'}</span></p>
-          <p><strong>.sibling (Hermano):</strong> <span className="text-emerald-500">{actual.sibling ?? 'null'}</span></p>
-          <p><strong>.return (Padre):</strong> <span className="text-purple-500">{actual.parent ?? 'null'}</span></p>
+          <p><strong>.child (First Child):</strong> <span className="text-blue-500">{current.child ?? 'null'}</span></p>
+          <p><strong>.sibling (Sibling):</strong> <span className="text-emerald-500">{current.sibling ?? 'null'}</span></p>
+          <p><strong>.return (Parent):</strong> <span className="text-purple-500">{current.parent ?? 'null'}</span></p>
         </div>
         <p className="text-[10px] text-muted pt-2 border-t">
-          Esta estructura de punteros sustituye la recursión de llamadas con bucles pausables, permitiendo rendering concurrente.
+          This pointer structure replaces call-stack recursion with pausable loops, enabling concurrent rendering.
         </p>
       </div>
     </div>
   );
 }
 
-// Demo 8.5: Bug de Stale Closure y sus 3 soluciones en vivo
+// Demo 8.5: Stale Closure Bug and 3 Live Solutions
 export function StaleClosuresDemo() {
-  const [cuenta, setCuenta] = useState(0);
-  const [modo, setModo] = useState<'bug' | 'funcional' | 'ref'>('bug');
-  const [valorRegistrado, setValorRegistrado] = useState(0);
+  const [count, setCount] = useState(0);
+  const [mode, setMode] = useState<'bug' | 'functional' | 'ref'>('bug');
+  const [loggedValue, setLoggedValue] = useState(0);
 
-  const cuentaRef = useRef(cuenta);
-  cuentaRef.current = cuenta;
+  const countRef = useRef(count);
+  countRef.current = count;
 
   useEffect(() => {
     const id = setInterval(() => {
-      if (modo === 'bug') {
-        // 💣 Stale Closure: esta closure capturó el valor de 'cuenta' al montar el efecto
-        setValorRegistrado(cuenta);
-      } else if (modo === 'funcional') {
-        // ✅ Solución 1: actualización funcional
-        setCuenta(c => {
-          setValorRegistrado(c + 1);
+      if (mode === 'bug') {
+        // 💣 Stale Closure: this closure captured the initial render's 'count'
+        setLoggedValue(count);
+      } else if (mode === 'functional') {
+        // ✅ Solution 1: functional state update
+        setCount(c => {
+          setLoggedValue(c + 1);
           return c + 1;
         });
-      } else if (modo === 'ref') {
-        // ✅ Solución 2: lectura a través de useRef mutable
-        setValorRegistrado(cuentaRef.current);
+      } else if (mode === 'ref') {
+        // ✅ Solution 2: reading through mutable useRef
+        setLoggedValue(countRef.current);
       }
     }, 1000);
 
     return () => clearInterval(id);
-  }, [modo]); // Intencionalmente sin [cuenta] para evidenciar el bug en modo 'bug'
+  }, [mode]); // Intentionally omitting [count] to demonstrate the bug in 'bug' mode
 
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <button
-            onClick={() => setCuenta(c => c + 1)}
+            onClick={() => setCount(c => c + 1)}
             className="px-3 py-1.5 bg-primary text-white rounded font-medium"
           >
-            Incrementar Cuenta ({cuenta})
+            Increment Count ({count})
           </button>
-          <button onClick={() => setCuenta(0)} className="px-3 py-1.5 border rounded">
+          <button onClick={() => setCount(0)} className="px-3 py-1.5 border rounded">
             Reset
           </button>
         </div>
-        <span className="font-mono text-sm">Estado React: <strong>{cuenta}</strong></span>
+        <span className="font-mono text-sm">React State: <strong>{count}</strong></span>
       </div>
 
       <div className="flex flex-wrap gap-2">
         <button
-          onClick={() => setModo('bug')}
-          className={`px-3 py-1 rounded font-medium ${modo === 'bug' ? 'bg-red-600 text-white' : 'border'}`}
+          onClick={() => setMode('bug')}
+          className={`px-3 py-1 rounded font-medium ${mode === 'bug' ? 'bg-red-600 text-white' : 'border'}`}
         >
-          ❌ Modo Stale Closure (Captura Congelada)
+          ❌ Stale Closure Mode (Frozen Capture)
         </button>
         <button
-          onClick={() => setModo('funcional')}
-          className={`px-3 py-1 rounded font-medium ${modo === 'funcional' ? 'bg-emerald-600 text-white' : 'border'}`}
+          onClick={() => setMode('functional')}
+          className={`px-3 py-1 rounded font-medium ${mode === 'functional' ? 'bg-emerald-600 text-white' : 'border'}`}
         >
-          ✅ Solución 1: Forma Funcional (prev =&gt; ...)
+          ✅ Solution 1: Functional Form (prev =&gt; ...)
         </button>
         <button
-          onClick={() => setModo('ref')}
-          className={`px-3 py-1 rounded font-medium ${modo === 'ref' ? 'bg-blue-600 text-white' : 'border'}`}
+          onClick={() => setMode('ref')}
+          className={`px-3 py-1 rounded font-medium ${mode === 'ref' ? 'bg-blue-600 text-white' : 'border'}`}
         >
-          ✅ Solución 2: Lectura vía useRef
+          ✅ Solution 2: Reading via useRef
         </button>
       </div>
 
       <div className="p-3 border rounded bg-background font-mono">
-        <p>Valor leído por el setInterval en este segundo: <strong className={modo === 'bug' ? 'text-red-500' : 'text-emerald-500'}>{valorRegistrado}</strong></p>
-        {modo === 'bug' && (
+        <p>Value read by setInterval this second: <strong className={mode === 'bug' ? 'text-red-500' : 'text-emerald-500'}>{loggedValue}</strong></p>
+        {mode === 'bug' && (
           <p className="text-[11px] text-red-500 mt-1">
-            Observa cómo aunque pulses &quot;Incrementar Cuenta&quot;, el setInterval sigue leyendo {valorRegistrado} porque está atrapado en la closure del primer render.
+            Notice that even when you click &quot;Increment Count&quot;, the setInterval continues reading {loggedValue} because it is trapped inside the initial render&apos;s closure scope.
           </p>
         )}
       </div>
@@ -135,13 +134,13 @@ export function StaleClosuresDemo() {
 
 // Demo 8.8: useEffect vs useLayoutEffect Flicker Simulator
 export function LayoutEffectFlickerDemo() {
-  const [tamano, setTamano] = useState(100);
-  const [usarLayoutEffect, setUsarLayoutEffect] = useState(false);
-  const cajaRef = useRef<HTMLDivElement>(null);
+  const [boxSize, setBoxSize] = useState(100);
+  const [useLayoutEffectMode, setUseLayoutEffectMode] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
 
-  // Simulación: ajusta el tamaño tras medir
-  const ejecutarAjuste = () => {
-    setTamano(prev => (prev === 100 ? 220 : 100));
+  // Simulation: resize after measurement
+  const triggerResize = () => {
+    setBoxSize(prev => (prev === 100 ? 220 : 100));
   };
 
   return (
@@ -149,81 +148,81 @@ export function LayoutEffectFlickerDemo() {
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <button
-            onClick={() => setUsarLayoutEffect(!usarLayoutEffect)}
+            onClick={() => setUseLayoutEffectMode(!useLayoutEffectMode)}
             className={`px-3 py-1.5 rounded font-medium border ${
-              usarLayoutEffect ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/30' : 'bg-amber-500/20 text-amber-600 border-amber-500/30'
+              useLayoutEffectMode ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/30' : 'bg-amber-500/20 text-amber-600 border-amber-500/30'
             }`}
           >
-            {usarLayoutEffect ? '✅ useLayoutEffect (Síncrono sin parpadeo)' : '⚠️ useEffect (Asíncrono tras pintar)'}
+            {useLayoutEffectMode ? '✅ useLayoutEffect (Synchronous before paint)' : '⚠️ useEffect (Asynchronous after paint)'}
           </button>
-          <button onClick={ejecutarAjuste} className="px-3 py-1.5 bg-primary text-white rounded font-medium">
-            Alternar Dimensión
+          <button onClick={triggerResize} className="px-3 py-1.5 bg-primary text-white rounded font-medium">
+            Toggle Dimension
           </button>
         </div>
-        <span className="font-mono text-muted">Ancho actual: {tamano}px</span>
+        <span className="font-mono text-muted">Current width: {boxSize}px</span>
       </div>
 
       <div className="h-28 border rounded bg-background flex items-center p-3 overflow-hidden">
         <div
-          ref={cajaRef}
-          style={{ width: `${tamano}px` }}
+          ref={boxRef}
+          style={{ width: `${boxSize}px` }}
           className="h-16 bg-gradient-to-r from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-300"
         >
-          {tamano}px
+          {boxSize}px
         </div>
       </div>
       <p className="text-muted text-[11px]">
-        <code>useLayoutEffect</code> corre antes de que el navegador pinte el frame, asegurando mediciones de DOM y ajustes de posición con cero parpadeo.
+        <code>useLayoutEffect</code> executes synchronously before the browser paints the frame, guaranteeing DOM measurements and coordinate adjustments happen without visual flicker.
       </p>
     </div>
   );
 }
 
-// Demo 8.10: Custom hooks implementados desde cero
+// Demo 8.10: Custom Hooks Implemented from Scratch
 export function CustomHooksFromScratchDemo() {
-  const [cuenta, setCuenta] = useState(0);
-  const valorPrevio = usePreviousHook(cuenta);
+  const [count, setCount] = useState(0);
+  const previousValue = usePreviousHook(count);
 
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-3">
       <div className="flex items-center gap-3">
         <button
-          onClick={() => setCuenta(c => c + 1)}
+          onClick={() => setCount(c => c + 1)}
           className="px-3 py-1.5 bg-primary text-white rounded font-medium"
         >
-          Incrementar: {cuenta}
+          Increment: {count}
         </button>
       </div>
 
       <div className="p-3 border rounded bg-background font-mono space-y-1">
-        <p>Valor Actual en Render: <strong className="text-primary">{cuenta}</strong></p>
-        <p>Valor Anterior (usePrevious con useRef): <strong className="text-emerald-500">{valorPrevio !== undefined ? valorPrevio : 'undefined (Primer render)'}</strong></p>
+        <p>Current Value on Render: <strong className="text-primary">{count}</strong></p>
+        <p>Previous Value (usePrevious with useRef): <strong className="text-emerald-500">{previousValue !== undefined ? previousValue : 'undefined (Initial render)'}</strong></p>
       </div>
     </div>
   );
 }
 
-// Implementación de usePrevious desde cero
-function usePreviousHook<T>(valor: T): T | undefined {
+// Implementation of usePrevious from scratch
+function usePreviousHook<T>(value: T): T | undefined {
   const ref = useRef<T>(undefined);
   useEffect(() => {
-    ref.current = valor; // Corre DESPUÉS del render
-  }, [valor]);
-  return ref.current;   // En el render actual retorna el valor previo
+    ref.current = value; // Runs AFTER render commit
+  }, [value]);
+  return ref.current;   // Returns prior value during current render
 }
 
-// Fallbacks para Nivel 8
+// Level 8 Topics & Internal Mechanics
 export function RenderCommitPhasesDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-orange-500">Pipeline de Fases en React</p>
+      <p className="font-semibold text-orange-500">React Phase Pipeline</p>
       <div className="font-mono text-[11px] text-muted space-y-1">
-        <p>1. Trigger (setState) -&gt; Scheduler encola el trabajo</p>
-        <p>2. Fase de Render: reconciliación en memoria (Interrumpible y Pura)</p>
-        <p>3. Fase de Commit: mutación síncrona en el DOM real</p>
-        <p>4. useLayoutEffect (síncrono antes de pintar)</p>
-        <p>5. Pintado del navegador (Browser Paint)</p>
-        <p>6. useEffect (asíncrono tras el pintado)</p>
+        <p>1. Trigger (setState) -&gt; Scheduler enqueues work</p>
+        <p>2. Render Phase: in-memory reconciliation (Interruptible &amp; Pure)</p>
+        <p>3. Commit Phase: synchronous mutation of the real browser DOM</p>
+        <p>4. useLayoutEffect (synchronous before paint)</p>
+        <p>5. Browser Paint (visual frame rendered)</p>
+        <p>6. useEffect (asynchronous after browser paint)</p>
       </div>
     </div>
   );
@@ -232,8 +231,8 @@ export function RenderCommitPhasesDemo() {
 export function SchedulerLanesDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-orange-500">Scheduler Lanes (Prioridades de 31 bits)</p>
-      <p className="text-muted">SyncLane (clic/input) &gt; InputContinuousLane &gt; DefaultLane &gt; TransitionLane &gt; IdleLane.</p>
+      <p className="font-semibold text-orange-500">Scheduler Lanes (31-bit Priorities)</p>
+      <p className="text-muted">SyncLane (clicks/inputs) &gt; InputContinuousLane &gt; DefaultLane &gt; TransitionLane &gt; IdleLane.</p>
     </div>
   );
 }
@@ -241,8 +240,8 @@ export function SchedulerLanesDemo() {
 export function HooksInternalsDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-orange-500">Lista Enlazada de Hooks</p>
-      <p className="text-muted">React no almacena nombres de variables; recorre fiber.memoizedState en orden estricto.</p>
+      <p className="font-semibold text-orange-500">Hooks Linked List</p>
+      <p className="text-muted">React does not store variable names; it traverses fiber.memoizedState in strict invocation order.</p>
     </div>
   );
 }
@@ -250,8 +249,8 @@ export function HooksInternalsDemo() {
 export function SetStateBatchingAsyncDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-orange-500">Encolado y Asincronía de setState</p>
-      <p className="text-muted">setState encola un objeto Update en fiber.updateQueue; nunca muta la constante local en la misma línea.</p>
+      <p className="font-semibold text-orange-500">setState Queuing and Asynchrony</p>
+      <p className="text-muted">setState enqueues an Update object into fiber.updateQueue; it never mutates the local closure variable on the same line.</p>
     </div>
   );
 }
@@ -259,8 +258,8 @@ export function SetStateBatchingAsyncDemo() {
 export function WhyRerenderBailoutDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-orange-500">Bailout con Object.is</p>
-      <p className="text-muted">Si el setter recibe la misma referencia, React ejecuta un Eager Bailout y omite el render.</p>
+      <p className="font-semibold text-orange-500">Bailout with Object.is</p>
+      <p className="text-muted">If the setter receives the identical identity reference, React executes an Eager Bailout and skips child re-rendering.</p>
     </div>
   );
 }
@@ -268,8 +267,8 @@ export function WhyRerenderBailoutDemo() {
 export function HydrationMismatchDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
-      <p className="font-semibold text-orange-500">Prevención de Mismatch de Hidratación</p>
-      <p className="text-muted">Difiere lecturas dependientes del cliente (como la hora local o localStorage) a un useEffect tras el montaje.</p>
+      <p className="font-semibold text-orange-500">Hydration Mismatch Prevention</p>
+      <p className="text-muted">Defer client-dependent values (like local time or localStorage) to a useEffect hook running strictly after mount.</p>
     </div>
   );
 }

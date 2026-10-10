@@ -67,10 +67,10 @@ export function TopicCard({
                     ? 'bg-primary text-white border-primary shadow-xs'
                     : 'border-border/80 hover:bg-muted text-muted hover:text-foreground'
                 }`}
-                title={isSpeaking ? 'Detener lectura de este tema' : 'Escuchar este tema con voz asistida'}
+                title={isSpeaking ? 'Stop topic audio' : 'Listen with TTS audio'}
               >
                 {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-                <span className="text-[11px]">{isSpeaking ? 'Detener' : 'Escuchar'}</span>
+                <span className="text-[11px]">{isSpeaking ? 'Stop' : 'Listen'}</span>
               </button>
             )}
 
@@ -85,12 +85,12 @@ export function TopicCard({
               {isCompleted ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span>Dominado</span>
+                  <span>Mastered</span>
                 </>
               ) : (
                 <>
                   <Circle className="w-4 h-4 text-muted" />
-                  <span>Marcar como estudiado</span>
+                  <span>Mark as studied</span>
                 </>
               )}
             </button>
@@ -100,7 +100,7 @@ export function TopicCard({
         <h3 className="text-lg font-bold text-foreground mt-2 leading-snug break-words">{topic.title}</h3>
         <p className="text-xs text-muted mt-1 leading-relaxed break-words">{topic.summary}</p>
 
-        {/* Tabs de navegación interna */}
+        {/* Internal tab navigation */}
         <div className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-border/40 text-xs">
           <button
             onClick={() => setActiveTab('concept')}
@@ -110,7 +110,7 @@ export function TopicCard({
                 : 'text-muted hover:text-foreground hover:bg-muted/60'
             }`}
           >
-            <BookOpen className="w-3.5 h-3.5" /> Concepto
+            <BookOpen className="w-3.5 h-3.5" /> Concept
           </button>
           <button
             onClick={() => setActiveTab('demo')}
@@ -120,7 +120,7 @@ export function TopicCard({
                 : 'text-muted hover:text-foreground hover:bg-muted/60'
             }`}
           >
-            <FlaskConical className="w-3.5 h-3.5" /> Laboratorio en Vivo
+            <FlaskConical className="w-3.5 h-3.5" /> Live Sandbox
           </button>
           <button
             onClick={() => setActiveTab('code')}
@@ -130,7 +130,7 @@ export function TopicCard({
                 : 'text-muted hover:text-foreground hover:bg-muted/60'
             }`}
           >
-            <Code2 className="w-3.5 h-3.5" /> Código Fuente
+            <Code2 className="w-3.5 h-3.5" /> Source Code
           </button>
           <button
             onClick={() => setActiveTab('interview')}
@@ -140,12 +140,12 @@ export function TopicCard({
                 : 'text-muted hover:text-foreground hover:bg-muted/60'
             }`}
           >
-            <Briefcase className="w-3.5 h-3.5" /> En la Entrevista
+            <Briefcase className="w-3.5 h-3.5" /> In the Interview
           </button>
         </div>
       </div>
 
-      {/* Body dinámico por tab */}
+      {/* Dynamic body per tab */}
       <div className="p-5">
         {activeTab === 'concept' && (
           <div className="space-y-4">
@@ -156,7 +156,7 @@ export function TopicCard({
             <div className="p-3.5 rounded-xl border border-primary/20 bg-primary/5 flex items-start gap-3 mt-4">
               <Lightbulb className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               <div className="text-xs">
-                <span className="font-bold text-primary block mb-0.5">Idea Clave para Recordar:</span>
+                <span className="font-bold text-primary block mb-0.5">Key Takeaway:</span>
                 <span className="text-foreground/90">{topic.keyTakeaway}</span>
               </div>
             </div>
@@ -179,7 +179,7 @@ export function TopicCard({
           <div className="space-y-3">
             <div className="flex items-center justify-between text-xs text-muted mb-2">
               <span className="font-semibold text-primary flex items-center gap-1">
-                <FlaskConical className="w-3.5 h-3.5" /> Widget interactivo de prueba
+                <FlaskConical className="w-3.5 h-3.5" /> Interactive Sandbox Widget
               </span>
               <span className="text-[11px] font-mono">React 19 Interactive Runtime</span>
             </div>
@@ -195,18 +195,18 @@ export function TopicCard({
             <CodeBlock
               code={topic.codeSnippet}
               language={topic.codeLanguage || 'tsx'}
-              title={`${topic.title} - Ejemplo`}
+              title={`${topic.title} - Example`}
             />
           </div>
         )}
 
         {activeTab === 'interview' && (
           <div className="space-y-4">
-            {/* Qué decir */}
+            {/* What to say */}
             <div className="space-y-2">
               <h4 className="font-bold text-xs text-foreground flex items-center gap-1.5">
                 <Briefcase className="w-4 h-4 text-blue-500" />
-                Cómo responder con nivel Senior:
+                Senior-Level Answer Strategy:
               </h4>
               <ul className="space-y-2 text-xs">
                 {topic.interviewTips.map((tip, idx) => (
@@ -218,12 +218,12 @@ export function TopicCard({
               </ul>
             </div>
 
-            {/* Trampas comunes */}
+            {/* Common Traps */}
             {topic.commonTraps.length > 0 && (
               <div className="space-y-2 pt-2 border-t border-border/40">
                 <h4 className="font-bold text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                   <AlertTriangle className="w-4 h-4 text-amber-500" />
-                  Trampas habituales y Red Flags en entrevistas:
+                  Common Traps &amp; Interview Red Flags:
                 </h4>
                 <ul className="space-y-2 text-xs">
                   {topic.commonTraps.map((trap, idx) => (

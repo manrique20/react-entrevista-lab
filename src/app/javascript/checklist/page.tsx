@@ -30,71 +30,71 @@ interface ChecklistItem {
 const defaultChecklistItems: ChecklistItem[] = [
   {
     id: 'lvl-1',
-    title: 'Nivel 1: Fundamentos',
-    description: 'Tipos primitivos vs objetos, var/let/const, hoisting, TDZ, coerción y operadores ?? y ?.',
+    title: 'Level 1: Fundamentals',
+    description: 'Primitive types vs objects, var/let/const, hoisting, TDZ, type coercion, and ?? & ?. operators.',
     link: '/javascript/nivel/1',
     category: 'Nivel'
   },
   {
     id: 'lvl-2',
-    title: 'Nivel 2: Funciones',
-    description: 'Arrow functions, rest/spread, funciones de orden superior, closures, currying y objeto arguments.',
+    title: 'Level 2: Functions',
+    description: 'Arrow functions, rest/spread, higher-order functions, closures, currying, and the arguments object.',
     link: '/javascript/nivel/2',
     category: 'Nivel'
   },
   {
     id: 'lvl-3',
-    title: 'Nivel 3: Scope, closures y this',
-    description: 'Scope léxico, variables en bucles, binding de this, call/apply/bind y patrón módulo para privacidad.',
+    title: 'Level 3: Scope, Closures & this',
+    description: 'Lexical scope, loop variables, this binding, call/apply/bind, and module pattern for privacy.',
     link: '/javascript/nivel/3',
     category: 'Nivel'
   },
   {
     id: 'lvl-4',
-    title: 'Nivel 4: Objetos, prototipos, clases y arrays',
-    description: 'Cadena de prototipos, operador new, miembros privados (#), mutación de arrays, shallow vs deep copy, Map y Set.',
+    title: 'Level 4: Objects, Prototypes, Classes & Arrays',
+    description: 'Prototype chain, new operator, private fields (#), array mutation, shallow vs deep copy, Map & Set.',
     link: '/javascript/nivel/4',
     category: 'Nivel'
   },
   {
     id: 'lvl-5',
-    title: 'Nivel 5: Asincronía',
-    description: 'Event loop explicado de memoria, microtareas vs macrotareas, Promise.all/race/any, cancelación con AbortController y retry con backoff.',
+    title: 'Level 5: Asynchronous JavaScript',
+    description: 'Event loop explained from memory, microtasks vs macrotasks, Promise combinators, AbortController cancellation, and backoff retries.',
     link: '/javascript/nivel/5',
     category: 'Nivel'
   },
   {
     id: 'lvl-6',
-    title: 'Nivel 6: ES6+ y módulos',
-    description: 'ESM vs CommonJS, iterables, generadores (function*), Proxy & Reflect y novedades recientes.',
+    title: 'Level 6: ES6+ & Modules',
+    description: 'ESM vs CommonJS, iterables, generators (function*), Proxy & Reflect, and modern ECMAScript features.',
     link: '/javascript/nivel/6',
     category: 'Nivel'
   },
   {
     id: 'lvl-7',
-    title: 'Nivel 7: DOM y navegador',
-    description: 'Event bubbling, captura, delegación, storage, fetch/CORS, debounce vs throttle, reflow/repaint y Web Workers.',
+    title: 'Level 7: DOM & Browser APIs',
+    description: 'Event bubbling, capture, delegation, storage, fetch/CORS, debounce vs throttle, reflow/repaint, and Web Workers.',
     link: '/javascript/nivel/7',
     category: 'Nivel'
   },
   {
     id: 'lvl-8',
-    title: 'Nivel 8: Avanzado',
-    description: 'Gestión de memoria, fugas (memory leaks), inmutabilidad, patrones de diseño en JS, Node.js event loop y WeakRef.',
+    title: 'Level 8: Advanced Internals',
+    description: 'Memory management, memory leaks, immutability, JS design patterns, Node.js event loop, and WeakRef.',
     link: '/javascript/nivel/8',
     category: 'Nivel'
   },
   {
     id: 'pr-riddles',
-    title: 'Acertijos resueltos sin mirar la solución',
-    description: 'Resolver los 12 acertijos (A1–A12) de memoria prediciendo exactamente la salida y explicando la trampa técnica.',
+    title: 'Trap riddles solved without looking at solutions',
+    description: 'Solve all riddles from memory predicting the exact output and explaining the underlying JavaScript engine trap.',
     link: '/javascript/acertijos',
     category: 'Práctica'
   },
   {
     id: 'pr-exercises',
-    title: 'Ejercicios E1–E17 escritos de memoria y explicados en voz alta',
-    description: 'Capacidad de codificar debounce, throttle, deepClone (con ciclos), LRU cache, polyfills y promesas sin consultar documentación.',
+    title: 'Coding challenges written from scratch and explained out loud',
+    description: 'Code debounce, throttle, deepClone (with circular refs), LRU cache, polyfills, and Promises without consulting documentation.',
     link: '/javascript/ejercicios',
     category: 'Práctica'
   }
@@ -140,7 +140,7 @@ export default function JsChecklistPage() {
   };
 
   const resetAll = () => {
-    if (confirm('¿Deseas reiniciar el checklist de repaso de JavaScript?')) {
+    if (confirm('Do you want to reset your JavaScript review checklist?')) {
       setCheckedState({});
       localStorage.removeItem('js_review_checklist');
     }
@@ -158,7 +158,7 @@ export default function JsChecklistPage() {
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Volver al Dashboard JS</span>
+          <span>Back to JavaScript Dashboard</span>
         </Link>
       </div>
 
@@ -168,10 +168,10 @@ export default function JsChecklistPage() {
           <div className="space-y-1 flex-1 min-w-0">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 text-xs font-bold uppercase tracking-wider">
               <CheckSquare className="w-3.5 h-3.5" />
-              <span>Preparación Final para la Entrevista</span>
+              <span>Final Interview Preparation</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-foreground leading-tight break-words">
-              Checklist de Repaso: JavaScript
+              Review Checklist: JavaScript
             </h1>
           </div>
 
@@ -180,43 +180,43 @@ export default function JsChecklistPage() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border/80 hover:bg-muted text-xs font-semibold text-muted hover:text-foreground transition-all shrink-0"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reiniciar Checklist</span>
+            <span>Reset Checklist</span>
           </button>
         </div>
 
         <p className="text-xs sm:text-sm text-muted leading-relaxed max-w-5xl break-words">
-          Lista oficial de verificación del documento. Marca cada hito a medida que seas capaz de explicarlo con soltura y escribirlo en vivo sin dudar.
+          Official verification list. Check off each milestone as you can fluently explain and live-code it without hesitation.
         </p>
 
         {/* Resumen de Dominio en Vivo */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
           <div className="p-3.5 rounded-2xl bg-card border border-border/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] text-muted font-medium block">Preguntas Teóricas</span>
-              <span className="text-base font-bold text-foreground">{studiedCount} / {allJsTopics.length} marcadas</span>
+              <span className="text-[11px] text-muted font-medium block">Theoretical Questions</span>
+              <span className="text-base font-bold text-foreground">{studiedCount} / {allJsTopics.length} checked</span>
             </div>
             <Link href="/javascript/nivel/1" className="text-xs text-amber-600 dark:text-amber-400 hover:underline font-semibold">
-              Revisar &gt;
+              Review &gt;
             </Link>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-card border border-border/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] text-muted font-medium block">Acertijos A1–A12</span>
-              <span className="text-base font-bold text-foreground">{riddlesCount} / {jsRiddlesData.length} dominados</span>
+              <span className="text-[11px] text-muted font-medium block">Trap Riddles</span>
+              <span className="text-base font-bold text-foreground">{riddlesCount} / {jsRiddlesData.length} mastered</span>
             </div>
             <Link href="/javascript/acertijos" className="text-xs text-amber-600 dark:text-amber-400 hover:underline font-semibold">
-              Practicar &gt;
+              Practice &gt;
             </Link>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-card border border-border/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] text-muted font-medium block">Ejercicios E1–E17</span>
-              <span className="text-base font-bold text-foreground">{exercisesCount} / {jsExercisesData.length} completados</span>
+              <span className="text-[11px] text-muted font-medium block">Coding Challenges</span>
+              <span className="text-base font-bold text-foreground">{exercisesCount} / {jsExercisesData.length} completed</span>
             </div>
             <Link href="/javascript/ejercicios" className="text-xs text-amber-600 dark:text-amber-400 hover:underline font-semibold">
-              Probar &gt;
+              Try &gt;
             </Link>
           </div>
         </div>
@@ -224,8 +224,8 @@ export default function JsChecklistPage() {
         {/* Global Progress Bar */}
         <div className="pt-2">
           <div className="flex items-center justify-between text-xs font-bold mb-1.5">
-            <span>Objetivos Generales de la Guía</span>
-            <span className="text-amber-600 dark:text-amber-400">{completedTotal} de {defaultChecklistItems.length} ({percentage}%)</span>
+            <span>Overall Guide Objectives</span>
+            <span className="text-amber-600 dark:text-amber-400">{completedTotal} of {defaultChecklistItems.length} ({percentage}%)</span>
           </div>
           <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
             <div
@@ -269,7 +269,7 @@ export default function JsChecklistPage() {
                     onClick={(e) => e.stopPropagation()}
                     className="text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1"
                   >
-                    <span>Ir al módulo</span>
+                    <span>Go to module</span>
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -288,10 +288,10 @@ export default function JsChecklistPage() {
             <Award className="w-8 h-8" />
           </div>
           <h2 className="text-2xl font-black text-foreground">
-            ¡Felicidades! Has completado el Checklist de JavaScript Core
+            Congratulations! You completed the JavaScript Core Checklist
           </h2>
           <p className="text-xs sm:text-sm text-muted max-w-xl mx-auto">
-            Estás 100% preparado para responder con confianza preguntas de arquitectura, el motor V8, event loop y algoritmos en vivo en cualquier entrevista técnica.
+            You are 100% prepared to confidently answer questions on architecture, the V8 engine, the event loop, and live algorithm problems in any technical interview.
           </p>
         </div>
       )}

@@ -4,30 +4,30 @@ export const level3Topics: JsTopic[] = [
   {
     "id": "P22",
     "level": 3,
-    "levelTitle": "Scope, closures y `this`",
-    "question": "¿Qué es el scope y qué tipos hay?",
-    "shortAnswer": "El **scope** es el contexto o alcance léxico que determina la visibilidad y ciclo de vida de las variables. En JavaScript existen 4 scopes: **global**, de **módulo**, de **función** y de **bloque** (`let`/`const`). JavaScript utiliza **ámbito léxico (*lexical scope*)**: la resolución de variables depende de dónde se declaró la función en el código fuente, no de dónde se invoca.",
-    "explanation": `Mecánica interna de la cadena de ámbitos (*Scope Chain*):
+    "levelTitle": "Scope, Closures & this",
+    "question": "What is scope and what types of scope exist in JavaScript?",
+    "shortAnswer": "**Scope** is the lexical context that determines the visibility and lifecycle of variables. JavaScript has 4 types of scope: **global**, **module**, **function**, and **block** (`let`/`const`). JavaScript uses **lexical scope** (static scope): variable resolution depends on where functions are declared in the source code, not where they are called.",
+    "explanation": `Internal mechanics of the Scope Chain:
 
-1. **Tipos de Ámbito:**
-- **Global:** Variables accesibles en todo el programa. En navegadores residen en \`window\` si se declaran con \`var\`.
-- **Módulo:** Cada archivo ESM (\`import\`/\`export\`) tiene su propio ámbito aislado, impidiendo colisiones entre módulos.
-- **Función:** Variables creadas con \`var\`, \`let\` o \`const\` dentro de una función no son visibles desde el exterior.
-- **Bloque (ES6):** Delimitado por \`{ ... }\` (\`if\`, \`for\`, \`try/catch\`). Solo afecta a \`let\`, \`const\` y declaraciones de clases.
+1. **Types of Scope:**
+- **Global:** Variables accessible throughout the entire program. In browsers, declaring variables with \`var\` attaches them to the \`window\` object.
+- **Module:** Each ES module (\`import\`/\`export\`) has its own isolated scope, preventing identifier collisions across files.
+- **Function:** Variables declared with \`var\`, \`let\`, or \`const\` inside a function are inaccessible from outside.
+- **Block (ES6):** Delimited by curly braces \`{ ... }\` (\`if\`, \`for\`, \`try/catch\`). Affects only \`let\`, \`const\`, and class declarations.
 
-2. **Ámbito Léxico y Scope Chain:**
-Cuando el motor ejecuta una instrucción y necesita resolver un identificador:
-1. Busca en el **Registro de Entorno (*Environment Record*)** local inmediato.
-2. Si no lo encuentra, sube a través de la referencia \`outer\` del contexto léxico hacia el ámbito contenedor padre.
-3. Continúa subiendo sucesivamente hasta llegar al ámbito global.
-4. Si tampoco existe en el global, lanza \`ReferenceError\` en modo estricto.
+2. **Lexical Scope and the Scope Chain:**
+When the engine executes an instruction requiring identifier resolution:
+1. It searches the immediate local **Environment Record**.
+2. If not found, it traverses upward via the \`outer\` lexical environment reference to the enclosing parent scope.
+3. It continues ascending iteratively until reaching the global scope.
+4. If the identifier is still not found, it throws a \`ReferenceError\` in strict mode.
 
-3. **Direccionalidad:**
-La búsqueda de variables siempre va de adentro hacia afuera (un hijo ve las variables de sus padres, pero un padre jamás puede acceder a las variables locales de sus hijos).`,
-    "codeSnippet": "const global = 'g';\n\nfunction externa() {\n  const e = 'e';\n  function interna() {\n    const i = 'i';\n    console.log(global, e, i); // ve los tres: sube por la scope chain\n  }\n  interna();\n}\n// console.log(e); → ReferenceError: no se ve hacia adentro",
-    "seniorTip": "En entrevistas, aclara que JavaScript NO tiene ámbito dinámico (como Bash o Perl); tiene ámbito léxico o estático. Esto significa que el scope se determina durante el análisis léxico en tiempo de compilación/parseo, lo cual permite que las closures funcionen de manera predecible.",
+3. **Directionality:**
+Scope lookup is strictly inside-out (inner scopes can access variables from outer scopes, but an outer scope can never access variables declared inside an inner scope).`,
+    "codeSnippet": "const globalVar = 'g';\n\nfunction outer() {\n  const o = 'o';\n  function inner() {\n    const i = 'i';\n    console.log(globalVar, o, i); // Sees all three: climbs the scope chain\n  }\n  inner();\n}\n// console.log(o); → ReferenceError: cannot look into inner scopes",
+    "seniorTip": "In interviews, clarify that JavaScript does NOT have dynamic scoping (like Bash or Perl); it has lexical (static) scoping. This means scope is locked during lexical analysis at compile/parse time, which is precisely why closures behave reliably and predictably.",
     "tags": [
-      "nivel-3",
+      "level-3",
       "scope",
       "javascript",
       "lexical-scope"
@@ -37,23 +37,23 @@ La búsqueda de variables siempre va de adentro hacia afuera (un hijo ve las var
   {
     "id": "P23",
     "level": 3,
-    "levelTitle": "Scope, closures y `this`",
-    "question": "¿Qué es una closure?",
-    "shortAnswer": "Una **closure** es la combinación de una función y el **entorno léxico** en el cual fue declarada. Permite que la función interna recuerde y mantenga acceso a las variables de su ámbito contenedor exterior, incluso después de que la función padre haya finalizado su ejecución y salido de la pila de llamadas (*call stack*).",
-    "explanation": `Mecanismo en memoria y casos de uso en producción:
+    "levelTitle": "Scope, Closures & this",
+    "question": "What is a closure?",
+    "shortAnswer": "A **closure** is the combination of a function bundled together with references to its surrounding **lexical environment**. It allows an inner function to remember and access variables from its outer enclosing scope even after the outer function has finished executing and returned from the call stack.",
+    "explanation": `Memory mechanics and production use cases:
 
-1. **Cómo funciona en la memoria del motor:**
-Normalmente, cuando una función termina su ejecución, su contexto de ejecución (*Execution Context*) se retira de la pila (*call stack*) y sus variables locales son destruidas por el Garbage Collector. Sin embargo, si una función interna hace referencia a alguna variable de ese contexto padre y dicha función interna sobrevive (por ejemplo, al retornarla o pasarla a un callback), el motor traslada esas variables al **Heap** dentro de un objeto de ámbito especial (*Closure Scope*), manteniéndolas vivas mientras la función interna exista.
+1. **How It Works in Engine Memory:**
+Normally, when a function finishes execution, its Execution Context is popped off the call stack and its local variables are reclaimed by the Garbage Collector. However, if an inner function references any variable from that parent context and that inner function survives (e.g., by being returned or passed to a callback), the engine moves those variables from the stack to the **Heap** inside a special scope object (the *Closure Scope*), keeping them alive for as long as the inner function is reachable.
 
-2. **Casos de uso clave en ingeniería de software:**
-- **Encapsulación y datos privados:** Simular propiedades privadas y métodos de acceso sin exponer estado mutable (Patrón Factory y Módulo).
-- **Fábricas de funciones (*Currying* y Aplicación Parcial):** Generar funciones parametrizadas (ej. generadores de URLs o validadores).
-- **Memoización y Caché:** Guardar un diccionario de resultados previos en una variable oculta en la closure para evitar recálculos costosos.
-- **Temporizadores y Event Handlers:** Preservar estado en callbacks asíncronos (\`debounce\`, \`throttle\`, listeners del DOM).`,
-    "codeSnippet": "function crearContador() {\n  let n = 0;              // variable \"privada\"\n  return () => ++n;       // la función interna la sigue viendo\n}\n\nconst a = crearContador();\nconst b = crearContador();\na(); a();                 // 1, 2\nb();                      // 1 (entorno distinto)",
-    "seniorTip": "Cuidado con los memory leaks: las closures mantienen vivas todas las variables a las que hacen referencia. Si una closure de larga duración (como un event listener global o un setInterval) referencia objetos pesados (como un árbol DOM completo o un gran array), esos datos no podrán ser liberados por el Garbage Collector hasta que la closure sea descartada.",
+2. **Key Software Engineering Use Cases:**
+- **Encapsulation and private state:** Emulating private variables and accessors without exposing mutable properties (Factory and Module patterns).
+- **Function factories (Currying and Partial Application):** Generating specialized parameterized functions (e.g., URL builders, validators).
+- **Memoization and Caching:** Storing a lookup dictionary of previously computed results hidden within a closure to avoid redundant recomputations.
+- **Timers and Event Handlers:** Preserving state across asynchronous callbacks (\`debounce\`, \`throttle\`, DOM event listeners).`,
+    "codeSnippet": "function createCounter() {\n  let count = 0;          // \"private\" variable\n  return () => ++count;   // inner function maintains access\n}\n\nconst a = createCounter();\nconst b = createCounter();\na(); a();                 // 1, 2\nb();                      // 1 (independent closure environment)",
+    "seniorTip": "Beware of memory leaks: closures hold onto every variable referenced in their lexical scope. If a long-lived closure (such as a global event listener or setInterval) references heavy objects (like full DOM trees or large arrays), those objects cannot be collected by the Garbage Collector until the closure itself is discarded.",
     "tags": [
-      "nivel-3",
+      "level-3",
       "scope",
       "javascript",
       "debounce",
@@ -64,27 +64,27 @@ Normalmente, cuando una función termina su ejecución, su contexto de ejecució
   {
     "id": "P24",
     "level": 3,
-    "levelTitle": "Scope, closures y `this`",
-    "question": "¿Qué imprime este bucle y cómo se arregla?",
-    "shortAnswer": "Imprime `3 3 3` porque `var` tiene ámbito de función, creando una **única variable `i` compartida** en memoria. Cuando los callbacks de `setTimeout` se ejecutan tras el bucle, este ya finalizó y `i` vale 3. Con `let`, JavaScript crea una **nueva variable `i` con su propia closure por cada iteración**, imprimiendo `0 1 2`.",
-    "explanation": `Análisis paso a paso del Event Loop y closures:
+    "levelTitle": "Scope, Closures & this",
+    "question": "What does this loop log and how do you fix it?",
+    "shortAnswer": "It logs `3 3 3` because `var` is function-scoped, creating a **single shared variable `i`** in memory. By the time the `setTimeout` callbacks run after the loop completes, `i` has reached 3. Replacing `var` with `let` causes JavaScript to create a **new `i` binding per iteration with its own closure**, logging `0 1 2`.",
+    "explanation": `Step-by-step Event Loop and closure breakdown:
 
-1. **Por qué ocurre con \`var\`:**
-- \`var\` no tiene ámbito de bloque. Solo existe una única variable \`i\` en todo el scope de la función o contexto global.
-- \`setTimeout(..., 0)\` no ejecuta el callback de inmediato; lo encola en la cola de macrotareas (*macrotask queue*).
-- El bucle \`for\` síncrono corre hasta su final (\`i = 0, 1, 2, 3\`), terminando con \`i === 3\`.
-- El Call Stack se vacía y el Event Loop despacha los 3 callbacks encolados. Como los 3 leen el mismo puntero en memoria de \`i\`, todos imprimen \`3\`.
+1. **Why It Happens with \`var\`:**
+- \`var\` lacks block scope; only one variable \`i\` exists across the entire function or global context.
+- \`setTimeout(..., 0)\` does not execute the callback immediately; it schedules it in the macrotask queue.
+- The synchronous \`for\` loop runs to completion (\`i = 0, 1, 2, 3\`), ending with \`i === 3\`.
+- The call stack clears and the Event Loop dispatches the 3 queued callbacks. Since all 3 read the exact same memory pointer for \`i\`, they all log \`3\`.
 
-2. **Por qué \`let\` lo resuelve automáticamente:**
-La especificación de ES6 define un comportamiento especial para bucles \`for (let ...)\`: en cada iteración del bucle, el motor crea un **nuevo entorno léxico independiente** y enlaza el valor actual de \`i\` a esa iteración concreta. Cada callback captura su propio valor inmutable de \`i\` en su respectiva closure.
+2. **Why \`let\` Automatically Fixes It:**
+The ES6 specification defines special semantics for \`for (let ...)\` loops: for every iteration, the engine creates a **new independent lexical environment** and re-binds the current value of \`i\` to that specific iteration step. Each callback captures its own immutable copy of \`i\` in its closure.
 
-3. **Solución alternativa histórica (pre-ES6):**
-Usar una IIFE para capturar el valor de \`i\` como argumento por valor:
+3. **Historical Pre-ES6 Solution:**
+Use an IIFE to capture the value of \`i\` as an argument passed by value:
 \`for (var i = 0; i < 3; i++) { ((j) => setTimeout(() => console.log(j), 0))(i); }\``,
-    "codeSnippet": "for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}\n// Imprime: 3 3 3\n\n// Solución 1 moderna: let (ámbito por iteración)\nfor (let i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0); // 0 1 2\n}\n\n// Solución 2 clásica: IIFE que captura el valor en un parámetro j\nfor (var i = 0; i < 3; i++) {\n  ((j) => setTimeout(() => console.log(j), 0))(i);\n}",
-    "seniorTip": "Esta es una de las preguntas de filtro técnico más clásicas en la industria. Si el evaluador te pide explicar la solución con let, menciona explícitamente que la especificación ECMAScript estipula una creación de entorno por paso de bucle (per-iteration environment binding), demostrando que comprendes la especificación a bajo nivel.",
+    "codeSnippet": "for (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0);\n}\n// Logs: 3 3 3\n\n// Modern Solution 1: let (per-iteration block scope)\nfor (let i = 0; i < 3; i++) {\n  setTimeout(() => console.log(i), 0); // 0 1 2\n}\n\n// Classic Solution 2: IIFE capturing value in parameter j\nfor (var i = 0; i < 3; i++) {\n  ((j) => setTimeout(() => console.log(j), 0))(i);\n}",
+    "seniorTip": "This is one of the most classic technical screening questions in the industry. If the interviewer asks you to explain the let solution, explicitly cite the ECMAScript specification's 'per-iteration environment binding' mechanism, demonstrating deep engine-level comprehension.",
     "tags": [
-      "nivel-3",
+      "level-3",
       "closure",
       "javascript",
       "event-loop"
@@ -94,30 +94,30 @@ Usar una IIFE para capturar el valor de \`i\` como argumento por valor:
   {
     "id": "P25",
     "level": 3,
-    "levelTitle": "Scope, closures y `this`",
-    "question": "¿Cómo se determina el valor de `this`?",
-    "shortAnswer": "En funciones tradicionales, `this` no depende de dónde se escribe la función sino de **cómo se invoca** en tiempo de ejecución. Se determina evaluando 4 reglas con precedencia: (1) `new`, (2) enlace explícito (`call`/`apply`/`bind`), (3) enlace implícito (`obj.metodo()`), y (4) enlace por defecto (`undefined` en strict mode, `window` en no estricto). En arrow functions, `this` es puramente léxico.",
-    "explanation": `Las 4 reglas de enlace (*Binding Rules*) ordenadas por precedencia:
+    "levelTitle": "Scope, Closures & this",
+    "question": "How is the value of `this` determined?",
+    "shortAnswer": "In regular functions, `this` is not determined by where the function is defined, but by **how it is invoked** at call time. It is resolved by evaluating 4 rules in order of precedence: (1) `new` binding, (2) explicit binding (`call`/`apply`/`bind`), (3) implicit binding (`obj.method()`), and (4) default binding (`undefined` in strict mode, `window` in sloppy mode). Arrow functions bypass these rules and use lexical `this`.",
+    "explanation": `The 4 Binding Rules ordered by precedence:
 
-1. **Regla 1: \`new Binding\` (Mayor prioridad):**
-Si la función se invoca con el operador \`new\` (\`new Persona()\`), \`this\` se enlaza automáticamente al nuevo objeto recién creado en memoria.
+1. **Rule 1: \`new\` Binding (Highest priority):**
+When a function is invoked with the \`new\` operator (\`new Person()\`), \`this\` is bound to the newly created instance in memory.
 
-2. **Regla 2: Enlace Explícito (\`call\`, \`apply\`, \`bind\`):**
-Si se usa \`.call(contexto)\`, \`.apply(contexto)\` o \`.bind(contexto)\`, \`this\` se fija explícitamente al objeto provisto como primer argumento.
+2. **Rule 2: Explicit Binding (\`call\`, \`apply\`, \`bind\`):**
+When invoked with \`.call(context)\`, \`.apply(context)\`, or \`.bind(context)\`, \`this\` is explicitly set to the object passed as the first argument.
 
-3. **Regla 3: Enlace Implícito (Llamada mediante objeto):**
-Si la función se invoca como propiedad de un objeto (\`usuario.saludar()\`), \`this\` apunta al objeto contenedor inmediato situado a la izquierda del punto en la llamada.
+3. **Rule 3: Implicit Binding (Method call on object):**
+When a function is called as a property on an object (\`user.greet()\`), \`this\` points to the context object immediately preceding the dot at call time.
 
-4. **Regla 4: Enlace por Defecto (Menor prioridad):**
-Si la función se llama como una función suelta e independiente (\`saludar()\`):
-- En **modo estricto (\`'use strict'\`):** \`this\` es \`undefined\`.
-- En **modo no estricto:** \`this\` apunta al objeto global (\`window\` en el navegador, \`global\` en Node.js).
+4. **Rule 4: Default Binding (Lowest priority):**
+When a function is called as a freestanding invocation (\`greet()\`):
+- In **strict mode (\`'use strict'\`):** \`this\` is \`undefined\`.
+- In **non-strict mode:** \`this\` defaults to the global object (\`window\` in browsers, \`global\` in Node.js).
 
-**Excepción:** Las **Arrow Functions** ignoran por completo estas cuatro reglas y heredan el \`this\` léxico de su contexto contenedor en tiempo de definición.`,
-    "codeSnippet": "const persona = {\n  nombre: 'Ana',\n  saludar() { return `Hola, soy ${this.nombre}`; },\n};\n\npersona.saludar();            // 'Hola, soy Ana'  (regla 3: enlace implícito)\nconst suelta = persona.saludar;\nsuelta();                     // pierde el this → TypeError en strict mode",
-    "seniorTip": "Para memorizar esto en entrevistas, cita el libro 'You Don't Know JS' de Kyle Simpson: aplica las reglas en orden: ¿Se llamó con new? ¿Con bind/call/apply? ¿Con un objeto contexto obj.fn()? Si ninguna aplica, cae en default binding (undefined en strict).",
+**Exception:** **Arrow Functions** completely ignore all 4 rules, capturing \`this\` lexically from their enclosing scope when defined.`,
+    "codeSnippet": "const person = {\n  name: 'Ana',\n  greet() { return `Hello, I'm ${this.name}`; },\n};\n\nperson.greet();             // 'Hello, I'm Ana' (Rule 3: implicit binding)\nconst freestanding = person.greet;\nfreestanding();             // Loses this → TypeError in strict mode",
+    "seniorTip": "To ace this in interviews, cite Kyle Simpson's 'You Don't Know JS': apply the rules in order: Was it called with new? Was it called with bind/call/apply? Was it called with a context object obj.fn()? If none apply, fall back to default binding (undefined in strict).",
     "tags": [
-      "nivel-3",
+      "level-3",
       "scope",
       "this",
       "javascript"
@@ -127,29 +127,29 @@ Si la función se llama como una función suelta e independiente (\`saludar()\`)
   {
     "id": "P26",
     "level": 3,
-    "levelTitle": "Scope, closures y `this`",
-    "question": "¿Diferencia entre `call`, `apply` y `bind`?",
-    "shortAnswer": "`call` y `apply` **ejecutan la función inmediatamente** cambiando su contexto `this`: `call` recibe los argumentos separados por comas y `apply` como un array. Por el contrario, `bind` **no ejecuta la función**, sino que devuelve una nueva función con el `this` (y opcionalmente argumentos) fijado permanentemente.",
-    "explanation": `Comparativa y casos de uso de los métodos de \`Function.prototype\`:
+    "levelTitle": "Scope, Closures & this",
+    "question": "What is the difference between `call`, `apply`, and `bind`?",
+    "shortAnswer": "`call` and `apply` **invoke the function immediately** with a specified `this` context: `call` takes arguments individually separated by commas, while `apply` takes arguments as an array. `bind` **does not invoke the function**; it returns a new bound function with its `this` context (and optionally partial arguments) permanently fixed.",
+    "explanation": `Comparison and use cases of \`Function.prototype\` methods:
 
 1. **\`Function.prototype.call(thisArg, arg1, arg2, ...)\`:**
-- Invoca la función de inmediato con \`thisArg\` como \`this\`.
-- Pasa los argumentos de forma posicional e individual.
-- Útil cuando conoces con antelación el número exacto de argumentos.
+- Invokes the function immediately with \`thisArg\` as \`this\`.
+- Passes additional arguments positionally one by one.
+- Best suited when the number of arguments is fixed and known upfront.
 
 2. **\`Function.prototype.apply(thisArg, [argsArray])\`:**
-- Invoca la función de inmediato con \`thisArg\` como \`this\`.
-- Pasa los argumentos agrupados en un array o un objeto array-like.
-- Históricamente vital antes de ES6 para pasar listas dinámicas (\`Math.max.apply(null, numeros)\`), hoy mayoritariamente sustituido por el spread operator (\`Math.max(...numeros)\`).
+- Invokes the function immediately with \`thisArg\` as \`this\`.
+- Passes additional arguments as an array or array-like object.
+- Historically critical before ES6 for passing dynamic argument lists (\`Math.max.apply(null, numbers)\`), largely superseded today by spread syntax (\`Math.max(...numbers)\`).
 
 3. **\`Function.prototype.bind(thisArg, arg1, arg2, ...)\`:**
-- Retorna una nueva función ligada (*bound function*).
-- Fija \`this\` de forma inmutable: intentar usar \`.call()\` o \`.apply()\` sobre una función ya ligada con \`bind\` no alterará su \`this\`.
-- Permite la **aplicación parcial de argumentos**: puedes prefijar argumentos que se prependerán a las llamadas posteriores.`,
-    "codeSnippet": "function presentar(saludo, puntuacion) {\n  return `${saludo}, soy ${this.nombre}${puntuacion}`;\n}\nconst ana = { nombre: 'Ana' };\n\npresentar.call(ana, 'Hola', '!');       // 'Hola, soy Ana!'\npresentar.apply(ana, ['Hola', '!']);    // 'Hola, soy Ana!'\nconst ligada = presentar.bind(ana, 'Hola');\nligada('?');                            // 'Hola, soy Ana?'",
-    "seniorTip": "Regla mnemotécnica para entrevistas: Call usa Comas (arg1, arg2), Apply usa Array ([args]), y Bind devuelve una función atada para llamar más tarde. Aclara también que bind() no puede re-ligarse: una vez atada con bind, invocar .bind() por segunda vez no cambiará el this original.",
+- Returns a new *bound function*.
+- Immutably binds \`this\`: attempting to call \`.call()\` or \`.apply()\` on an already bound function will not override its bound \`this\`.
+- Enables **partial application**: you can prepend fixed arguments that will precede any arguments passed to subsequent invocations.`,
+    "codeSnippet": "function introduce(greeting, punctuation) {\n  return `${greeting}, I'm ${this.name}${punctuation}`;\n}\nconst ana = { name: 'Ana' };\n\nintroduce.call(ana, 'Hello', '!');       // 'Hello, I'm Ana!'\nintroduce.apply(ana, ['Hello', '!']);    // 'Hello, I'm Ana!'\nconst bound = introduce.bind(ana, 'Hello');\nbound('?');                              // 'Hello, I'm Ana?'",
+    "seniorTip": "Interview mnemonic: Call uses Commas (arg1, arg2), Apply uses Array ([args]), and Bind creates a Bound function to call later. Also note that bind() is irreversible: calling .bind() a second time on a bound function cannot alter its original this context.",
     "tags": [
-      "nivel-3",
+      "level-3",
       "this",
       "javascript",
       "bind",
@@ -160,30 +160,30 @@ Si la función se llama como una función suelta e independiente (\`saludar()\`)
   {
     "id": "P27",
     "level": 3,
-    "levelTitle": "Scope, closures y `this`",
-    "question": "¿Cómo se comporta `this` en una arrow function?",
-    "shortAnswer": "Una **arrow function no tiene su propio enlace `this`**; en su lugar, captura el `this` de su ámbito léxico contenedor al momento de definirse. Este valor es permanente y no puede ser alterado con `call`, `apply` o `bind`.",
-    "explanation": `Mecánica y consecuencias prácticas:
+    "levelTitle": "Scope, Closures & this",
+    "question": "How does `this` behave inside an arrow function?",
+    "shortAnswer": "An **arrow function has no `this` binding of its own**; instead, it retains the `this` value of the enclosing lexical scope at the time it is defined. This binding is permanent and cannot be modified using `call`, `apply`, or `bind`.",
+    "explanation": `Mechanics and practical consequences:
 
-1. **Resolución Léxica:**
-Las arrow functions no tienen el slot interno \`[[ThisBindingStatus]]\`. Cuando dentro de una arrow function se utiliza la palabra reservada \`this\`, el motor la busca en la cadena de ámbitos (*scope chain*) tal como buscaría cualquier variable ordinaria (\`x\` o \`y\`).
+1. **Lexical Resolution:**
+Arrow functions lack the internal \`[[ThisBindingStatus]]\` slot. When the \`this\` keyword is evaluated inside an arrow function, the engine resolves it along the scope chain just as it would any ordinary variable (\`x\` or \`y\`).
 
-2. **Comportamiento con \`call\`, \`apply\` y \`bind\`:**
-Si invocas \`.call(nuevoContexto)\` o \`.bind(nuevoContexto)\` sobre una arrow function, **el primer argumento es ignorado**. Solo se pasarán los argumentos subsiguientes si la función los recibe.
+2. **Behavior with \`call\`, \`apply\`, and \`bind\`:**
+If you invoke \`.call(newContext)\` or \`.bind(newContext)\` on an arrow function, **the first argument is ignored**. Only subsequent arguments are passed if the function accepts parameters.
 
-3. **Cuándo es ideal:**
-- En callbacks de métodos (\`array.map(() => this.propiedad)\`).
-- En timers (\`setTimeout(() => this.contador++, 1000)\`).
-- En controladores de eventos donde necesitas acceder a la instancia de la clase y no al elemento del DOM.
+3. **When to Use:**
+- Method callbacks (\`array.map(() => this.property)\`).
+- Timers (\`setTimeout(() => this.count++, 1000)\`).
+- Event listeners when you want to access the class instance rather than the DOM target element.
 
-4. **Cuándo es un antipatrón:**
-- **Como métodos de objetos literales:** \`const obj = { id: 1, getId: () => this.id }\` fallará porque el scope léxico exterior es \`window\` o el módulo, no \`obj\`.
-- **Como métodos prototipales:** \`Persona.prototype.saludar = () => { ... }\` no tendrá acceso a la instancia.
-- **En handlers de DOM donde necesites \`event.currentTarget\` vía \`this\`.**`,
-    "codeSnippet": "const temporizador = {\n  segundos: 0,\n  iniciar() {\n    setInterval(() => {\n      this.segundos++;   // this = temporizador (heredado léxicamente de iniciar)\n    }, 1000);\n  },\n  malMetodo: () => this.segundos, // this NO es el objeto (es el del scope exterior global)\n};",
-    "seniorTip": "En entrevistas, si te preguntan '¿Cómo harías para cambiarle el this a una arrow function?', la respuesta técnica categórica es: 'No es posible. Su diseño en la especificación ECMAScript elimina el enlace dinámico de this a nivel de bytecode'.",
+4. **When It is an Anti-Pattern:**
+- **As object literal methods:** \`const obj = { id: 1, getId: () => this.id }\` fails because its lexical parent is the outer module or \`window\`, not \`obj\`.
+- **As prototype methods:** \`Person.prototype.greet = () => { ... }\` will not have access to the calling instance.
+- **In DOM event handlers** where you expect \`this\` to refer to \`event.currentTarget\`.`,
+    "codeSnippet": "const timer = {\n  seconds: 0,\n  start() {\n    setInterval(() => {\n      this.seconds++;   // this = timer (inherited lexically from start)\n    }, 1000);\n  },\n  badMethod: () => this.seconds, // this is NOT timer (it is global/module scope)\n};",
+    "seniorTip": "In interviews, if asked 'How would you rebind this on an arrow function?', the categorical technical answer is: 'You cannot. By ECMAScript specification design, arrow functions eliminate dynamic this binding at the bytecode level'.",
     "tags": [
-      "nivel-3",
+      "level-3",
       "scope",
       "this",
       "javascript",
@@ -194,29 +194,29 @@ Si invocas \`.call(nuevoContexto)\` o \`.bind(nuevoContexto)\` sobre una arrow f
   {
     "id": "P28",
     "level": 3,
-    "levelTitle": "Scope, closures y `this`",
-    "question": "¿Por qué se pierde `this` al pasar un método como callback y cómo se arregla?",
-    "shortAnswer": "Al extraer un método de un objeto y pasarlo como callback (por ejemplo, `setTimeout(obj.metodo, 1000)`), se extrae únicamente la **referencia suelta a la función**, desvinculándola del objeto. Al ejecutarse en el Event Loop, se invoca como una llamada independiente sin objeto receptor, activando la regla de enlace por defecto (`undefined` o `window`).",
-    "explanation": `Por qué ocurre y las 3 soluciones en producción:
+    "levelTitle": "Scope, Closures & this",
+    "question": "Why is `this` lost when passing an object method as a callback, and how do you fix it?",
+    "shortAnswer": "When extracting a method from an object to pass as a callback (e.g., `setTimeout(obj.method, 1000)`), only the **standalone function reference** is passed, stripping away the object receiver. When executed by the Event Loop, it runs as a freestanding invocation, triggering default binding (`undefined` in strict mode or `window` in sloppy mode).",
+    "explanation": `Root cause and 3 production solutions:
 
-1. **La causa raíz:**
-La sintaxis \`obj.metodo()\` ejecuta una referencia con base (*Reference Record* con base \`obj\`). Al hacer \`const fn = obj.metodo;\` o \`setTimeout(obj.metodo, 100);\`, la operación de acceso a propiedad evalúa y entrega solo el valor funcional desprovisto de su base. Cuando el temporizador o el despachador de eventos lo ejecuta, hace \`fn()\`, lo que activa la regla 4 (enlace por defecto).
+1. **The Root Cause:**
+The syntax \`obj.method()\` evaluates a Reference Record with base \`obj\`. Doing \`const fn = obj.method;\` or \`setTimeout(obj.method, 100);\` dereferences the method, discarding its base object. When the timer or callback dispatcher invokes \`fn()\`, it triggers Rule 4 (default binding).
 
-2. **Solución 1: Envolver en una Arrow Function (Recomendada):**
-\`setTimeout(() => obj.metodo(), 1000);\`
-La arrow function preserva la invocación explícita \`obj.metodo()\`, conservando a \`obj\` a la izquierda del punto.
+2. **Solution 1: Wrap in an Arrow Function (Recommended):**
+\`setTimeout(() => obj.method(), 1000);\`
+The arrow function preserves the explicit call syntax \`obj.method()\`, keeping \`obj\` to the left of the dot.
 
-3. **Solución 2: Enlace explícito con \`bind\`:**
-\`setTimeout(obj.metodo.bind(obj), 1000);\`
-Crea una nueva función permanentemente vinculada a la instancia.
+3. **Solution 2: Explicit Binding with \`bind\`:**
+\`setTimeout(obj.method.bind(obj), 1000);\`
+Returns a new function permanently bound to the target instance.
 
-4. **Solución 3: Class Fields con Arrow Functions (Patrón React clásico):**
-\`class Boton { onClick = () => { console.log(this.texto); }; }\`
-Crea una función flecha por cada instancia durante la construcción de la clase.`,
-    "codeSnippet": "class Boton {\n  constructor() { this.texto = 'Click'; }\n  onClick() { console.log(this.texto); }\n}\nconst b = new Boton();\n\nsetTimeout(b.onClick, 0);                    // undefined o TypeError: this perdido\n\n// Soluciones eficaces:\nsetTimeout(() => b.onClick(), 0);            // 1. Arrow wrapper\nsetTimeout(b.onClick.bind(b), 0);            // 2. Function.prototype.bind\nclass Boton2 {\n  onClick = () => console.log(this.texto);   // 3. Class field arrow\n}",
-    "seniorTip": "En React y TypeScript, los class fields con arrow functions resuelven el problema de this, pero tienen un coste en memoria: la función se recrea en cada instancia en lugar de compartirse en el prototipo (Boton.prototype). Si tienes miles de instancias en memoria, usar métodos prototipales y bind o wrappers es mucho más eficiente.",
+4. **Solution 3: Class Fields with Arrow Functions (Classic React Pattern):**
+\`class Button { onClick = () => { console.log(this.text); }; }\`
+Attaches an arrow function directly to each instance during construction.`,
+    "codeSnippet": "class Button {\n  constructor() { this.text = 'Click'; }\n  onClick() { console.log(this.text); }\n}\nconst b = new Button();\n\nsetTimeout(b.onClick, 0);                    // undefined or TypeError: lost this\n\n// Reliable solutions:\nsetTimeout(() => b.onClick(), 0);            // 1. Arrow wrapper\nsetTimeout(b.onClick.bind(b), 0);            // 2. Function.prototype.bind\nclass Button2 {\n  onClick = () => console.log(this.text);   // 3. Class field arrow function\n}",
+    "seniorTip": "In React and TypeScript, arrow class fields solve the this problem conveniently, but carry a memory footprint: the function is re-created per instance rather than shared on the prototype (Button.prototype). For thousands of instances, prototype methods combined with bound handlers or wrappers are far more memory-efficient.",
     "tags": [
-      "nivel-3",
+      "level-3",
       "this",
       "javascript",
       "callbacks"
@@ -226,29 +226,29 @@ Crea una función flecha por cada instancia durante la construcción de la clase
   {
     "id": "P29",
     "level": 3,
-    "levelTitle": "Scope, closures y `this`",
-    "question": "¿Cómo se crea privacidad con closures (patrón módulo)?",
-    "shortAnswer": "El **patrón Módulo** utiliza closures e IIFEs para crear variables y funciones privadas dentro de un ámbito de función cerrado, exponiendo únicamente un objeto público con métodos que operan sobre dicho estado interno. En JavaScript moderno coexiste con los campos privados nativos `#campo` en clases.",
-    "explanation": `Evolución de la privacidad en JavaScript:
+    "levelTitle": "Scope, Closures & this",
+    "question": "How do you create data privacy with closures (Module Pattern)?",
+    "shortAnswer": "The **Module Pattern** leverages closures and IIFEs to encapsulate private state and helper functions within a closed function scope, returning only a public object with methods that operate on that internal state. In modern JavaScript, it coexists with native `#privateField` class syntax.",
+    "explanation": `Evolution of data privacy in JavaScript:
 
-1. **Patrón Módulo Clásico con Closures:**
-Al retornar un objeto literal desde una función o IIFE, los métodos del objeto mantienen una closure sobre las variables locales de la función. El código exterior no puede leer ni modificar esas variables directamente bajo ninguna circunstancia, garantizando encapsulación estricta.
+1. **Classic Module Pattern with Closures:**
+By returning an object literal from a function or IIFE, the returned methods retain a closure over the function's local variables. External code cannot read or modify these variables directly under any circumstances, guaranteeing strict encapsulation.
 
-2. **Ventajas del enfoque funcional con closures:**
-- No depende de clases ni de \`this\`.
-- Inviolable desde el exterior (ni siquiera mediante \`Object.keys()\` o \`Reflect\`).
-- Estado 100% aislado por cada instancia producida por la factory.
+2. **Advantages of the Closure-Based Approach:**
+- Does not rely on classes or \`this\` binding.
+- Truly impenetrable from the outside (cannot be bypassed with \`Object.keys()\` or \`Reflect\`).
+- 100% isolated state per instance produced by the factory function.
 
-3. **Alternativa moderna de ES2022: Campos Privados \`#\`:**
-Las clases de JavaScript ahora soportan sintaxis de campos privados reales forzados a nivel de lenguaje con \`#\` (\`#saldo = 0\`). A diferencia de convenciones obsoletas como \`_saldo\` (que era meramente cosmético), \`#saldo\` arroja \`SyntaxError\` si se intenta acceder desde fuera de la clase.`,
-    "codeSnippet": "const banco = (() => {\n  let saldo = 0;                       // inaccesible desde fuera\n  const validar = (n) => n > 0;\n\n  return {\n    depositar(n) { if (validar(n)) saldo += n; },\n    obtenerSaldo: () => saldo,\n  };\n})();\n\nbanco.depositar(100);\nconsole.log(banco.obtenerSaldo()); // 100\nconsole.log(banco.saldo);          // undefined (privacidad real)",
-    "seniorTip": "Diferencia técnica senior entre _prop (convención TypeScript private) y #prop (privacidad nativa ECMAScript): la palabra clave private de TypeScript solo es una comprobación en tiempo de compilación que desaparece al transpilar a JS; #prop es privacidad forzada por el propio motor del navegador en tiempo de ejecución.",
+3. **Modern ES2022 Alternative: Private \`#\` Fields:**
+JavaScript classes now natively support hard private fields prefixed with \`#\` (\`#balance = 0\`). Unlike cosmetic naming conventions like \`_balance\`, accessing \`#balance\` from outside the class produces a compile/runtime \`SyntaxError\`.`,
+    "codeSnippet": "const bank = (() => {\n  let balance = 0;                       // Inaccessible from outside\n  const isValid = (n) => n > 0;\n\n  return {\n    deposit(n) { if (isValid(n)) balance += n; },\n    getBalance: () => balance,\n  };\n})();\n\nbank.deposit(100);\nconsole.log(bank.getBalance()); // 100\nconsole.log(bank.balance);      // undefined (true privacy)",
+    "seniorTip": "Senior technical distinction between _prop (TypeScript private modifier) and #prop (ECMAScript native private field): TypeScript's private keyword is merely a compile-time check stripped away during transpilation; #prop is enforced by the JavaScript engine itself at runtime.",
     "tags": [
-      "nivel-3",
+      "level-3",
       "closure",
       "javascript",
-      "patrones",
-      "privacidad"
+      "patterns",
+      "privacy"
     ],
     "interactiveDemo": "console"
   }

@@ -4,228 +4,228 @@ export const LEVEL_2_TOPICS: Topic[] = [
   {
     id: '2.1',
     level: 2,
-    levelTitle: 'Estado y Hooks Básicos',
-    title: '2.1 `useState` (Estado local y actualizaciones funcionales)',
-    summary: 'Manejo de estado inmutable en componentes funcionales. La forma funcional `setCount(prev => prev + 1)` es clave para actualizaciones concurrentes y seguras.',
-    whatIsIt: `\`useState\` declara una variable de estado que React preserva entre renders. Cuando su función actualizadora se invoca con un nuevo valor, programa un re-render del componente.
+    levelTitle: 'State & Core Hooks',
+    title: '2.1 `useState` (Local State and Functional Updates)',
+    summary: 'Immutable state management in functional components. The functional updater `setCount(prev => prev + 1)` is critical for safe, concurrent updates.',
+    whatIsIt: `\`useState\` declares a state variable that React preserves between renders. Calling its updater function with a new value schedules a re-render of the component.
 
-Reglas de oro de \`useState\`:
-1. **Inmutabilidad estricta**: Nunca modifiques el objeto o array actual. Crea una copia nueva usando el operador spread (\`[...arr]\` o \`{ ...obj }\`).
-2. **Actualizaciones asíncronas y programadas**: Llamar a \`setN(5)\` no actualiza la variable \`n\` en la línea siguiente del código actual. La variable tendrá el nuevo valor en el **siguiente ciclo de render**.
-3. **Forma funcional**: Si el nuevo estado depende del estado anterior, usa \`setN(prev => prev + 1)\`. Esto evita leer valores obsoletos por closures o cuando múltiples actualizaciones se agrupan (batching).`,
-    codeSnippet: `function ContadorAsincrono() {
-  const [cuenta, setCuenta] = useState(0);
+Golden rules of \`useState\`:
+1. **Strict Immutability**: Never mutate the current state object or array in place. Always create a new copy using the spread operator (\`[...arr]\` or \`{ ...obj }\`).
+2. **Asynchronous, Scheduled Updates**: Calling \`setN(5)\` does not update the local variable \`n\` on the very next line of code. The variable reflects the new value in the **next render cycle**.
+3. **Functional Updater Form**: If the new state depends on the previous state, use \`setN(prev => prev + 1)\`. This avoids stale values captured in closures and works reliably with state batching.`,
+    codeSnippet: `function AsyncCounter() {
+  const [count, setCount] = useState(0);
 
-  const handleClickIncorrecto = () => {
-    // ❌ Error: Todas leen el mismo 'cuenta' del render actual (ej: 0)
-    setCuenta(cuenta + 1);
-    setCuenta(cuenta + 1);
-    setCuenta(cuenta + 1);
-    // Resultado al terminar el render: ¡Solo suma 1!
+  const handleIncorrectClick = () => {
+    // ❌ Bug: All calls read the same 'count' from the current render closure (e.g. 0)
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+    // Result after render: Increments by only 1!
   };
 
-  const handleClickCorrecto = () => {
-    // ✅ Seguro: Se encolan funciones sobre el valor pendiente más reciente
-    setCuenta(prev => prev + 1);
-    setCuenta(prev => prev + 1);
-    setCuenta(prev => prev + 1);
-    // Resultado: ¡Suma 3 de forma fiable!
+  const handleCorrectClick = () => {
+    // ✅ Safe: Queues updater functions operating on the latest pending state
+    setCount(prev => prev + 1);
+    setCount(prev => prev + 1);
+    setCount(prev => prev + 1);
+    // Result: Reliably increments by 3!
   };
 
   return (
     <div className="flex gap-4">
-      <button onClick={handleClickIncorrecto}>Suma Incorrecta</button>
-      <button onClick={handleClickCorrecto}>Suma Funcional (Correcta)</button>
+      <button onClick={handleIncorrectClick}>Incorrect Increment</button>
+      <button onClick={handleCorrectClick}>Functional Increment (Correct)</button>
     </div>
   );
 }`,
     interviewTips: [
-      'Pregunta clásica: "¿Por qué console.log(cuenta) imprime el valor viejo justo después de setCuenta(cuenta + 1)?" Respuesta senior: Porque setState no muta la variable local en ese frame; programa un nuevo render donde el componente se invocará con el nuevo valor en su closure.',
-      'Explica la inicialización perezosa (lazy initial state): si el valor inicial es costoso de calcular (ej: leer localStorage), pasa una función: `useState(() => calcularPesado())`. Solo se ejecutará en el montaje inicial.'
+      'Classic question: "Why does console.log(count) log the old value immediately after setCount(count + 1)?" Senior answer: Because setState does not mutate the local variable in the current frame; it schedules a new render where the component function will run with the new value in its closure.',
+      'Explain lazy state initialization: if computing the initial value is expensive (e.g. reading from localStorage), pass an initializer function: `useState(() => computeExpensiveValue())`. It only runs during initial mount.'
     ],
     commonTraps: [
-      'Hacer `arr.push(item)` y luego `setArr(arr)`. React compara con `Object.is` y al ver la misma referencia, omite el render.',
-      'Pasar la invocación directa en vez de la función perezosa: `useState(leerLocalStorage())` ejecutará la lectura costosa en cada render aunque descarte el resultado.'
+      'Calling `arr.push(item)` and then `setArr(arr)`. React compares state references with `Object.is`; seeing the same reference, it bails out of rendering.',
+      'Passing a direct function invocation instead of an initializer function: `useState(readLocalStorage())` runs the expensive operation on every render even though React discards the return value after mount.'
     ],
-    keyTakeaway: 'Usa siempre la forma funcional `prev => ...` cuando el nuevo valor dependa del anterior, y nunca mutes la referencia.',
+    keyTakeaway: 'Always use the functional form `prev => ...` when next state depends on previous state, and never mutate references directly.',
     componentKey: 'UseStateAsyncDemo',
-    tags: ['useState', 'actualizacion-funcional', 'inmutabilidad', 'lazy-initial-state']
+    tags: ['useState', 'functional-updates', 'immutability', 'lazy-initial-state']
   },
   {
     id: '2.2',
     level: 2,
-    levelTitle: 'Estado y Hooks Básicos',
-    title: '2.2 `useEffect` (Sincronización y ciclo de vida)',
-    summary: 'Sincroniza el componente con sistemas externos (APIs, timers, eventos DOM). Su función de retorno (cleanup) previene fugas de memoria.',
-    whatIsIt: `\`useEffect\` permite ejecutar efectos secundarios después de que React ha terminado la fase de render y el navegador ha pintado la pantalla.
+    levelTitle: 'State & Core Hooks',
+    title: '2.2 `useEffect` (Synchronization and Lifecycle)',
+    summary: 'Synchronize the component with external systems (APIs, timers, DOM events). Its cleanup function prevents memory leaks.',
+    whatIsIt: `\`useEffect\` lets you run side effects after React has completed the render phase and the browser has painted the screen.
 
-El array de dependencias define su ciclo:
-- **Sin array (\`useEffect(fn)\`)**: Corre después de CADA render.
-- **Array vacío (\`[]\`)**: Corre solo una vez al montar el componente.
-- **Con dependencias (\`[a, b]\`)**: Corre al montar y cada vez que el valor de \`a\` o \`b\` cambie según \`Object.is\`.
+The dependency array controls its lifecycle:
+- **No array (\`useEffect(fn)\`)**: Runs after EVERY render.
+- **Empty array (\`[]\`)**: Runs only once when the component mounts.
+- **With dependencies (\`[a, b]\`)**: Runs on mount and whenever \`a\` or \`b\` changes based on \`Object.is\` comparison.
 
-**La función de limpieza (Cleanup Function)**:
-La función retornada por \`useEffect\` se ejecuta:
-1. Justo antes de que el efecto vuelva a correr (cuando las dependencias cambian).
-2. Cuando el componente se desmonta de la pantalla.
-Es vital para cancelar peticiones, limpiar \`setInterval\` o remover event listeners.`,
-    codeSnippet: `function TemporizadorActivo() {
-  const [segundos, setSegundos] = useState(0);
+**The Cleanup Function**:
+The cleanup function returned by \`useEffect\` executes:
+1. Right before the effect re-runs (when dependencies change).
+2. When the component unmounts from the DOM.
+It is critical for canceling network requests, clearing timers (\`clearInterval\`), or removing event listeners.`,
+    codeSnippet: `function ActiveTimer() {
+  const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    // 1. Configuración del efecto
+    // 1. Effect setup
     const timerId = setInterval(() => {
-      setSegundos(s => s + 1);
+      setSeconds(s => s + 1);
     }, 1000);
 
-    // 2. Limpieza obligatoria (Cleanup)
+    // 2. Mandatory cleanup
     return () => {
-      clearInterval(timerId); // Evita fugas de memoria y timers huérfanos
+      clearInterval(timerId); // Prevents memory leaks and orphaned intervals
     };
-  }, []); // Solo al montar y desmontar
+  }, []); // Runs on mount and unmount only
 
-  return <p>Tiempo transcurrido: {segundos}s</p>;
+  return <p>Elapsed time: {seconds}s</p>;
 }`,
     interviewTips: [
-      'Enfatiza la frase de la documentación oficial: "useEffect no es un método de ciclo de vida, es un mecanismo de sincronización con el mundo exterior".',
-      'Si puedes calcular algo derivado del estado o de las props durante el propio render, NO uses un `useEffect`. Los effects para sincronizar estado interno son un antipatrón común.'
+      'Emphasize the official React docs guidance: "useEffect is not a lifecycle hook; it is a synchronization mechanism with external systems outside React".',
+      'If a value can be derived from existing state or props during render, DO NOT use `useEffect`. Using effects to sync internal React state is a major anti-pattern.'
     ],
     commonTraps: [
-      'Olvidar la función de retorno al suscribirse a eventos de `window` o timers, provocando fugas de memoria acumulativas.',
-      'Omitir dependencias usadas dentro del efecto para "evitar que corra", lo que conduce directamente a bugs de closures obsoletas (stale closures).'
+      'Forgetting cleanup functions when subscribing to `window` events or intervals, creating cumulative memory leaks.',
+      'Omitting dependencies used inside the effect to "prevent it from running," which directly leads to stale closure bugs.'
     ],
-    keyTakeaway: 'useEffect es para sincronizar con sistemas externos al árbol de React. Limpia siempre los recursos al desmontar.',
+    keyTakeaway: 'useEffect is for synchronizing with systems external to the React tree. Always clean up resources on unmount.',
     componentKey: 'UseEffectLifecycleDemo',
-    tags: ['useEffect', 'dependencias', 'cleanup', 'fugas-de-memoria']
+    tags: ['useEffect', 'dependencies', 'cleanup', 'memory-leaks']
   },
   {
     id: '2.3',
     level: 2,
-    levelTitle: 'Estado y Hooks Básicos',
-    title: '2.3 Componentes controlados vs. no controlados',
-    summary: 'Controlado: React es la fuente de la verdad con value + onChange. No controlado: el DOM retiene el valor y se lee vía useRef.',
-    whatIsIt: `Se refiere al manejo de los elementos de formulario (\`<input>\`, \`<select>\`, \`<textarea>\`):
+    levelTitle: 'State & Core Hooks',
+    title: '2.3 Controlled vs. Uncontrolled Components',
+    summary: 'Controlled: React is the single source of truth via value + onChange. Uncontrolled: DOM holds the value and is accessed via useRef.',
+    whatIsIt: `This distinction applies to form input elements (\`<input>\`, \`<select>\`, \`<textarea>\`):
 
-1. **Componente Controlado**:
-- El valor está enlazado a un estado de React (\`value={valor}\`).
-- Las mutaciones ocurren a través de handlers (\`onChange={(e) => setValor(e.target.value)}\`).
-- Ventajas: Validación inmediata, deshabilitado de botones reactivo, inputs dependientes.
-- Desventajas: Provoca un re-render por cada tecla pulsada.
+1. **Controlled Component**:
+- The input value is bound to React state (\`value={val}\`).
+- Modifications occur through change handlers (\`onChange={(e) => setVal(e.target.value)}\`).
+- Advantages: Instant validation, reactive button disabling, dependent inputs.
+- Trade-offs: Triggers a re-render on every keystroke.
 
-2. **Componente No Controlado**:
-- El navegador maneja el valor en su DOM interno.
-- Se accede al valor usando una referencia (\`ref={inputRef}\`) o al hacer submit con \`new FormData(e.currentTarget)\`.
-- Ventajas: Máximo rendimiento, código simple, ideal para formularios extensos o librerías como React Hook Form.`,
-    codeSnippet: `// 1. Controlado: Estado en React
-function InputControlado() {
-  const [texto, setTexto] = useState('');
+2. **Uncontrolled Component**:
+- The browser manages the value in its internal DOM state.
+- The value is read using a ref (\`ref={inputRef}\`) or on submit via \`new FormData(e.currentTarget)\`.
+- Advantages: Optimal performance, simpler code, ideal for large forms and libraries like React Hook Form.`,
+    codeSnippet: `// 1. Controlled: State in React
+function ControlledInput() {
+  const [text, setText] = useState('');
   return (
     <div>
-      <input value={texto} onChange={e => setTexto(e.target.value)} />
-      <span>Caracteres: {texto.length}</span>
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <span>Characters: {text.length}</span>
     </div>
   );
 }
 
-// 2. No Controlado: Estado en el DOM
-function InputNoControlado() {
+// 2. Uncontrolled: State in the DOM
+function UncontrolledInput() {
   const inputRef = useRef<HTMLInputElement>(null);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Valor leído del DOM: ' + inputRef.current?.value);
+    alert('Value read from DOM: ' + inputRef.current?.value);
   };
   return (
     <form onSubmit={handleSubmit}>
-      <input ref={inputRef} defaultValue="Texto inicial" />
-      <button type="submit">Enviar</button>
+      <input ref={inputRef} defaultValue="Initial text" />
+      <button type="submit">Submit</button>
     </form>
   );
 }`,
     interviewTips: [
-      'Explica por qué React Hook Form prefiere componentes no controlados: al registrar refs nativas, escribir en un campo no desencadena un ciclo de renderizado en toda la pantalla, manteniendo 60 FPS incluso con cientos de campos.',
-      'Menciona el uso de `defaultValue` vs `value`: en componentes no controlados se usa `defaultValue` para fijar el valor inicial sin volverlo controlado.'
+      'Explain why React Hook Form prefers uncontrolled components: by registering native input refs, typing in a field does not trigger full-component re-renders, maintaining 60 FPS even with hundreds of inputs.',
+      'Highlight `defaultValue` vs `value`: uncontrolled components use `defaultValue` to configure the initial value without converting the input into a controlled component.'
     ],
     commonTraps: [
-      'El warning: "A component is changing an uncontrolled input to be controlled". Ocurre cuando inicias con `value={undefined}` y luego pasa a tener string. Solución: `value={texto ?? ""}`.'
+      'The warning: "A component is changing an uncontrolled input to be controlled". This occurs when starting with `value={undefined}` and later passing a string. Fix: `value={text ?? ""}`.'
     ],
-    keyTakeaway: 'Controlado ofrece reactividad y validación instantánea; no controlado ofrece rendimiento óptimo y simplicidad.',
+    keyTakeaway: 'Controlled inputs provide instant reactivity and validation; uncontrolled inputs provide optimal rendering performance and simplicity.',
     componentKey: 'ControlledVsUncontrolledDemo',
-    tags: ['formularios', 'controlados', 'no-controlados', 'useRef']
+    tags: ['forms', 'controlled', 'uncontrolled', 'useRef']
   },
   {
     id: '2.4',
     level: 2,
-    levelTitle: 'Estado y Hooks Básicos',
-    title: '2.4 Formularios y validación en React',
-    summary: 'Patrones para formularios multi-campo, unificación de handlers y validación síncrona/asíncrona con feedback visual accesible.',
-    whatIsIt: `Manejar formularios eficientemente en React requiere estructurar el estado para evitar declarar un \`useState\` independiente para cada campo.
+    levelTitle: 'State & Core Hooks',
+    title: '2.4 Forms and Validation in React',
+    summary: 'Patterns for multi-field forms, unified change handlers, and synchronous/asynchronous validation with accessible visual feedback.',
+    whatIsIt: `Managing forms efficiently in React requires structuring state to avoid declaring separate \`useState\` hooks for every single field.
 
-Patrón recomendado de handler unificado:
-- Se declara un solo objeto de estado para todos los campos: \`const [form, setForm] = useState({ email: '', password: '' })\`.
-- Se asigna el atributo \`name\` a cada input coincidiendo con la llave del objeto.
-- Un único handler actualiza dinámicamente la propiedad con computación de llaves: \`setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))\`.
-- La función de validación comprueba las reglas y genera un diccionario de errores tipado antes de enviar.`,
-    codeSnippet: `function FormularioRegistro() {
+Recommended unified handler pattern:
+- Declare a single state object for all fields: \`const [form, setForm] = useState({ email: '', password: '' })\`.
+- Assign the \`name\` attribute on each input matching the state object key.
+- Use a single change handler that updates properties dynamically with computed property names: \`setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))\`.
+- A validation function evaluates rules and produces a typed error dictionary prior to submission.`,
+    codeSnippet: `function RegistrationForm() {
   const [form, setForm] = useState({ email: '', pass: '' });
-  const [errores, setErrores] = useState<{ email?: string; pass?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; pass?: string }>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const validar = () => {
+  const validate = () => {
     const errs: { email?: string; pass?: string } = {};
-    if (!form.email.includes('@')) errs.email = 'Email inválido';
-    if (form.pass.length < 6) errs.pass = 'Mínimo 6 caracteres';
+    if (!form.email.includes('@')) errs.email = 'Invalid email';
+    if (form.pass.length < 6) errs.pass = 'Minimum 6 characters';
     return errs;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const nuevosErrores = validar();
-    setErrores(nuevosErrores);
-    if (Object.keys(nuevosErrores).length === 0) {
-      console.log('Enviando:', form);
+    const newErrors = validate();
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      console.log('Submitting:', form);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <input name="email" value={form.email} onChange={handleChange} placeholder="Email" />
-      {errores.email && <p className="text-red-500 text-sm">{errores.email}</p>}
-      <input name="pass" type="password" value={form.pass} onChange={handleChange} placeholder="Contraseña" />
-      {errores.pass && <p className="text-red-500 text-sm">{errores.pass}</p>}
-      <button type="submit">Registrarse</button>
+      {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+      <input name="pass" type="password" value={form.pass} onChange={handleChange} placeholder="Password" />
+      {errors.pass && <p className="text-red-500 text-sm">{errors.pass}</p>}
+      <button type="submit">Register</button>
     </form>
   );
 }`,
     interviewTips: [
-      'Destaca la importancia de la accesibilidad en formularios: enlazar etiquetas con `htmlFor="id"`, marcar `aria-invalid={!!error}` y asociar el mensaje de error con `aria-describedby="error-id"`.',
-      'Para producción en proyectos medianos/grandes, argumenta por qué se opta por React Hook Form + Zod (validación basada en esquemas sin duplicar lógica entre frontend y backend).'
+      'Emphasize form accessibility: associate labels using `htmlFor="id"`, mark invalid fields with `aria-invalid={!!error}`, and link error messages with `aria-describedby="error-id"`.',
+      'For production in mid-to-large projects, explain why you choose React Hook Form + Zod (schema-based validation that avoids duplicating validation logic between client and server).'
     ],
     commonTraps: [
-      'Declarar 15 `useState` separados para un formulario de 15 campos en lugar de un objeto consolidado o una librería de formularios.',
-      'Validar únicamente en el frontend y olvidar que cualquier validación en cliente es solo conveniencia de UX; la seguridad real se valida en el backend.'
+      'Declaring 15 separate `useState` hooks for a 15-field form instead of using a consolidated object or dedicated form library.',
+      'Relying solely on frontend validation and forgetting that client-side validation is purely for UX convenience; real security must be enforced on the server.'
     ],
-    keyTakeaway: 'Consolida campos con `[e.target.name]: value` o usa React Hook Form para validación desacoplada y accesible.',
+    keyTakeaway: 'Consolidate multi-field inputs with `[e.target.name]: value` or use React Hook Form for decoupled, accessible validation.',
     componentKey: 'FormValidationDemo',
-    tags: ['formularios', 'validacion', 'handlers-dinamicos', 'accesibilidad']
+    tags: ['forms', 'validation', 'dynamic-handlers', 'accessibility']
   },
   {
     id: '2.5',
     level: 2,
-    levelTitle: 'Estado y Hooks Básicos',
-    title: '2.5 Lifting State Up (Elevar el estado)',
-    summary: 'Compartir estado entre componentes hermanos moviéndolo al ancestro común más cercano y distribuyéndolo vía props.',
-    whatIsIt: `A menudo, varios componentes necesitan reflejar los mismos datos cambiantes (ej: un conversor de moneda o dos inputs de temperatura Celsius y Fahrenheit).
+    levelTitle: 'State & Core Hooks',
+    title: '2.5 Lifting State Up',
+    summary: 'Share state between sibling components by moving it to their closest common ancestor and distributing it via props.',
+    whatIsIt: `Often, multiple components need to reflect the same changing data (e.g. a currency converter or Celsius and Fahrenheit temperature inputs).
 
-En React, los componentes no pueden comunicarse de forma lateral directamente. La solución canónica es **elevar el estado (Lifting State Up)**:
-1. Se retira el estado local de los componentes hijos.
-2. Se traslada al ancestro común más cercano.
-3. El ancestro común pasa el valor actual hacia abajo a través de props y una función callback para actualizarlo.
-4. Ambos hijos permanecen perfectamente sincronizados gracias al flujo de datos unidireccional.`,
-    codeSnippet: `function ConversorTemperatura() {
+In React, sibling components cannot communicate laterally. The canonical solution is **Lifting State Up**:
+1. Remove local state from the child components.
+2. Move it to their closest common ancestor.
+3. The common ancestor passes the current state down via props and passes callback functions to update it.
+4. Both children stay in sync thanks to unidirectional data flow.`,
+    codeSnippet: `function TemperatureConverter() {
   const [celsius, setCelsius] = useState(0);
 
   const fahrenheit = (celsius * 9) / 5 + 32;
@@ -236,45 +236,45 @@ En React, los componentes no pueden comunicarse de forma lateral directamente. L
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <InputTemperatura label="Celsius (°C)" valor={celsius} onChange={setCelsius} />
-      <InputTemperatura label="Fahrenheit (°F)" valor={fahrenheit} onChange={handleFahrenheitChange} />
+      <TemperatureInput label="Celsius (°C)" value={celsius} onChange={setCelsius} />
+      <TemperatureInput label="Fahrenheit (°F)" value={fahrenheit} onChange={handleFahrenheitChange} />
     </div>
   );
 }
 
-function InputTemperatura({ label, valor, onChange }: { label: string; valor: number; onChange: (v: number) => void }) {
+function TemperatureInput({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
     <div>
       <label>{label}</label>
-      <input type="number" value={Math.round(valor * 100) / 100} onChange={e => onChange(Number(e.target.value))} />
+      <input type="number" value={Math.round(value * 100) / 100} onChange={e => onChange(Number(e.target.value))} />
     </div>
   );
 }`,
     interviewTips: [
-      'Explica el concepto de "Single Source of Truth" (Única fuente de verdad): no guardes Celsius y Fahrenheit como dos estados independientes que se sincronizan con useEffect; guarda uno solo y deriva el otro durante el renderizado.',
-      'Explica cuándo elevar el estado deja de ser suficiente: si el ancestro común está a demasiados niveles de distancia (prop drilling severo), es momento de considerar Composición, Context API o Zustand.'
+      'Explain the "Single Source of Truth" concept: do not store Celsius and Fahrenheit as two separate states synced via useEffect; store only one and derive the other during rendering.',
+      'Explain when lifting state up is no longer sufficient: if the common ancestor is too far up the component tree (severe prop drilling), it is time to consider Composition, the Context API, or Zustand.'
     ],
     commonTraps: [
-      'Duplicar el estado en ambos hijos e intentar sincronizarlos mediante llamadas cruzadas de `useEffect`, lo cual crea bucles infinitos de renderizado y estados desfasados.',
-      'Elevar el estado demasiado alto (al componente raíz de toda la app), provocando re-renders innecesarios en toda la aplicación.'
+      'Duplicating state across sibling components and attempting to synchronize them with cross-firing `useEffect` calls, creating render loops and out-of-sync states.',
+      'Lifting state up too high (to the app root), causing the entire application to re-render on minor input changes.'
     ],
-    keyTakeaway: 'Eleva el estado al ancestro común más cercano y deriva valores matemáticos durante el render en vez de guardarlos por duplicado.',
+    keyTakeaway: 'Lift state to the closest common ancestor and derive calculated values during render rather than storing duplicates.',
     componentKey: 'LiftingStateDemo',
-    tags: ['lifting-state', 'single-source-of-truth', 'estado-derivado', 'sincronizacion']
+    tags: ['lifting-state', 'single-source-of-truth', 'derived-state', 'synchronization']
   },
   {
     id: '2.6',
     level: 2,
-    levelTitle: 'Estado y Hooks Básicos',
-    title: '2.6 Composición vs. Herencia en React',
-    summary: 'React favorece fuertemente la composición mediante children y slots sobre la herencia de clases tradicional.',
-    whatIsIt: `En la documentación oficial de React el equipo de Facebook señaló que tras miles de componentes en producción nunca encontraron un caso de uso donde recomendaran la herencia de componentes.
+    levelTitle: 'State & Core Hooks',
+    title: '2.6 Composition vs. Inheritance in React',
+    summary: 'React strongly favors composition via children and slots over traditional class-based inheritance.',
+    whatIsIt: `In the official React documentation, the Facebook team noted that across thousands of components in production, they never found a use case where component inheritance was recommended.
 
-**La composición resuelve todos los casos mediante dos técnicas principales**:
-1. **Contención**: Pasar elementos anidados mediante la prop especial \`children\`.
-2. **Especialización**: Un componente más específico renderiza a uno más genérico configurándolo con props específicas (ej: un \`DialogoBienvenida\` renderiza un \`Dialogo\` genérico).
-3. **Slots / Ranuras**: Pasar componentes completos a través de props nombradas (\`encabezado={<Header />}\`, \`lateral={<Sidebar />}\`).`,
-    codeSnippet: `// Componente genérico con Slots y Children
+**Composition solves all use cases through primary techniques**:
+1. **Containment**: Passing nested elements via the special \`children\` prop.
+2. **Specialization**: A specific component renders a more generic component by configuring it with specific props (e.g. a \`WelcomeDialog\` renders a generic \`Dialog\`).
+3. **Slots**: Passing complete components through named props (\`header={<Header />}\`, \`sidebar={<Sidebar />}\`).`,
+    codeSnippet: `// Generic Component with Slots and Children
 interface CardProps {
   header?: React.ReactNode;
   footer?: React.ReactNode;
@@ -291,126 +291,126 @@ function Card({ header, footer, children }: CardProps) {
   );
 }
 
-// Uso mediante composición limpia:
-function PerfilUsuario() {
+// Usage via clean composition:
+function UserProfile() {
   return (
     <Card
-      header={<h3>Mi Perfil</h3>}
-      footer={<button className="btn-primary">Guardar Cambios</button>}
+      header={<h3>My Profile</h3>}
+      footer={<button className="btn-primary">Save Changes</button>}
     >
-      <p>Configura las opciones de tu cuenta.</p>
+      <p>Configure your account preferences.</p>
     </Card>
   );
 }`,
     interviewTips: [
-      'Explica cómo la composición es la principal herramienta para mitigar el Prop Drilling: en vez de pasar datos a través de 4 componentes intermedios para que el nieto los pinte, armas el nieto en el abuelo y lo pasas como `children` directo al intermedio.',
-      'Cita el principio de diseño de software: "Favorece la composición sobre la herencia" (GoF Design Patterns).'
+      'Explain how composition is the primary tool to mitigate prop drilling: instead of piping data down 4 intermediate layers for a grandchild to consume, instantiate the grandchild in the grandparent and pass it as `children` directly through intermediate components.',
+      'Quote the classic software engineering principle: "Favor object composition over class inheritance" (GoF Design Patterns).'
     ],
     commonTraps: [
-      'Crear jerarquías rígidas de clases o componentes (`BotonBase -> BotonConIcono -> BotonPrimarioConIcono`) en vez de componer con props opcionales y children.',
-      'Pasar 20 props de configuración primitivas cuando podrías simplemente aceptar un `React.ReactNode` como ranura.'
+      'Creating rigid inheritance hierarchies (`BaseButton -> IconButton -> PrimaryIconButton`) instead of composing with optional props and children.',
+      'Accepting dozens of primitive configuration props when you could simply accept a `React.ReactNode` slot.'
     ],
-    keyTakeaway: 'Usa `children` y slots para componentes contenedores flexibles. Evita cualquier intento de extender clases en React.',
+    keyTakeaway: 'Use `children` and slots for flexible container components. Avoid extending classes in React.',
     componentKey: 'CompositionVsInheritanceDemo',
-    tags: ['composicion', 'herencia', 'children', 'slots', 'prop-drilling']
+    tags: ['composition', 'inheritance', 'children', 'slots', 'prop-drilling']
   },
   {
     id: '2.7',
     level: 2,
-    levelTitle: 'Estado y Hooks Básicos',
-    title: '2.7 `useRef` (Nodos DOM y valores mutables persistentes)',
-    summary: 'Guarda una referencia mutable que persiste durante todo el ciclo de vida sin desencadenar re-renders al modificar `.current`.',
-    whatIsIt: `\`useRef\` retorna un objeto plano mutable con una única propiedad: \`{ current: initialValue }\`.
+    levelTitle: 'State & Core Hooks',
+    title: '2.7 `useRef` (DOM Nodes and Persistent Mutable Values)',
+    summary: 'Holds a mutable reference that persists across the full component lifecycle without triggering re-renders when `.current` changes.',
+    whatIsIt: `\`useRef\` returns a plain mutable JavaScript object with a single property: \`{ current: initialValue }\`.
 
-Tiene dos usos primordiales:
-1. **Acceso directo al DOM imperativo**:
-- Enfocar inputs (\`inputRef.current.focus()\`).
-- Medir dimensiones o posiciones de scroll.
-- Integrarse con librerías externas que no son de React (gráficos D3, mapas Leaflet, reproductores de video).
-2. **Almacén de valores mutables entre renders**:
-- Guardar IDs de temporizadores (\`timerId.current\`).
-- Contadores de renders de diagnóstico.
-- Almacenar el valor anterior de una prop o estado sin forzar una actualización visual.
+It has two primary use cases:
+1. **Direct Imperative DOM Access**:
+- Focusing inputs (\`inputRef.current.focus()\`).
+- Measuring scroll positions or element dimensions.
+- Integrating with non-React external libraries (D3 charts, Leaflet maps, video players).
+2. **Storing Mutable Values Across Renders**:
+- Holding timer IDs (\`timerId.current\`).
+- Render counters for diagnostic purposes.
+- Storing previous prop or state values without triggering a visual re-render.
 
-Diferencia crítica con \`useState\`: **Modificar \`ref.current\` NO desencadena un re-render** de React.`,
-    codeSnippet: `function InputConFocoYContadorDeRenders() {
+Critical difference with \`useState\`: **Mutating \`ref.current\` DOES NOT trigger a React re-render**.`,
+    codeSnippet: `function InputWithFocusAndRenderCount() {
   const inputRef = useRef<HTMLInputElement>(null);
   const rendersCount = useRef(0);
 
-  // Incrementamos el ref en cada render:
-  rendersCount.current += 1; // NO causa bucle infinito porque no re-renderiza
+  // Increment ref on each render:
+  rendersCount.current += 1; // Does NOT trigger an infinite loop because refs do not re-render
 
-  const handleEnfocar = () => {
+  const handleFocus = () => {
     inputRef.current?.focus();
     inputRef.current?.select();
   };
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted">Este componente se ha renderizado: {rendersCount.current} veces.</p>
+      <p className="text-sm text-muted">This component has rendered: {rendersCount.current} times.</p>
       <div className="flex gap-2">
-        <input ref={inputRef} placeholder="Escribe aquí..." />
-        <button onClick={handleEnfocar}>Poner Foco</button>
+        <input ref={inputRef} placeholder="Type here..." />
+        <button onClick={handleFocus}>Focus Input</button>
       </div>
     </div>
   );
 }`,
     interviewTips: [
-      'Regla de oro: Nunca leas ni escribas en `ref.current` durante la fase pura de renderizado si el resultado afecta lo que se pinta en pantalla (hacerlo rompe el rendering concurrente de React 18/19). Las lecturas/escrituras deben ocurrir en handlers de eventos o dentro de `useEffect`.',
-      'Describe la analogía: "useRef es como una variable de instancia `this.miVariable` en una clase, pero adaptada al mundo funcional".'
+      'Golden Rule: Never read or write `ref.current` during the pure rendering phase if the result affects what is displayed on screen (doing so breaks React 18/19 concurrent rendering). Ref mutations and reads belong in event handlers or `useEffect`.',
+      'Describe the analogy: "useRef is like an instance variable `this.myVar` on a class component, adapted for functional components".'
     ],
     commonTraps: [
-      'Intentar usar `useRef` para datos que deben verse actualizados inmediatamente en la pantalla (como un contador visual). Como no causa re-render, la UI se queda congelada hasta que otro evento fuerce una actualización.',
-      'Modificar el DOM directamente a través de refs (`inputRef.current.remove()`) interfiriendo con la reconciliación interna de React.'
+      'Attempting to use `useRef` for data that needs to be reflected immediately in the UI (like a visual counter). Because it does not trigger a re-render, the UI remains frozen until another event updates state.',
+      'Mutating the DOM directly through refs (`inputRef.current.remove()`), interfering with React\'s internal reconciliation.'
     ],
-    keyTakeaway: 'useRef persiste referencias entre renders sin causar re-renders. Ideal para el DOM y valores mutables entre bastidores.',
+    keyTakeaway: 'useRef persists values across renders without triggering re-renders. Ideal for DOM references and behind-the-scenes mutable values.',
     componentKey: 'UseRefDomAndStateDemo',
-    tags: ['useRef', 'dom', 'persistencia-mutable', 'contador-renders']
+    tags: ['useRef', 'dom', 'mutable-persistence', 'render-counter']
   },
   {
     id: '2.8',
     level: 2,
-    levelTitle: 'Estado y Hooks Básicos',
-    title: '2.8 Reglas de los Hooks y su mecanismo interno',
-    summary: 'Las 2 reglas inviolables: solo en el nivel superior y solo desde componentes/hooks. La lista enlazada interna de Fiber depende del orden exacto de llamada.',
-    whatIsIt: `Los Hooks de React están sujetos a dos reglas estrictas exigidas por el linter (\`eslint-plugin-react-hooks\`):
-1. **Llamar a los Hooks solo en el nivel superior**:
-Nunca los invoques dentro de condicionales (\`if\`), bucles (\`for\`, \`while\`), ni funciones anidadas.
-2. **Llamar a los Hooks solo desde funciones de React**:
-Únicamente desde componentes funcionales o desde Custom Hooks personalizados (cuyo nombre comience por \`use\`).
+    levelTitle: 'State & Core Hooks',
+    title: '2.8 Rules of Hooks and Internal Mechanics',
+    summary: 'The 2 inviolable rules: call only at the top level and only from React functions. Fiber\'s internal linked list relies on exact call order.',
+    whatIsIt: `React Hooks must follow two strict rules enforced by the linter (\`eslint-plugin-react-hooks\`):
+1. **Call Hooks only at the top level**:
+Never call them inside conditional statements (\`if\`), loops (\`for\`, \`while\`), or nested functions.
+2. **Call Hooks only from React functions**:
+Only from React functional components or custom hooks (functions starting with \`use\`).
 
-**¿Por qué existe esta restricción? (Bajo el capó)**:
-React no asocia los hooks a nombres de variables, sino a una **lista enlazada interna (Linked List)** guardada en la fibra del componente (\`fiber.memoizedState\`).
-En cada renderizado, React recorre esa lista secuencialmente: la llamada 1 lee el hook 1, la llamada 2 lee el hook 2, etc.
-Si un hook estuviera dentro de un \`if\` y en el segundo render la condición fuera falsa, **el orden se desplazaría** y React le entregaría el estado de un hook a otro completamente distinto, corrompiendo la app.`,
-    codeSnippet: `// ❌ VIOLACIÓN GRAVE: Hook dentro de condicional
-function ComponenteRoto({ esAdmin }: { esAdmin: boolean }) {
-  if (esAdmin) {
-    const [permisos, setPermisos] = useState(['read']); // 💣 Al cambiar esAdmin, la lista enlazada se desalinea
+**Why this rule exists (Under the Hood)**:
+React does not identify hooks by variable name; it tracks them using an **internal linked list** stored on the component\'s Fiber node (\`fiber.memoizedState\`).
+On every render, React traverses this linked list sequentially: call 1 reads hook 1, call 2 reads hook 2, and so on.
+If a hook were wrapped in an \`if\` statement and the condition evaluated to false on the next render, **the sequence would shift**, handing one hook\'s state to a completely different hook and corrupting application state.`,
+    codeSnippet: `// ❌ SEVERE VIOLATION: Hook inside a conditional
+function BrokenComponent({ isAdmin }: { isAdmin: boolean }) {
+  if (isAdmin) {
+    const [permissions, setPermissions] = useState(['read']); // 💣 Shifts the linked list when isAdmin changes
   }
-  const [tema, setTema] = useState('dark');
+  const [theme, setTheme] = useState('dark');
   // ...
 }
 
-// ✅ FORMA CORRECTA: Los hooks siempre corren en el mismo orden incondicional
-function ComponenteCorrecto({ esAdmin }: { esAdmin: boolean }) {
-  const [permisos, setPermisos] = useState(['read']);
-  const [tema, setTema] = useState('dark');
+// ✅ CORRECT: Hooks always execute in the exact same unconditional order
+function CorrectComponent({ isAdmin }: { isAdmin: boolean }) {
+  const [permissions, setPermissions] = useState(['read']);
+  const [theme, setTheme] = useState('dark');
 
-  // La lógica condicional se aplica AL VALOR O RENDER, no a la invocación del hook:
-  const permisosActivos = esAdmin ? permisos : [];
+  // Conditional logic applies to the VALUE or RENDER, never the hook call:
+  const activePermissions = isAdmin ? permissions : [];
   // ...
 }`,
     interviewTips: [
-      'Esta es una de las preguntas favoritas de los entrevistadores técnicos de nivel Senior: "¿Por qué React exige llamar a los hooks en el nivel superior?". Explicar la lista enlazada interna (`memoizedState`) y el puntero secuencial (`workInProgressHook`) te coloca de inmediato en la franja alta de evaluación técnica.',
-      'Menciona el hook `use` introducido en React 19: a diferencia de los hooks clásicos, `use(promise)` o `use(context)` SÍ puede llamarse dentro de condicionales y bucles.'
+      'A favorite Senior interview question: "Why does React require hooks to be called at the top level?" Explaining the internal linked list (`memoizedState`) and sequential pointer (`workInProgressHook`) demonstrates deep technical knowledge.',
+      'Mention the `use` hook in React 19: unlike classic hooks, `use(promise)` or `use(context)` CAN be called conditionally and inside loops.'
     ],
     commonTraps: [
-      'Intentar engañar a las reglas llamando hooks dentro de callbacks de eventos (`const handleClick = () => { const [x, setX] = useState(0); }`).',
-      'Desactivar las advertencias de ESLint (`eslint-disable-next-line react-hooks/rules-of-hooks`) en vez de refactorizar el código correctamente.'
+      'Trying to bypass the rules by calling hooks inside event handlers (`const handleClick = () => { const [x, setX] = useState(0); }`).',
+      'Disabling ESLint warnings (`eslint-disable-next-line react-hooks/rules-of-hooks`) instead of refactoring the code correctly.'
     ],
-    keyTakeaway: 'React identifica los hooks por su orden secuencial estricto en cada render. React 19 relaja esto exclusivamente para el nuevo operador `use()`.',
+    keyTakeaway: 'React identifies hooks by strict sequential order on each render. React 19 relaxes this exclusively for the new `use()` API.',
     componentKey: 'HooksRulesAndLinkedListDemo',
-    tags: ['reglas-de-los-hooks', 'lista-enlazada', 'fiber-internals', 'eslint']
+    tags: ['rules-of-hooks', 'linked-list', 'fiber-internals', 'eslint']
   }
 ];

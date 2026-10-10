@@ -38,7 +38,7 @@ export interface ExerciseItem {
   id: string;
   title: string;
   description: string;
-  difficulty: 'Básico' | 'Intermedio' | 'Avanzado';
+  difficulty: 'Basic' | 'Intermediate' | 'Advanced';
   topicsTested: string[];
   componentKey: string;
   hints: string[];

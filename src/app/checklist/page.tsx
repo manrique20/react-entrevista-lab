@@ -21,24 +21,23 @@ interface ChecklistItem {
 
 const CHECKLIST_SECTIONS: { title: string; items: ChecklistItem[] }[] = [
   {
-    title: 'Dominio de los 8 Niveles de Conocimiento',
+    title: 'Mastery of all 8 Knowledge Levels',
     items: [
-      { id: 'chk_l1', label: 'Nivel 1: Fundamentos', description: 'DOM virtual, JSX, componentes funcionales, props, keys, condicionales y SyntheticEvent.', linkHref: '/nivel/1' },
-      { id: 'chk_l2', label: 'Nivel 2: Estado y Hooks Básicos', description: 'useState funcional, useEffect y cleanup, controlados vs no controlados, validación y useRef.', linkHref: '/nivel/2' },
-      { id: 'chk_l3', label: 'Nivel 3: Intermedio', description: 'Context API, useReducer, useMemo/useCallback/memo, ciclo de vida, portals y virtualización.', linkHref: '/nivel/3' },
-      { id: 'chk_l4', label: 'Nivel 4: Estado Global y Ecosistema', description: 'Redux Toolkit, Zustand, TanStack Query, React Hook Form + Zod, TypeScript, a11y e i18n.', linkHref: '/nivel/4' },
-      { id: 'chk_l5', label: 'Nivel 5: Rendimiento', description: 'Profiler, prevención de re-renders con children, code splitting, Web Vitals, debounce y Web Workers.', linkHref: '/nivel/5' },
-      { id: 'chk_l6', label: 'Nivel 6: React Moderno (18 y 19)', description: 'Concurrencia, Automatic Batching, useTransition, useId, Server Components, Server Actions y React 19 hooks.', linkHref: '/nivel/6' },
-      { id: 'chk_l7', label: 'Nivel 7: Frameworks y Arquitectura', description: 'CSR vs SSR vs SSG vs ISR, Next.js App Router, arquitectura por features, micro-frontends y seguridad XSS/CSRF.', linkHref: '/nivel/7' },
-      { id: 'chk_l8', label: 'Nivel 8: Internos de React', description: 'Arquitectura Fiber, fases Render/Commit, Scheduler lanes, lista enlazada de hooks y stale closures.', linkHref: '/nivel/8' }
+      { id: 'chk_l1', label: 'Level 1: Fundamentals', description: 'Virtual DOM, JSX, functional components, props, keys, conditional rendering, and SyntheticEvent.', linkHref: '/nivel/1' },
+      { id: 'chk_l2', label: 'Level 2: State & Basic Hooks', description: 'Functional useState, useEffect & cleanup, controlled vs uncontrolled, validation, and useRef.', linkHref: '/nivel/2' },
+      { id: 'chk_l3', label: 'Level 3: Intermediate React', description: 'Context API, useReducer, useMemo/useCallback/memo, lifecycle, portals, and virtualization.', linkHref: '/nivel/3' },
+      { id: 'chk_l4', label: 'Level 4: Global State & Ecosystem', description: 'Redux Toolkit, Zustand, TanStack Query, React Hook Form + Zod, TypeScript, a11y, and i18n.', linkHref: '/nivel/4' },
+      { id: 'chk_l5', label: 'Level 5: Performance Optimization', description: 'Profiler, preventing re-renders with children pattern, code splitting, Web Vitals, debounce, and Web Workers.', linkHref: '/nivel/5' },
+      { id: 'chk_l6', label: 'Level 6: Modern React (18 & 19)', description: 'Concurrent rendering, Automatic Batching, useTransition, useId, Server Components, Server Actions, and React 19 hooks.', linkHref: '/nivel/6' },
+      { id: 'chk_l7', label: 'Level 7: Frameworks & Architecture', description: 'CSR vs SSR vs SSG vs ISR, Next.js App Router, feature-based architecture, micro-frontends, and XSS/CSRF security.', linkHref: '/nivel/7' },
+      { id: 'chk_l8', label: 'Level 8: React Internals', description: 'Fiber architecture, Render/Commit phases, Scheduler lanes, hooks linked list, and stale closures.', linkHref: '/nivel/8' }
     ]
   },
   {
-    title: 'Preparación Práctica y Simulación de Entrevistas',
+    title: 'Hands-on Practice & Interview Simulation',
     items: [
-      { id: 'chk_preguntas_es', label: 'Preguntas clásicas explicadas en voz alta (Español)', description: 'Explicar con claridad por qué no mutar estado, diferencia entre useEffect y useLayoutEffect, etc.', linkHref: '/preguntas' },
-      { id: 'chk_preguntas_en', label: 'Preguntas clásicas explicadas en voz alta (Inglés)', description: 'Capacidad de defender conceptos clave en entrevistas técnicas en inglés técnico.', linkHref: '/preguntas' },
-      { id: 'chk_ejercicios', label: 'Ejercicios de código hechos sin mirar documentación', description: 'Construir el buscador debounce, todo list y modal portal en pizarra o live coding fluido.', linkHref: '/ejercicios' }
+      { id: 'chk_preguntas_en', label: 'Classic senior questions explained out loud', description: 'Fluently explain why not to mutate state, useEffect vs useLayoutEffect, reconciliation mechanics, and architectural trade-offs.', linkHref: '/preguntas' },
+      { id: 'chk_ejercicios', label: 'Live coding challenges solved from scratch without docs', description: 'Build debounced search inputs, todo list with undo, modal portals, and virtualized lists on live whiteboard sessions.', linkHref: '/ejercicios' }
     ]
   }
 ];
@@ -66,7 +65,7 @@ export function ChecklistPage() {
       const nuevo = { ...prev, [id]: !prev[id] };
       const marcadosAhora = Object.values(nuevo).filter(Boolean).length;
 
-      // Celebración si completa el 100%
+      // Confetti on 100% completion
       if (marcadosAhora === totalItems && !prev[id]) {
         confetti({
           particleCount: 120,
@@ -85,7 +84,7 @@ export function ChecklistPage() {
   };
 
   const resetear = () => {
-    if (confirm('¿Deseas reiniciar tu checklist de repaso?')) {
+    if (confirm('Do you want to reset your review checklist?')) {
       setCompletados({});
       localStorage.removeItem('react_entrevista_checklist');
     }
@@ -99,18 +98,18 @@ export function ChecklistPage() {
           <div className="space-y-1 flex-1 min-w-0">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-semibold">
               <CheckSquare className="w-3.5 h-3.5" />
-              <span>Checklist Oficial de Preparación</span>
+              <span>Official Preparation Checklist</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">
-              Checklist de Repaso para la Entrevista
+              Interview Review Checklist
             </h1>
             <p className="text-xs sm:text-sm text-muted max-w-4xl break-words">
-              Monitorea tu preparación integral. Marca cada hito a medida que domines la teoría y puedas explicarlo con fluidez en voz alta.
+              Track your end-to-end interview readiness. Check off each milestone as you master the theory and explain it fluently out loud.
             </p>
           </div>
 
           <div className="p-4 border rounded-2xl bg-background text-right min-w-[170px] shrink-0">
-            <span className="text-xs text-muted block">Hitos Completados</span>
+            <span className="text-xs text-muted block">Milestones Completed</span>
             <span className="text-2xl font-extrabold font-mono text-primary">
               {itemsMarcados}/{totalItems} ({porcentaje}%)
             </span>
@@ -127,8 +126,8 @@ export function ChecklistPage() {
           <div className="p-4 border border-emerald-500/40 bg-emerald-500/10 rounded-2xl flex items-center gap-3 text-emerald-700 dark:text-emerald-300 text-xs font-semibold animate-in zoom-in-95">
             <Trophy className="w-6 h-6 text-emerald-500 shrink-0" />
             <div>
-              <p className="text-sm font-bold">¡Felicidades! Has completado el 100% de la preparación técnica.</p>
-              <p className="font-normal text-muted">Estás listo para cualquier entrevista técnica de React &amp; Next.js Senior.</p>
+              <p className="text-sm font-bold">Congratulations! You completed 100% of technical preparation.</p>
+              <p className="font-normal text-muted">You are ready for any Senior React &amp; Next.js technical interview round.</p>
             </div>
           </div>
         )}
@@ -139,12 +138,12 @@ export function ChecklistPage() {
             className="flex items-center gap-1.5 text-xs text-muted hover:text-red-500 transition-colors"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reiniciar Checklist</span>
+            <span>Reset Checklist</span>
           </button>
         </div>
       </div>
 
-      {/* Secciones de Checklist */}
+      {/* Checklist Sections */}
       <div className="space-y-8">
         {CHECKLIST_SECTIONS.map((seccion, sIdx) => (
           <div key={sIdx} className="space-y-3">
@@ -186,7 +185,7 @@ export function ChecklistPage() {
                         href={item.linkHref}
                         className="px-3 py-1.5 border rounded-xl hover:bg-muted text-[11px] font-semibold text-primary shrink-0 flex items-center gap-1"
                       >
-                        <span>Estudiar</span>
+                        <span>Study</span>
                         <ArrowRight className="w-3 h-3" />
                       </Link>
                     )}

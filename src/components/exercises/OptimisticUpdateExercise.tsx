@@ -25,7 +25,7 @@ interface CommentItem {
 }
 
 export function OptimisticUpdateExercise() {
-  // Estado real / del servidor
+  // Server / true state
   const [likes, setLikes] = useState<number>(42);
   const [hasLiked, setHasLiked] = useState<boolean>(false);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
@@ -33,30 +33,30 @@ export function OptimisticUpdateExercise() {
     {
       id: 'c1',
       author: 'Carlos Dev',
-      text: 'Excelente desglose de concurrencia y transiciones en React 19.',
-      timestamp: 'Hace 10 min'
+      text: 'Excellent breakdown of concurrency and transitions in React 19.',
+      timestamp: '10 min ago'
     },
     {
       id: 'c2',
       author: 'Elena Frontend',
-      text: 'El patrón de rollback es indispensable para una UX impecable.',
-      timestamp: 'Hace 3 min'
+      text: 'The rollback pattern is essential for a flawless UX.',
+      timestamp: '3 min ago'
     }
   ]);
 
-  // Controles del laboratorio
+  // Lab controls
   const [newCommentText, setNewCommentText] = useState('');
   const [simulateFailure, setSimulateFailure] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [showCode, setShowCode] = useState(false);
 
-  // Simulación de API con promesa retrasada
+  // API simulation with delayed promise
   const fakeApiCall = async (shouldFail: boolean, delayMs = 1200): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (shouldFail) {
-          reject(new Error('HTTP 500: Fallo de persistencia en la base de datos'));
+          reject(new Error('HTTP 500: Database persistence failure'));
         } else {
           resolve(true);
         }
@@ -64,15 +64,15 @@ export function OptimisticUpdateExercise() {
     });
   };
 
-  // Manejar Like con Actualización Optimista + Rollback
+  // Handle Like with Optimistic Update + Rollback
   const handleToggleLike = async () => {
     if (isSyncing) return;
 
-    // 1. Snapshot del estado previo para posible rollback
+    // 1. Snapshot previous state for possible rollback
     const prevLikes = likes;
     const prevHasLiked = hasLiked;
 
-    // 2. Actualización OPTIMISTA inmediata (0ms de latencia percibida)
+    // 2. Immediate OPTIMISTIC update (0ms perceived latency)
     const nextHasLiked = !hasLiked;
     const nextLikes = nextHasLiked ? likes + 1 : likes - 1;
 
@@ -86,30 +86,30 @@ export function OptimisticUpdateExercise() {
     }
 
     try {
-      // 3. Petición en segundo plano al servidor
+      // 3. Background server request
       await fakeApiCall(simulateFailure);
       setIsSyncing(false);
-      setNotification({ type: 'success', message: '✓ Servidor sincronizado con éxito.' });
+      setNotification({ type: 'success', message: '✓ Server synced successfully.' });
     } catch (err: any) {
-      // 4. ROLLBACK automático si el servidor falla
+      // 4. Automatic ROLLBACK if the server fails
       setLikes(prevLikes);
       setHasLiked(prevHasLiked);
       setIsSyncing(false);
       setNotification({
         type: 'error',
-        message: `❌ Error del servidor (${err.message}). Se revirtió el Like a su estado anterior.`
+        message: `❌ Server error (${err.message}). Rolled back Like to previous state.`
       });
     }
   };
 
-  // Manejar Bookmark optimista
+  // Handle Optimistic Bookmark
   const handleToggleBookmark = async () => {
     if (isSyncing) return;
 
     const prevBookmark = isBookmarked;
     const nextBookmark = !isBookmarked;
 
-    // Actualización inmediata
+    // Immediate update
     setIsBookmarked(nextBookmark);
     setIsSyncing(true);
     setNotification(null);
@@ -117,19 +117,19 @@ export function OptimisticUpdateExercise() {
     try {
       await fakeApiCall(simulateFailure);
       setIsSyncing(false);
-      setNotification({ type: 'success', message: '✓ Bookmark actualizado en tu perfil.' });
+      setNotification({ type: 'success', message: '✓ Bookmark updated in your profile.' });
     } catch (err: any) {
       // Rollback
       setIsBookmarked(prevBookmark);
       setIsSyncing(false);
       setNotification({
         type: 'error',
-        message: '❌ No se pudo guardar el bookmark. Revertido automáticamente.'
+        message: '❌ Could not save bookmark. Automatically rolled back.'
       });
     }
   };
 
-  // Manejar Envío de Comentario optimista
+  // Handle Optimistic Comment Submission
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCommentText.trim() || isSyncing) return;
@@ -137,15 +137,15 @@ export function OptimisticUpdateExercise() {
     const commentId = `temp-${Date.now()}`;
     const optimisticComment: CommentItem = {
       id: commentId,
-      author: 'Tú (Entrevistado)',
+      author: 'You (Candidate)',
       text: newCommentText.trim(),
-      timestamp: 'Ahora mismo',
+      timestamp: 'Just now',
       isPending: true
     };
 
     const prevComments = [...comments];
 
-    // 1. Insertar optimísticamente en la lista de comentarios
+    // 1. Optimistically insert into comments list
     setComments(prev => [optimisticComment, ...prev]);
     setNewCommentText('');
     setIsSyncing(true);
@@ -153,36 +153,36 @@ export function OptimisticUpdateExercise() {
 
     try {
       await fakeApiCall(simulateFailure);
-      // 2. Marcar como confirmado por el servidor
+      // 2. Mark as confirmed by server
       setComments(prev =>
         prev.map(c => (c.id === commentId ? { ...c, isPending: false } : c))
       );
       setIsSyncing(false);
-      setNotification({ type: 'success', message: '✓ Comentario publicado en el servidor.' });
+      setNotification({ type: 'success', message: '✓ Comment posted to server successfully.' });
     } catch (err: any) {
-      // 3. Rollback: remover el comentario optimista que falló
+      // 3. Rollback: remove optimistic comment that failed
       setComments(prevComments);
       setIsSyncing(false);
       setNotification({
         type: 'error',
-        message: '❌ El comentario falló al guardarse. Se eliminó de la lista optimista.'
+        message: '❌ Failed to save comment. Removed from optimistic list.'
       });
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Controles de Configuración del Laboratorio */}
+      {/* Lab Configuration Controls */}
       <div className="p-4 rounded-2xl bg-muted/30 border border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-bold text-foreground">
-              Simulador de Red y Fallos de Servidor
+              Network & Server Failure Simulator
             </span>
           </div>
           <p className="text-xs text-muted">
-            Alterna el interruptor para comprobar cómo la UI aplica cambios al instante y ejecuta rollback limpio si el servidor responde con error.
+            Toggle the switch to see how the UI applies changes instantly and performs a clean rollback if the server responds with an error.
           </p>
         </div>
 
@@ -195,24 +195,24 @@ export function OptimisticUpdateExercise() {
           />
           <div className="text-xs">
             <span className={`font-bold block ${simulateFailure ? 'text-rose-600 dark:text-rose-400' : 'text-foreground'}`}>
-              {simulateFailure ? 'Modo: Fallo de Red (500 Error)' : 'Modo: Conexión Exitosa (200 OK)'}
+              {simulateFailure ? 'Mode: Network Failure (500 Error)' : 'Mode: Successful Connection (200 OK)'}
             </span>
             <span className="text-[10px] text-muted">
-              {simulateFailure ? 'Forzar error en servidor' : 'El servidor responde OK'}
+              {simulateFailure ? 'Force server error' : 'Server responds OK'}
             </span>
           </div>
         </label>
       </div>
 
-      {/* Banner de Estado de Sincronización */}
+      {/* Sync Status Banner */}
       {isSyncing && (
         <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-xs text-blue-600 dark:text-blue-400 flex items-center justify-between animate-in fade-in">
           <span className="flex items-center gap-2 font-semibold">
             <Clock className="w-4 h-4 animate-spin" />
-            <span>Sincronizando mutación optimista con el backend (1.2s)...</span>
+            <span>Syncing optimistic mutation with backend (1.2s)...</span>
           </span>
           <span className="text-[10px] font-mono uppercase bg-blue-500/20 px-2 py-0.5 rounded">
-            Latencia Simulada
+            Simulated Latency
           </span>
         </div>
       )}
@@ -237,32 +237,32 @@ export function OptimisticUpdateExercise() {
             onClick={() => setNotification(null)}
             className="text-[10px] underline hover:opacity-80"
           >
-            Cerrar
+            Close
           </button>
         </div>
       )}
 
-      {/* Tarjeta de Publicación Interactiva */}
+      {/* Interactive Post Card */}
       <div className="rounded-2xl border border-border/80 bg-card p-6 space-y-6 shadow-sm">
-        {/* Encabezado del Post */}
+        {/* Post Header */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-xs text-muted">
             <span className="font-bold text-foreground">React Architecture Lab</span>
             <span>•</span>
-            <span>Publicado hoy</span>
+            <span>Published today</span>
           </div>
           <h3 className="text-xl font-black text-foreground">
-            Arquitectura de UI Optimista en React 19: Cero Latencia con Red de Seguridad
+            Optimistic UI Architecture in React 19: Zero Latency with a Safety Net
           </h3>
           <p className="text-xs sm:text-sm text-muted leading-relaxed">
-            Las interfaces modernas no hacen esperar al usuario con spinners bloqueantes ante acciones predecibles. Actualizamos el Virtual DOM en 0ms y encolamos la mutación en segundo plano. Si la red falla, revertimos limpiamente.
+            Modern interfaces do not make users wait on blocking spinners for predictable actions. We update the Virtual DOM in 0ms and queue the mutation in the background. If the network fails, we roll back cleanly.
           </p>
         </div>
 
-        {/* Barra de Acciones del Post */}
+        {/* Post Actions Bar */}
         <div className="flex items-center justify-between pt-4 border-t border-border/60">
           <div className="flex items-center gap-3">
-            {/* Botón de Like */}
+            {/* Like Button */}
             <button
               onClick={handleToggleLike}
               disabled={isSyncing}
@@ -274,17 +274,17 @@ export function OptimisticUpdateExercise() {
             >
               <Heart className={`w-4 h-4 ${hasLiked ? 'fill-current text-rose-500' : 'text-muted'}`} />
               <span>{likes}</span>
-              <span className="text-[11px] font-normal text-muted">{hasLiked ? 'Me gusta' : 'Dar me gusta'}</span>
+              <span className="text-[11px] font-normal text-muted">{hasLiked ? 'Liked' : 'Like'}</span>
             </button>
 
-            {/* Contador de comentarios */}
+            {/* Comment Counter */}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-muted/30 text-xs font-semibold text-muted">
               <MessageSquare className="w-4 h-4" />
-              <span>{comments.length} comentarios</span>
+              <span>{comments.length} comments</span>
             </div>
           </div>
 
-          {/* Botón de Bookmark */}
+          {/* Bookmark Button */}
           <button
             onClick={handleToggleBookmark}
             disabled={isSyncing}
@@ -293,25 +293,25 @@ export function OptimisticUpdateExercise() {
                 ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30'
                 : 'bg-muted/40 hover:bg-muted text-muted hover:text-foreground border-border/80'
             }`}
-            title={isBookmarked ? 'Guardado en marcadores' : 'Guardar marcador'}
+            title={isBookmarked ? 'Saved to bookmarks' : 'Save bookmark'}
           >
             <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current text-amber-500' : ''}`} />
           </button>
         </div>
 
-        {/* Sección de Comentarios Optimistas */}
+        {/* Optimistic Comments Section */}
         <div className="space-y-4 pt-4 border-t border-border/60">
           <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
-            Comentarios en Tiempo Real ({comments.length})
+            Real-Time Comments ({comments.length})
           </h4>
 
-          {/* Formulario para agregar comentario */}
+          {/* Comment Form */}
           <form onSubmit={handleAddComment} className="flex gap-2">
             <input
               type="text"
               value={newCommentText}
               onChange={e => setNewCommentText(e.target.value)}
-              placeholder="Escribe un comentario optimista..."
+              placeholder="Write an optimistic comment..."
               className="flex-1 px-3.5 py-2 rounded-xl border border-border/80 bg-background text-xs focus:outline-none focus:border-primary transition-colors placeholder:text-muted"
             />
             <button
@@ -320,11 +320,11 @@ export function OptimisticUpdateExercise() {
               className="px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-1.5 shadow-sm shadow-primary/20"
             >
               <Send className="w-3.5 h-3.5" />
-              <span>Comentar</span>
+              <span>Comment</span>
             </button>
           </form>
 
-          {/* Listado de comentarios */}
+          {/* Comments List */}
           <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
             {comments.map(c => (
               <div
@@ -341,7 +341,7 @@ export function OptimisticUpdateExercise() {
                     {c.isPending && (
                       <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
                         <Clock className="w-3 h-3 animate-spin" />
-                        <span>Enviando...</span>
+                        <span>Sending...</span>
                       </span>
                     )}
                     <span>{c.timestamp}</span>
@@ -354,38 +354,38 @@ export function OptimisticUpdateExercise() {
         </div>
       </div>
 
-      {/* Código y Modelo Mental del Patrón */}
+      {/* Code and Mental Model Snippet */}
       <div className="p-4 rounded-2xl bg-card border border-border/80 space-y-2">
         <button
           onClick={() => setShowCode(!showCode)}
           className="flex items-center gap-1.5 text-xs text-primary font-bold hover:underline"
         >
           <Code2 className="w-4 h-4" />
-          <span>{showCode ? 'Ocultar snippet de implementación' : 'Ver patrón senior con useOptimistic / Rollback'}</span>
+          <span>{showCode ? 'Hide implementation snippet' : 'View senior pattern with useOptimistic / Rollback'}</span>
         </button>
 
         {showCode && (
           <div className="rounded-xl bg-slate-950 p-4 border border-slate-800 text-slate-100 font-mono text-xs overflow-x-auto shadow-inner mt-2">
             <pre className="text-emerald-300 leading-relaxed">
-{`// Patrón canónico con Snapshot + Rollback:
+{`// Canonical pattern with Snapshot + Rollback:
 const handleOptimisticUpdate = async () => {
-  // 1. Guardar snapshot del estado previo
+  // 1. Save snapshot of previous state
   const previousState = state;
 
-  // 2. Aplicar cambio en la UI inmediatamente
+  // 2. Apply change to UI immediately
   setState(computeNextState(previousState));
 
   try {
-    // 3. Enviar mutación al servidor en segundo plano
+    // 3. Send mutation to server in background
     await api.persistChange();
   } catch (error) {
-    // 4. Si falla la red o DB, revertir al snapshot anterior
+    // 4. If network or DB fails, revert to previous snapshot
     setState(previousState);
-    toast.error('Operación fallida, cambios revertidos');
+    toast.error('Operation failed, changes rolled back');
   }
 };
 
-// En React 19 con el hook nativo useOptimistic:
+// In React 19 with native useOptimistic hook:
 // const [optimisticLikes, setOptimisticLikes] = useOptimistic(
 //   likes,
 //   (current, update) => current + update
@@ -397,4 +397,3 @@ const handleOptimisticUpdate = async () => {
     </div>
   );
 }
-

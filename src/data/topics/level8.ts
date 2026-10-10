@@ -4,365 +4,365 @@ export const LEVEL_8_TOPICS: Topic[] = [
   {
     id: '8.1',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.1 La Arquitectura Fiber (Bajo el capó de React)',
-    summary: 'La estructura de datos interna que reemplazó la pila de llamadas síncrona, habilitando el rendering concurrente y pausado.',
-    whatIsIt: `Antes de React 16, la reconciliación utilizaba el "Stack Reconciler": recorría el árbol de componentes mediante la pila de llamadas nativa de JavaScript recursivamente. Como la pila no puede pausarse sin bloquear el navegador, renders grandes congelaban la interfaz.
+    levelTitle: 'React Internals',
+    title: '8.1 The Fiber Architecture (Under the Hood)',
+    summary: 'The internal data structure that replaced the synchronous call stack, enabling interruptible and concurrent rendering.',
+    whatIsIt: `Prior to React 16, reconciliation relied on the "Stack Reconciler": it traversed the component tree recursively using the native JavaScript call stack. Because the call stack cannot be paused without blocking the browser thread, large component trees locked up the UI.
 
-**¿Qué es un nodo Fiber?**:
-En React 16+, cada elemento del árbol de componentes está representado por un objeto de JavaScript llamado **Fiber**.
-Un Fiber es tanto una unidad de trabajo como una representación del árbol estructurada como una **lista doblemente enlazada**:
-- \`child\`: Puntero al primer hijo directo.
-- \`sibling\`: Puntero al siguiente hermano directo.
-- \`return\`: Puntero al componente padre.
-- \`stateNode\`: Referencia a la instancia de la clase o al nodo DOM real.
-- \`memoizedState\`: Lista enlazada de hooks del componente.
-- \`alternate\`: Puntero al fiber correspondiente en el otro árbol (técnica de **Double Buffering**).
+**What is a Fiber node?**:
+In React 16+, every element in the component tree is represented by an internal JavaScript object called a **Fiber**.
+A Fiber represents both a unit of work and a node in a **singly/doubly linked list tree structure**:
+- \`child\`: Pointer to the first direct child.
+- \`sibling\`: Pointer to the next direct sibling.
+- \`return\`: Pointer to the parent Fiber.
+- \`stateNode\`: Reference to the component class instance or physical DOM node.
+- \`memoizedState\`: Linked list of hooks for the component.
+- \`alternate\`: Pointer to the corresponding fiber in the opposing tree (**Double Buffering**).
 
-Al sustituir la pila de llamadas nativa por esta estructura de punteros en memoria heap, React puede pausar la iteración en cualquier momento, guardar el puntero, atender un evento urgente del usuario y reanudar el trabajo donde lo dejó.`,
-    codeSnippet: `// Representación simplificada de la estructura de un nodo Fiber:
+By replacing the native call stack with heap-allocated pointers, React can pause iteration at any time, save the pointer, yield to an urgent browser event, and resume work exactly where it left off.`,
+    codeSnippet: `// Simplified representation of a Fiber node structure:
 interface FiberNode {
-  tag: number;              // Tipo: FunctionComponent, ClassComponent, HostComponent (DOM), etc.
+  tag: number;              // Type: FunctionComponent, ClassComponent, HostComponent (DOM), etc.
   key: null | string;
-  elementType: any;         // La función del componente o tag ('div')
+  elementType: any;         // Component function or tag ('div')
   type: any;
-  stateNode: any;           // El elemento DOM nativo
+  stateNode: any;           // Native DOM element or class instance
 
-  // Punteros de la lista enlazada del árbol:
-  child: FiberNode | null;  // Primer hijo
-  sibling: FiberNode | null;// Siguiente hermano
-  return: FiberNode | null; // Padre
+  // Linked list tree pointers:
+  child: FiberNode | null;  // First child
+  sibling: FiberNode | null;// Next sibling
+  return: FiberNode | null; // Parent
 
-  // Estado y Hooks:
-  memoizedState: any;       // Cabeza de la lista enlazada de hooks
+  // State and Hooks:
+  memoizedState: any;       // Head of the hooks linked list
   memoizedProps: any;
   pendingProps: any;
 
   // Double Buffering:
-  alternate: FiberNode | null; // Apunta al árbol que se está mostrando actualmente en pantalla
-  flags: number;            // Banderas de mutación (Placement, Update, Deletion)
+  alternate: FiberNode | null; // Points to the tree currently displayed on screen
+  flags: number;            // Mutation effect flags (Placement, Update, Deletion)
 }`,
     interviewTips: [
-      'Explica la técnica de "Double Buffering" inspirada en motores de videojuegos: React mantiene dos árboles de Fiber en memoria: el árbol "Current" (lo que el usuario ve ahora en pantalla) y el árbol "WorkInProgress" (el que se está calculando en segundo plano). Cuando la fase de render termina con éxito, React simplemente intercambia el puntero raíz en una sola operación atómica en la fase de Commit.',
-      'Explica por qué los nodos Fiber usan `child`, `sibling` y `return`: permite recorrer todo el árbol con un bucle `while` plano sin recursión profunda de funciones.'
+      'Explain the "Double Buffering" technique borrowed from game engines: React maintains two Fiber trees in memory: the "Current" tree (what the user currently sees on screen) and the "WorkInProgress" tree (being calculated in the background). When the render phase completes successfully, React simply swaps the root pointer in a single atomic pointer swap during the Commit phase.',
+      'Explain why Fiber nodes use `child`, `sibling`, and `return`: allows traversing the entire tree with a flat `while` loop without deep recursive function call stacks.'
     ],
     commonTraps: [
-      'Confundir el Virtual DOM con Fiber: El Virtual DOM es el concepto de alto nivel de tener una representación en memoria de la UI; Fiber es la estructura de datos interna y el motor de planificación concreto que lo implementa desde React 16.',
-      'Intentar manipular nodos Fiber directamente en código de aplicación: son privados e internos del núcleo de React.'
+      'Confusing the Virtual DOM with Fiber: Virtual DOM is the high-level concept of an in-memory UI representation; Fiber is the specific low-level data structure and scheduling engine implementing it since React 16.',
+      'Attempting to inspect or mutate Fiber nodes in production application code: they are private, internal, and unstable implementation details.'
     ],
-    keyTakeaway: 'Fiber convirtió el renderizado en una lista enlazada pausable con double buffering, haciendo posible la concurrencia.',
+    keyTakeaway: 'Fiber transformed rendering into a pausable linked list with double buffering, making concurrency possible.',
     componentKey: 'FiberTreeVisualizerDemo',
-    tags: ['fiber', 'internals', 'double-buffering', 'linked-list', 'concurrencia', 'stack-reconciler']
+    tags: ['fiber', 'internals', 'double-buffering', 'linked-list', 'concurrency', 'stack-reconciler']
   },
   {
     id: '8.2',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.2 Fases de Render y Commit en detalle',
-    summary: 'La separación estricta: Render es asíncrono, interrumpible y puro; Commit es síncrono e ininterrumpible sobre el DOM real.',
-    whatIsIt: `El pipeline de actualización de React está estrictamente dividido en dos fases con reglas completamente opuestas:
+    levelTitle: 'React Internals',
+    title: '8.2 Render & Commit Phases in Depth',
+    summary: 'The strict separation: Render is async, interruptible, and pure; Commit is synchronous and uninterrupted on the real DOM.',
+    whatIsIt: `React's update pipeline is strictly partitioned into two phases with fundamentally opposite contracts:
 
-1. **Fase de Render (Reconciliación)**:
-- React ejecuta los componentes funcionales, procesa las colas de hooks y calcula qué nodos han cambiado.
-- **Es asíncrona e interrumpible**: El Scheduler de React puede fragmentarla en múltiples cuadros de tiempo o abortarla si surge un evento de mayor prioridad.
-- **Debe ser 100% pura**: Cero efectos secundarios, cero llamadas a APIs, cero mutaciones de variables globales. React puede invocar una función de componente y descartar su resultado sin llegar a pintar nada.
-- No se toca el DOM del navegador en esta fase.
+1. **Render Phase (Reconciliation)**:
+- React invokes function components, evaluates hook queues, and calculates what changed between trees.
+- **Asynchronous and Interruptible**: The React Scheduler can slice it across multiple frame budgets or abort it entirely if a higher-priority event intervenes.
+- **Must be 100% Pure**: Zero side effects, zero API calls, zero global variable mutations. React may call a component render function multiple times and discard the output without ever committing it to screen.
+- The real browser DOM is NEVER touched during this phase.
 
-2. **Fase de Commit**:
-- React toma la lista de cambios calculada en la fase de render y aplica las mutaciones al DOM real (insertar, mover o eliminar nodos).
-- **Es síncrona e ininterrumpible**: El navegador no puede intervenir hasta que React termine de actualizar el DOM para evitar que el usuario vea estados visuales inconsistentes a medio pintar.
-- En esta fase se ejecutan \`useLayoutEffect\` (síncrono antes de pintar) y se programa \`useEffect\` (asíncrono tras el pintado).`,
-    codeSnippet: `// Demostración del orden de ejecución entre fases:
-function PipelineFasesDemo() {
+2. **Commit Phase**:
+- React takes the list of mutations computed during the render phase and applies them to the real DOM (inserting, moving, or removing DOM nodes).
+- **Synchronous and Uninterrupted**: The browser cannot intervene until React finishes updating the DOM, preventing inconsistent, partially painted UI states.
+- Executes \`useLayoutEffect\` (synchronously before browser paint) and schedules \`useEffect\` (asynchronously after browser paint).`,
+    codeSnippet: `// Demonstrating execution lifecycle across phases:
+function PhasePipelineDemo() {
   const [val, setVal] = useState(0);
 
-  // FASE 1: Render (Puro, puede ejecutarse múltiples veces antes de pintar)
-  console.log('[FASE 1: Render] Evaluando función del componente');
+  // PHASE 1: Render (Pure, may execute multiple times before painting)
+  console.log('[PHASE 1: Render] Evaluating component function');
 
-  // FASE 2: Commit - Efecto de layout (Síncrono, tras mutar DOM, antes de pintar pantalla)
+  // PHASE 2: Commit - Layout Effect (Synchronous, after DOM mutation, before paint)
   useLayoutEffect(() => {
-    console.log('[FASE 2: Commit - Layout] DOM mutado síncronamente, pantalla aún no pintada');
+    console.log('[PHASE 2: Commit - Layout] DOM synchronously mutated, screen not yet painted');
   }, [val]);
 
-  // FASE 2+: Efecto pasivo (Asíncrono, tras pintar el frame en el monitor)
+  // PHASE 2+: Commit - Passive Effect (Asynchronous, after browser paints frame to screen)
   useEffect(() => {
-    console.log('[FASE 2+: Passive Effect] El navegador ya pintó los píxeles en pantalla');
+    console.log('[PHASE 2+: Passive Effect] Browser has painted pixels on screen');
   }, [val]);
 
-  return <button onClick={() => setVal(v => v + 1)}>Disparar Pipeline ({val})</button>;
+  return <button onClick={() => setVal(v => v + 1)}>Trigger Pipeline ({val})</button>;
 }`,
     interviewTips: [
-      'Pregunta de trampa senior: "¿Por qué en Strict Mode en desarrollo React ejecuta dos veces el cuerpo de la función pero solo una vez el `useEffect`?". Respuesta: Para detectar impurezas en la FASE DE RENDER. Si tu función de render muta una variable global, la segunda ejecución generará un resultado diferente, delatando el bug.',
-      'Explica por qué `useLayoutEffect` puede causar congelamiento: al correr en la fase de Commit antes de que el navegador pinte, si ejecutas código lento dentro de él, bloquearás el hilo principal y retrasarás el siguiente fotograma.'
+      'Senior trick question: "Why does React execute the component body twice in StrictMode development, but only runs `useEffect` once?". Answer: To catch impurities in the RENDER PHASE. If your render function mutates a global variable or produces side effects, the second invocation produces different outputs, immediately exposing the bug.',
+      'Explain why `useLayoutEffect` can cause frame drops: because it executes synchronously in the Commit phase before paint, long-running calculations inside it block the main thread and delay the next frame.'
     ],
     commonTraps: [
-      'Provocar efectos secundarios en la fase de render (ej: `window.titulo = "Nuevo"` o `fetch()` directo en el cuerpo del componente).',
-      'Confundir el momento en que se ejecuta `useEffect`: corre DESPUÉS del commit y DESPUÉS del pintado del navegador.'
+      'Triggering side effects during the render phase (e.g., `window.title = "New"` or `fetch()` called directly in the component body).',
+      'Misunderstanding when `useEffect` fires: it runs AFTER commit and AFTER the browser has completed layout and paint.'
     ],
-    keyTakeaway: 'La fase de Render calcula diferencias y es interrumpible; la fase de Commit aplica mutaciones al DOM real de forma síncrona.',
+    keyTakeaway: 'Render phase calculates diffs and is interruptible; Commit phase synchronously mutates the real DOM.',
     componentKey: 'RenderCommitPhasesDemo',
-    tags: ['render-phase', 'commit-phase', 'pureza', 'useLayoutEffect', 'useEffect']
+    tags: ['render-phase', 'commit-phase', 'purity', 'useLayoutEffect', 'useEffect']
   },
   {
     id: '8.3',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.3 El Scheduler de React y los Carriles de Prioridad (Lanes)',
-    summary: 'Cómo el Scheduler asigna prioridades mediante carriles binarios (Lanes) y cede el control al navegador para evitar congelar frames.',
-    whatIsIt: `El **Scheduler** es el paquete interno de React que gestiona el tiempo de ejecución de las tareas en el hilo principal del navegador.
+    levelTitle: 'React Internals',
+    title: '8.3 The React Scheduler & Priority Lanes',
+    summary: 'How the Scheduler allocates priorities via 32-bit binary lanes and yields to the browser to prevent frame drops.',
+    whatIsIt: `The **Scheduler** is React's internal package that orchestrates task execution time on the browser's single thread.
 
-¿Cómo evita bloquear el navegador?:
-Utiliza una técnica llamada **Cooperative Multitasking**: divide el trabajo de renderizado en pequeños trozos de 5 milisegundos. Tras cada trozo, pregunta al navegador si hay eventos de usuario pendientes (\`navigator.scheduling.isInputPending()\` o \`MessageChannel\`). Si los hay, React cede el control inmediatamente (**Yield to Host**).
+How does it avoid locking the browser?:
+It employs **Cooperative Multitasking**: React breaks rendering work into 5-millisecond execution chunks. After each chunk, it checks whether user input events are pending (\`navigator.scheduling.isInputPending()\` or a \`MessageChannel\` tick). If input is pending, React yields control back to the host browser (**Yield to Host**).
 
-**El modelo de Carriles (Lanes)**:
-React 18 introdujo un sistema de prioridades de 31 bits basado en máscaras binarias (Lanes):
-- **SyncLane**: Prioridad máxima absoluta (clicks inmediatos, entradas de teclado, \`flushSync\`).
-- **InputContinuousLane**: Eventos continuos (drag and drop, scroll).
-- **DefaultLane**: Actualizaciones normales de \`useState\` y promesas de red.
-- **TransitionLane**: Tareas de baja prioridad creadas con \`useTransition\` o \`useDeferredValue\`.
-- **IdleLane**: Tareas de mantenimiento ejecutadas solo cuando el navegador está completamente desocupado.`,
-    codeSnippet: `// Representación conceptual de los carriles de prioridad (Lanes de 32 bits):
-// React usa operaciones a nivel de bits (bitwise operations) para comprobar prioridades en nanosegundos:
-const SyncLane             = 0b0000000000000000000000000000001; // Urgencia máxima
+**The Lanes Priority Model**:
+React 18 introduced a 31-bit priority system using binary bitmasks (Lanes):
+- **SyncLane**: Highest priority (direct clicks, keystrokes, \`flushSync\`).
+- **InputContinuousLane**: Continuous user inputs (drag-and-drop, scroll).
+- **DefaultLane**: Standard updates from \`useState\` and network promise resolutions.
+- **TransitionLane**: Low-priority transitions originating from \`useTransition\` or \`useDeferredValue\`.
+- **IdleLane**: Maintenance tasks executed only when the browser is entirely idle.`,
+    codeSnippet: `// Conceptual representation of 32-bit priority Lanes:
+// React uses bitwise operations to check and combine priorities in nanoseconds:
+const SyncLane             = 0b0000000000000000000000000000001; // Highest urgency
 const InputContinuousLane  = 0b0000000000000000000000000000100;
 const DefaultLane          = 0b0000000000000000000000010000000;
 const TransitionLane       = 0b0000000000000000001000000000000; // useTransition
 const IdleLane             = 0b0100000000000000000000000000000;
 
-// Si llega un trabajo SyncLane, React interrumpe el trabajo TransitionLane actual:
-function tieneMayorPrioridad(laneA: number, laneB: number): boolean {
-  return laneA < laneB; // Menor valor numérico binario = mayor prioridad
-}`,
+// If a SyncLane update arrives, React interrupts any running TransitionLane work:
+function hasHigherPriority(laneA: number, laneB: number): boolean {
+  return laneA < laneB; // Lower binary value = higher urgency
+} `,
     interviewTips: [
-      'Explica la evolución: antes de Lanes, React 16 usaba una escala simple de "Expiration Times". Lanes permitió modelar múltiples transiciones concurrentes paralelas y agruparlas o desacoplarlas con operaciones binarias rápidas (`&`, `|`).',
-      '¿Por qué React no usa `requestIdleCallback` nativo del navegador?: Porque en muchos navegadores se dispara con demasiada infrecuencia (a veces 20 cuadros después). El Scheduler de React utiliza un polyfill optimizado basado en `MessageChannel` y `postMessage` para lograr una granularidad de 5ms.'
+      'Explain the architectural evolution: before Lanes, React 16 used linear "Expiration Times". Lanes allowed React to model multiple disjoint concurrent transitions and batch or decouple them using fast bitwise operators (`&`, `|`).',
+      'Why doesn’t React use the native `requestIdleCallback`?: Because on many browsers it fires too infrequently (sometimes 20 frames late). The React Scheduler implements a finely tuned polyfill based on `MessageChannel` and `postMessage` to yield every 5ms.'
     ],
     commonTraps: [
-      'Pensar que todas las actualizaciones de estado tienen la misma urgencia en React.',
-      'Asumir que un trabajo en segundo plano nunca se ejecutará: el Scheduler incluye un mecanismo de "Starvation Protection" que eleva la prioridad de una tarea si ha estado esperando demasiado tiempo.'
+      'Assuming all state updates have equal priority in React.',
+      'Assuming low-priority background work can starve indefinitely: the Scheduler implements "Starvation Protection", boosting task priorities if they remain unexecuted past a deadline.'
     ],
-    keyTakeaway: 'El Scheduler usa máscaras de bits (Lanes) y rinde el control cada 5ms para que el navegador nunca pierda un frame de 60 FPS.',
+    keyTakeaway: 'The Scheduler uses bitmask Lanes and yields every 5ms so the browser never drops below 60 FPS.',
     componentKey: 'SchedulerLanesDemo',
-    tags: ['scheduler', 'lanes', 'prioridades', 'message-channel', 'starvation', 'yield']
+    tags: ['scheduler', 'lanes', 'priorities', 'message-channel', 'starvation', 'yield']
   },
   {
     id: '8.4',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.4 Cómo funcionan los Hooks por dentro (Lista Enlazada)',
-    summary: 'La implementación real de useState y useEffect: un cursor que avanza sobre una lista enlazada en la fibra del componente.',
-    whatIsIt: `Un mito recurrente es que React "busca los hooks por el nombre de la variable". En realidad, React no tiene idea de qué nombre le diste a \`const [edad, setEdad] = useState(25)\`.
+    levelTitle: 'React Internals',
+    title: '8.4 How Hooks Work Under the Hood (Linked List)',
+    summary: 'The real implementation of useState and useEffect: a cursor traversing a sequential linked list on the fiber.',
+    whatIsIt: `A common misconception is that React tracks hooks by their variable names. In reality, React has no idea you named your variable \`const [age, setAge] = useState(25)\`.
 
-**La arquitectura de lista enlazada**:
-En el nodo Fiber del componente existe la propiedad \`fiber.memoizedState\`.
-Cuando un componente se renderiza:
-1. En el **primer montaje (mount)**: cada llamada a un hook (\`useState\`, \`useEffect\`) crea un nuevo objeto \`Hook\` y lo enlaza al final de la lista: \`hook1.next = hook2; hook2.next = hook3\`.
-2. En los **renders siguientes (update)**: React sitúa un puntero cursor en el primer hook (\`workInProgressHook = fiber.memoizedState\`). Cada vez que tu código invoca un hook, React lee el estado de ese nodo y avanza el cursor al siguiente (\`workInProgressHook = currentHook.next\`).
+**The Linked List Architecture**:
+On each component Fiber exists the property \`fiber.memoizedState\`.
+When a component renders:
+1. On **Initial Mount**: Each hook call (\`useState\`, \`useEffect\`) creates a new \`Hook\` object and appends it to the end of a linked list: \`hook1.next = hook2; hook2.next = hook3\`.
+2. On **Subsequent Updates**: React places a cursor pointer at the first hook (\`workInProgressHook = fiber.memoizedState\`). Every time your code invokes a hook, React reads state from that node and advances the cursor to the next (\`workInProgressHook = currentHook.next\`).
 
-Por este motivo es matemáticamente obligatorio que los hooks se invoquen en el mismo orden exacto en cada render.`,
-    codeSnippet: `// Simulación didáctica de cómo React implementa useState internamente:
-let listaDeHooks: any[] = [];
-let cursorActual = 0;
+This is the exact reason the Rules of Hooks exist: hook calls must execute in the exact same sequence on every single render pass.`,
+    codeSnippet: `// Educational simulation of how React implements useState internally:
+let hooksList: any[] = [];
+let currentCursor = 0;
 
-function miUseState<T>(valorInicial: T): [T, (nuevo: T | ((prev: T) => T)) => void] {
-  const indiceFijo = cursorActual;
+function myUseState<T>(initialValue: T): [T, (next: T | ((prev: T) => T)) => void] {
+  const fixedIndex = currentCursor;
 
-  // Si es la primera vez que corre, inicializamos el valor:
-  if (listaDeHooks[indiceFijo] === undefined) {
-    listaDeHooks[indiceFijo] = valorInicial;
+  // Initialize value on first run (mount):
+  if (hooksList[fixedIndex] === undefined) {
+    hooksList[fixedIndex] = initialValue;
   }
 
-  const setter = (nuevoValor: T | ((prev: T) => T)) => {
-    listaDeHooks[indiceFijo] = typeof nuevoValor === 'function'
-      ? (nuevoValor as any)(listaDeHooks[indiceFijo])
-      : nuevoValor;
-    reRenderizarApp(); // Dispara un nuevo ciclo de renderizado
+  const setter = (nextValue: T | ((prev: T) => T)) => {
+    hooksList[fixedIndex] = typeof nextValue === 'function'
+      ? (nextValue as any)(hooksList[fixedIndex])
+      : nextValue;
+    reRenderApp(); // Trigger a new render cycle
   };
 
-  cursorActual++; // Avanzamos el cursor para el siguiente hook
-  return [listaDeHooks[indiceFijo], setter];
+  currentCursor++; // Advance cursor for the next hook call
+  return [hooksList[fixedIndex], setter];
 }
 
-function reRenderizarApp() {
-  cursorActual = 0; // Se reinicia el cursor al inicio del render
-  // Se vuelve a invocar el componente...
+function reRenderApp() {
+  currentCursor = 0; // Reset cursor to 0 before re-evaluating the component
+  // Component function is called again...
 }`,
     interviewTips: [
-      'Esta es una de las preguntas de código en vivo más habituales para candidatos Senior: "Implementa una versión mínima de `useState` desde cero". Explicar el array o lista enlazada y el reseteo del cursor `cursor = 0` al inicio de cada render demuestra dominio absoluto.',
-      'Explica la diferencia entre `mountWorkInProgressHook` y `updateWorkInProgressHook`: en el código fuente de React, existen dos conjuntos de funciones para cada hook según si el componente está montándose por primera vez o actualizándose.'
+      'Frequent senior live coding challenge: "Implement a minimal useState from scratch". Demonstrating the array or linked list pointer with `cursor = 0` reset at the start of each render proves deep understanding.',
+      'Explain `mountWorkInProgressHook` vs `updateWorkInProgressHook`: in React source code, distinct dispatcher tables exist for mount and update phases.'
     ],
     commonTraps: [
-      'Llamar a un hook condicionalmente, lo cual desincroniza el cursor e intercambia el estado de dos variables totalmente distintas.',
-      'Crear efectos secundarios en setters sin saber que son funciones encoladas.'
+      'Calling a hook conditionally, which shifts the cursor index and misaligns state between completely different variables.',
+      'Performing side effects inside state setters without understanding they are queued updates.'
     ],
-    keyTakeaway: 'React rastrea los hooks mediante una lista enlazada secuencial; el orden de llamada es su única identidad.',
+    keyTakeaway: 'React tracks hooks via a sequential linked list; call order is their only persistent identity.',
     componentKey: 'HooksInternalsDemo',
-    tags: ['hooks-internals', 'lista-enlazada', 'useState-from-scratch', 'cursor', 'fiber']
+    tags: ['hooks-internals', 'linked-list', 'useState-from-scratch', 'cursor', 'fiber']
   },
   {
     id: '8.5',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.5 Closures Obsoletas (Stale Closures)',
-    summary: 'El error más sutil de React: funciones que capturan variables de un render previo y muestran valores desactualizados.',
-    whatIsIt: `Una **Stale Closure (Closure obsoleta)** ocurre debido a la forma en que funcionan las funciones y el ámbito léxico en JavaScript:
-Cada vez que un componente funcional de React se ejecuta, se crea un nuevo ámbito con **nuevas variables independientes**.
+    levelTitle: 'React Internals',
+    title: '8.5 Stale Closures',
+    summary: "React's most subtle bug: functions capturing variables from a prior render pass and referencing outdated values.",
+    whatIsIt: `A **Stale Closure** occurs because of how functions and lexical scoping work in JavaScript:
+Each time a React function component runs, a fresh scope is created with **brand-new local variables**.
 
-Si defines una función callback, un temporizador (\`setInterval\`) o un manejador de eventos que persiste a lo largo del tiempo, esa función **retiene en su closure los valores de las variables del render exacto en que fue creada**.
-Si ese temporizador no se recrea o no actualiza sus dependencias, **seguirá leyendo para siempre el valor viejo del primer render**.`,
-    codeSnippet: `// ❌ EL BUG CLÁSICO DE STALE CLOSURE
-function TemporizadorRoto() {
-  const [cuenta, setCuenta] = useState(0);
+If you declare a callback, interval (\`setInterval\`), or event listener that persists over time, that function **retains in its closure the variable values from the exact render pass in which it was created**.
+If that callback is not recreated or does not update its dependency array, **it will perpetually read the stale variable value from that initial render**.`,
+    codeSnippet: `// ❌ THE CLASSIC STALE CLOSURE BUG
+function BrokenTimer() {
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => {
-      // 💣 Este intervalo capturó 'cuenta = 0' al montar.
-      // ¡En cada segundo volverá a imprimir 0 y fijará setCuenta(0 + 1) = 1 eternamente!
-      console.log('Valor capturado obsoleto:', cuenta);
-      setCuenta(cuenta + 1);
+      // 💣 This interval closed over 'count = 0' on mount.
+      // Every second it logs 0 and calls setCount(0 + 1) = 1 forever!
+      console.log('Stale captured value:', count);
+      setCount(count + 1);
     }, 1000);
     return () => clearInterval(id);
-  }, []); // Dependencias incompletas: falta [cuenta]
+  }, []); // Missing dependencies: lacks [count]
 
-  return <div>Cuenta: {cuenta}</div>;
+  return <div>Count: {count}</div>;
 }
 
-// ✅ LAS 3 SOLUCIONES SENIOR:
-// 1. Usar actualización funcional (no depende de la variable externa):
-//    setCuenta(prev => prev + 1);
-// 2. Incluir [cuenta] en las dependencias (reinicia el timer con la nueva closure).
-// 3. Guardar el valor en una useRef que se actualiza en cada render:
-//    const cuentaRef = useRef(cuenta); cuentaRef.current = cuenta;`,
+// ✅ THE 3 SENIOR SOLUTIONS:
+// 1. Functional state updater (does not depend on outer scope variable):
+//    setCount(prev => prev + 1);
+// 2. Include [count] in dependencies (resets the timer with fresh closure).
+// 3. Store state in a useRef updated on every render:
+//    const countRef = useRef(count); countRef.current = count;`,
     interviewTips: [
-      'Explica la solución de `useRef` para callbacks estables: si tienes un listener que no deseas reiniciar pero necesita leer el valor más reciente del estado, almacena el estado en `ref.current = state` en cada render y lee `ref.current` dentro del callback.',
-      'Menciona el hook experimental/propuesto `useEffectEvent`: una API diseñada para extraer código no reactivo de los efectos sin disparar re-ejecuciones.'
+      'Explain the `useRef` pattern for stable callbacks: when an event listener must not be reset but needs to read the latest state, assign `ref.current = state` on each render and access `ref.current` inside the handler.',
+      'Mention the experimental/RFC hook `useEffectEvent`: designed specifically to extract non-reactive logic from effects without adding dependencies to the effect array.'
     ],
     commonTraps: [
-      'Silenciar las advertencias de ESLint (`// eslint-disable-next-line react-hooks/exhaustive-deps`) en vez de aplicar una de las 3 soluciones correctas.',
-      'Asumir que los valores de las variables dentro de un `setTimeout` o promesa son reactivos en tiempo real.'
+      'Silencing ESLint warnings (`// eslint-disable-next-line react-hooks/exhaustive-deps`) instead of applying one of the 3 correct architectural fixes.',
+      'Assuming variable values inside `setTimeout` or promises remain reactive in real time.'
     ],
-    keyTakeaway: 'Las closures capturan el valor de su render. Usa la forma funcional `prev => ...` o refs para evitar valores congelados.',
+    keyTakeaway: 'Closures capture values from their specific render. Use functional updates `prev => ...` or refs to avoid frozen state.',
     componentKey: 'StaleClosuresDemo',
-    tags: ['stale-closures', 'closures-obsoletas', 'setInterval', 'exhaustive-deps', 'useRef']
+    tags: ['stale-closures', 'closures', 'setInterval', 'exhaustive-deps', 'useRef']
   },
   {
     id: '8.6',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.6 Asincronía y Encolado de `setState`',
-    summary: 'setState no muta la variable local de inmediato; encola una actualización en la fibra para ser procesada en el siguiente render.',
-    whatIsIt: `Una de las mayores fuentes de confusión para principiantes es escribir \`setContador(5)\` y en la línea siguiente comprobar que \`contador\` sigue teniendo el valor \`0\`.
+    levelTitle: 'React Internals',
+    title: '8.6 Asynchrony & `setState` Queuing',
+    summary: 'setState does not mutate local variables immediately; it enqueues an update onto the fiber to be processed in the next render.',
+    whatIsIt: `A major source of confusion for engineers is calling \`setCount(5)\` and noticing on the next line that \`count\` is still \`0\`.
 
-¿Por qué ocurre esto?:
-1. \`const [contador, setContador] = useState(0)\` declara una constante \`contador\` en el ámbito de la función actual.
-2. \`setContador\` no es un puntero a esa constante ni puede mutar el valor de una constante en JavaScript.
-3. Lo que hace \`setContador\` es crear un objeto de actualización (\`Update\`) y colocarlo en la **cola de actualizaciones de la fibra (\`fiber.updateQueue\`)**, programando una nueva invocación del componente para el futuro.
-4. El nuevo valor solo estará disponible cuando React vuelva a ejecutar la función del componente en el **siguiente ciclo de render**.`,
-    codeSnippet: `function DemostracionEncolado() {
+Why does this happen?:
+1. \`const [count, setCount] = useState(0)\` declares a constant \`count\` scoped to the current function execution.
+2. \`setCount\` is not a pointer to that constant and cannot reassign a JavaScript constant in the current execution scope.
+3. Instead, \`setCount\` instantiates an \`Update\` object and appends it to the **Fiber update queue (\`fiber.updateQueue\`)**, scheduling a future re-render.
+4. The updated value becomes available only when React invokes the component function again in the **next render pass**.`,
+    codeSnippet: `function QueueingDemo() {
   const [n, setN] = useState(0);
 
   const handleClick = () => {
-    console.log('1. Antes del set:', n); // Imprime 0
+    console.log('1. Before set:', n); // Logs 0
 
-    setN(n + 1); // Encola actualización con valor calculado (0 + 1)
-    console.log('2. Inmediatamente después:', n); // ¡Sigue imprimiendo 0!
+    setN(n + 1); // Enqueues update with computed value (0 + 1)
+    console.log('2. Immediately after:', n); // Still logs 0!
 
-    setN(n + 1); // Encola actualización con el mismo valor (0 + 1)
+    setN(n + 1); // Enqueues update with identical value (0 + 1)
 
-    // Con la forma funcional se encadenan sobre la cola de actualizaciones:
-    setN(prev => prev + 1); // Recibe el resultado de la cola (1) y suma 1 -> 2
+    // Functional updates chain over the queue:
+    setN(prev => prev + 1); // Receives output from queue (1) and increments -> 2
   };
 
-  return <button onClick={handleClick}>Valor actual: {n}</button>;
+  return <button onClick={handleClick}>Current value: {n}</button>;
 }`,
     interviewTips: [
-      'Pregunta de entrevista trampa: "¿`setState` es síncrono o asíncrono?". Respuesta técnica precisa: La llamada a la función `setContador()` es estrictamente síncrona en su ejecución (crea el objeto y lo encola al instante), pero el efecto observable sobre el estado y el repintado en pantalla es asíncrono y programado.',
-      'Explica cómo se procesa la cola de updates (`updateQueue`): React recorre la lista circular de actualizaciones pendientes y aplica cada una secuencialmente sobre el estado base para calcular el `memoizedState` final.'
+      'Interview trick question: "Is setState synchronous or asynchronous?". Precise technical answer: The function call `setCount()` itself executes synchronously (it creates and enqueues the update object immediately), but the observable state change and screen repaint are asynchronous and scheduled.',
+      'Explain how `updateQueue` is processed: React traverses a circular linked list of pending updates and sequentially applies them to base state to compute the final `memoizedState`.'
     ],
     commonTraps: [
-      'Escribir `await setEstado(...)` creyendo que `setState` retorna una Promesa (retorna `void`).',
-      'Intentar leer el estado actualizado inmediatamente después de invocar su setter para enviarlo a una API en vez de pasar el nuevo valor directamente a la función de envío.'
+      'Writing `await setState(...)` believing it returns a Promise (it returns `void`).',
+      'Attempting to read state immediately after calling its setter to pass to an API instead of passing the new value directly.'
     ],
-    keyTakeaway: 'setState programa un re-render y encola un cambio; nunca modifica la variable local en la misma línea de ejecución.',
+    keyTakeaway: 'setState schedules a re-render and queues an update; it never modifies the local variable in the current call stack.',
     componentKey: 'SetStateBatchingAsyncDemo',
-    tags: ['setState', 'asincronia', 'updateQueue', 'encolado', 'batching']
+    tags: ['setState', 'asynchrony', 'updateQueue', 'queueing', 'batching']
   },
   {
     id: '8.7',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.7 Cuándo y por qué React vuelve a renderizar',
-    summary: 'Las causas exactas de un re-render y optimizaciones de salida temprana (Bailout) con comparación `Object.is`.',
-    whatIsIt: `Un componente vuelve a renderizarse exclusivamente por:
-1. **Actualización de su propio estado local** (\`useState\` / \`useReducer\`).
-2. **Re-renderizado de su componente padre** (a menos que esté memoizado con \`React.memo\` y sus props sean idénticas).
-3. **Consumo de un Contexto** cuyo valor cambió.
+    levelTitle: 'React Internals',
+    title: '8.7 When & Why React Re-renders',
+    summary: 'The exact triggers of a re-render and early bailout optimizations with `Object.is` comparison.',
+    whatIsIt: `A component re-renders exclusively due to:
+1. **Local state updates** (\`useState\` / \`useReducer\`).
+2. **Parent component re-rendering** (unless memoized with \`React.memo\` and props remain identical).
+3. **Context changes** when the component consumes that Context.
 
-**La optimización de salida temprana (Bailout con \`Object.is\`)**:
-Si invocas \`setEstado(nuevoValor)\` y \`Object.is(nuevoValor, estadoAnterior) === true\` (es decir, el valor o la referencia es exactamente idéntica), **React cancela la actualización de inmediato (Eager Bailout)** sin re-renderizar los hijos ni tocar el DOM.`,
+**The Early Bailout Optimization (with \`Object.is\`)**:
+If you invoke \`setState(nextValue)\` and \`Object.is(nextValue, prevState) === true\` (meaning primitive values or object references are strictly identical), **React aborts the update immediately (Eager Bailout)** without rendering children or touching the DOM.`,
     codeSnippet: `function BailoutDemo() {
-  const [numero, setNumero] = useState(10);
+  const [number, setNumber] = useState(10);
   const renders = useRef(0);
   renders.current += 1;
 
-  const asignarMismoValor = () => {
-    // Como el valor es idéntico según Object.is, React omite el render
-    setNumero(10);
+  const assignSameValue = () => {
+    // Because the value is identical under Object.is, React bails out
+    setNumber(10);
   };
 
-  const asignarNuevoObjetoMismoContenido = () => {
-    // 💣 Aunque el contenido sea igual, la referencia de memoria es nueva
-    // React no puede hacer bailout y forzará un re-render:
-    // setUser({ nombre: 'Ana' });
+  const assignNewObjectSameContent = () => {
+    // 💣 Even if content is identical, the object reference is new
+    // React cannot bail out and triggers a re-render:
+    // setUser({ name: 'Ana' });
   };
 
   return (
     <div>
-      <p>Valor: {numero} | Renders ejecutados: {renders.current}</p>
-      <button onClick={asignarMismoValor}>Asignar 10 de nuevo (Bailout)</button>
+      <p>Value: {number} | Renders executed: {renders.current}</p>
+      <button onClick={assignSameValue}>Assign 10 again (Bailout)</button>
     </div>
   );
 }`,
     interviewTips: [
-      'Explica por qué mutar objetos rompe el bailout: si haces `usuario.edad = 30; setUsuario(usuario);`, la referencia es idéntica (`Object.is(usuario, usuario) === true`), por lo que React ejecuta un bailout y NO actualiza la UI.',
-      'Explica qué ocurre si llamas a setState con el mismo valor cuando el componente ya tenía un render pendiente: React puede ejecutar el cuerpo del componente una vez para verificar y luego hacer bailout sin hacer commit en los hijos.'
+      'Explain why mutating objects breaks bailout: if you do `user.age = 30; setUser(user);`, the reference is identical (`Object.is(user, user) === true`), so React triggers an eager bailout and DOES NOT update the UI.',
+      'Explain what happens if setState is called with the same value while a render is already pending: React may evaluate the component body once to verify, then bail out before committing to child fibers.'
     ],
     commonTraps: [
-      'Crear nuevas referencias en el setter (`setItems([...items])`) sin haber modificado nada, forzando re-renders que podrían haberse evitado.',
-      'Asumir que React compara objetos en profundidad (deep equality): React solo usa comparación superficial con `Object.is`.'
+      'Creating new references in setters (`setItems([...items])`) without changes, forcing re-renders that could have been skipped.',
+      'Assuming React performs deep object equality checks: React only performs shallow `Object.is` comparisons.'
     ],
-    keyTakeaway: 'React compara con `Object.is`; si la referencia no cambió, aplica un Bailout y omite el re-render por completo.',
+    keyTakeaway: 'React compares values with `Object.is`; if references have not changed, it executes an early Bailout and skips re-rendering.',
     componentKey: 'WhyRerenderBailoutDemo',
-    tags: ['rerender-causes', 'bailout', 'Object.is', 'shallow-compare', 'optimizacion']
+    tags: ['rerender-causes', 'bailout', 'Object.is', 'shallow-compare', 'optimization']
   },
   {
     id: '8.8',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.8 `useEffect` vs. `useLayoutEffect` (Pintado del navegador)',
-    summary: 'useLayoutEffect corre síncronamente antes de pintar para evitar parpadeos visuales; useEffect corre asíncronamente tras el pintado.',
-    whatIsIt: `La diferencia crítica reside en el momento exacto en que se ejecutan respecto al ciclo de pintado del navegador (**Browser Paint**):
+    levelTitle: 'React Internals',
+    title: '8.8 `useEffect` vs. `useLayoutEffect` (Browser Paint)',
+    summary: 'useLayoutEffect runs synchronously before paint to prevent visual flicker; useEffect runs asynchronously after paint.',
+    whatIsIt: `The crucial distinction lies in execution timing relative to the **Browser Paint** pipeline:
 
 1. **\`useLayoutEffect\`**:
-- Se ejecuta **síncronamente** inmediatamente después de que React aplica los cambios al DOM en la fase de Commit, pero **ANTES de que el navegador pinte el fotograma en pantalla**.
-- Bloquea el pintado visual hasta que su función termine.
-- **Caso de uso esencial**: Medir el tamaño o posición de un nodo del DOM (\`getBoundingClientRect()\`) y ajustar estilos o posicionamiento (ej: tooltips, popovers) para que el usuario no vea el salto visual (**Flicker**).
-- Advertencia: Dispara un warning en SSR porque en el servidor no hay DOM ni layout.
+- Runs **synchronously** immediately after React applies DOM mutations in the Commit phase, but **BEFORE the browser paints pixels on screen**.
+- Blocks visual paint until its execution completes.
+- **Essential Use Case**: Measuring DOM geometry (\`getBoundingClientRect()\`) and adjusting layout/styles (tooltips, popovers, dropdowns) so the user never sees a visual layout jump (**Flicker**).
+- Warning: Emits a console warning in SSR because the server has no layout or DOM.
 
 2. **\`useEffect\`**:
-- Se ejecuta **asíncronamente después de que el navegador ha pintado la pantalla**.
-- No bloquea la renderización.
-- **Caso de uso**: El 99% de los efectos cotidianos (fetch, suscripciones, timers).`,
-    codeSnippet: `function TooltipConLayoutEffect({ targetRect }: { targetRect: DOMRect | null }) {
+- Runs **asynchronously after the browser has completed layout and paint**.
+- Never blocks painting or user interactions.
+- **Essential Use Case**: 99% of day-to-day side effects (data fetching, subscriptions, timers).`,
+    codeSnippet: `function TooltipWithLayoutEffect({ targetRect }: { targetRect: DOMRect | null }) {
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const [posicion, setPosicion] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState({ top: 0, left: 0 });
 
-  // Si usáramos useEffect aquí, el tooltip aparecería en (0,0) por 1 frame y luego saltaría
-  // Con useLayoutEffect, la medición y ajuste ocurren ANTES del primer frame visible:
+  // If useEffect were used here, the tooltip would render at (0,0) for 1 frame then jump.
+  // With useLayoutEffect, measurement and adjustment occur BEFORE the first visible paint:
   useLayoutEffect(() => {
     if (tooltipRef.current && targetRect) {
       const tooltipHeight = tooltipRef.current.offsetHeight;
-      setPosicion({
+      setPosition({
         top: targetRect.top - tooltipHeight - 8,
         left: targetRect.left
       });
@@ -372,119 +372,119 @@ Si invocas \`setEstado(nuevoValor)\` y \`Object.is(nuevoValor, estadoAnterior) =
   return (
     <div
       ref={tooltipRef}
-      style={{ position: 'fixed', top: posicion.top, left: posicion.left }}
+      style={{ position: 'fixed', top: position.top, left: position.left }}
       className="bg-gray-900 text-white p-2 rounded shadow-lg text-sm"
     >
-      Tooltip posicionado a la perfección sin parpadeo
+      Perfectly positioned tooltip with zero visual flicker
     </div>
   );
 }`,
     interviewTips: [
-      'Pregunta de pizarra: "¿Cómo simularías un parpadeo visual para demostrar la necesidad de useLayoutEffect?". Respuesta: Renderizas un elemento con un valor inicial y en `useEffect` lo modificas tras una medición; el usuario verá el elemento cambiar de posición por una fracción de segundo. Con `useLayoutEffect`, ese frame intermedio nunca se pinta.',
-      'Explica la regla: "Comienza siempre con `useEffect`. Solo cambia a `useLayoutEffect` si experimentas parpadeos visuales al medir el DOM".'
+      'Whiteboard question: "How would you reproduce visual flicker to justify useLayoutEffect?". Answer: Render an element with initial coordinates, then update its position in `useEffect` based on DOM measurements; the user sees the element flicker in its starting position for a split second. With `useLayoutEffect`, that intermediate frame is never painted.',
+      'Rule of thumb: "Always start with `useEffect`. Switch to `useLayoutEffect` only if you experience visual flicker while measuring the DOM".'
     ],
     commonTraps: [
-      'Colocar llamadas a APIs o tareas lentas en `useLayoutEffect`, bloqueando el hilo de pintado del navegador y arruinando el INP.',
-      'Intentar usar `useLayoutEffect` en Server Components o en SSR de Next.js.'
+      'Placing slow API calls or heavy tasks in `useLayoutEffect`, blocking browser painting and degrading INP.',
+      'Attempting to run `useLayoutEffect` in React Server Components or Next.js SSR.'
     ],
-    keyTakeaway: 'useLayoutEffect mide y corrige antes de pintar para evitar parpadeos; useEffect corre después para no bloquear la pantalla.',
+    keyTakeaway: 'useLayoutEffect measures and updates before paint to prevent flicker; useEffect runs asynchronously after paint.',
     componentKey: 'LayoutEffectFlickerDemo',
-    tags: ['useEffect', 'useLayoutEffect', 'flicker', 'browser-paint', 'mediciones-dom']
+    tags: ['useEffect', 'useLayoutEffect', 'flicker', 'browser-paint', 'dom-measurements']
   },
   {
     id: '8.9',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.9 Hidratación y Errores de Mismatch en profundidad',
-    summary: 'Qué causa las discrepancias de hidratación entre servidor y cliente y cómo resolverlas de forma robusta y elegante.',
-    whatIsIt: `En Server-Side Rendering (SSR) o SSG, el servidor genera un archivo HTML estático que se envía al navegador. Al llegar el bundle de JavaScript, React ejecuta la fase de **Hidratación**:
-React recorre el DOM HTML existente y le asocia los listeners de eventos y el estado en memoria.
+    levelTitle: 'React Internals',
+    title: '8.9 Hydration & Mismatch Errors in Depth',
+    summary: 'What causes hydration mismatches between server and client, and how to resolve them cleanly and robustly.',
+    whatIsIt: `In Server-Side Rendering (SSR) or SSG, the server renders a static HTML document and delivers it to the browser. Once the JavaScript bundle downloads, React initiates **Hydration**:
+React walks the existing server HTML DOM tree and attaches event listeners and in-memory component state.
 
-**¿Qué es un Hydration Mismatch?**:
-Durante la hidratación, React espera que **el árbol de Virtual DOM generado por el primer render en el cliente sea idéntico al HTML que provino del servidor**.
-Si hay diferencias (por ejemplo, el servidor renderizó \`<div>--:--</div>\` pero el cliente renderizó \`<div>14:32:05</div>\`), React detecta una inconsistencia:
-- En desarrollo: Dispara el warning rojo \`Text content does not match server-rendered HTML\`.
-- En casos severos: React tiene que descartar el subárbol del servidor y regenerarlo en el cliente, destruyendo las ventajas de rendimiento de SSR.`,
-    codeSnippet: `// ❌ CAUSAS COMUNES DE MISMATCH:
-// 1. Fechas y horas: new Date().toLocaleTimeString() (el servidor tiene una zona horaria distinta al usuario)
-// 2. Valores aleatorios: Math.random() o crypto.randomUUID()
-// 3. APIs del navegador: window.innerWidth, localStorage.getItem('token')
-// 4. HTML inválido según el estándar: colocar un <p> dentro de otro <p>, o un <div> dentro de un <p>
+**What is a Hydration Mismatch?**:
+During hydration, React expects that **the Virtual DOM tree generated by the client’s first render pass matches the server-rendered HTML character for character**.
+If discrepancies exist (e.g., the server rendered \`<div>--:--</div>\` but the client rendered \`<div>14:32:05</div>\`), React flags an error:
+- In development: Logs the prominent warning \`Text content does not match server-rendered HTML\`.
+- In severe cases: React must discard the server-rendered DOM subtree and recreate it from scratch on the client, destroying SSR performance advantages.`,
+    codeSnippet: `// ❌ COMMON CAUSES OF HYDRATION MISMATCH:
+// 1. Date/time formatting: new Date().toLocaleTimeString() (server runs in a different timezone than user)
+// 2. Random values: Math.random() or crypto.randomUUID()
+// 3. Browser-only globals: window.innerWidth, localStorage.getItem('token')
+// 4. Invalid HTML according to HTML specs: nesting <p> inside <p>, or <div> inside <p>
 
-// ✅ SOLUCIÓN ELEGANTE: Diferir la renderización del dato dependiente del cliente
-function RelojSeguro() {
-  const [hora, setHora] = useState<string | null>(null);
+// ✅ CLEAN FIX: Defer rendering browser-dependent data until after hydration
+function SafeClock() {
+  const [time, setTime] = useState<string | null>(null);
 
   useEffect(() => {
-    // Solo corre en el cliente tras la hidratación exitosa:
-    setHora(new Date().toLocaleTimeString());
-    const id = setInterval(() => setHora(new Date().toLocaleTimeString()), 1000);
+    // Only runs on the client after successful hydration:
+    setTime(new Date().toLocaleTimeString());
+    const id = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  // En el servidor y primer render del cliente muestra '--:--' (coincidencia perfecta):
-  return <span>{hora ?? '--:--'}</span>;
+  // Server and initial client render display '--:--' (perfect match):
+  return <span>{time ?? '--:--'}</span>;
 }`,
     interviewTips: [
-      'Menciona el atributo de escape `suppressHydrationWarning`: Si una diferencia es inevitable y controlada (por ejemplo, una marca de tiempo generada por el servidor que solo difiere por milisegundos en el texto), puedes añadir `suppressHydrationWarning` en ese elemento HTML específico para silenciar la advertencia sin regenerar todo el nodo.',
-      'Explica el impacto del HTML no válido: navegadores como Chrome corrigen el HTML defectuoso sobre la marcha (por ejemplo, si pones un `<div>` dentro de un `<p>`, el navegador cierra el `<p>` antes de tiempo). Esto altera la estructura del DOM físico y hace que la hidratación de React falle de forma catastrófica.'
+      'Mention the escape hatch `suppressHydrationWarning`: If a discrepancy is unavoidable and benign (e.g., a server-rendered timestamp differing slightly in text), you can add `suppressHydrationWarning` to that specific HTML element to silence warnings without re-creating the entire subtree.',
+      'Explain invalid HTML nesting: browsers like Chrome auto-correct malformed HTML on the fly (e.g., nesting a `<div>` inside a `<p>` causes Chrome to close the `<p>` early). This mutates the physical DOM structure and causes React hydration to fail catastrophically.'
     ],
     commonTraps: [
-      'Leer `localStorage` durante la inicialización de `useState(() => localStorage.getItem("tema"))` en un componente con SSR.',
-      'Usar `typeof window !== "undefined"` en condicionales de renderizado inicial (produce diferente JSX en servidor que en cliente).'
+      'Reading `localStorage` inside `useState(() => localStorage.getItem("theme"))` initialization in an SSR component.',
+      'Using `typeof window !== "undefined"` in initial conditional JSX (produces different markup on server vs client).'
     ],
-    keyTakeaway: 'Garantiza que el primer render en cliente sea idéntico al del servidor; difiere lecturas de navegador a un useEffect.',
+    keyTakeaway: 'Ensure the initial client render matches server HTML identically; defer browser-only reads to a useEffect.',
     componentKey: 'HydrationMismatchDemo',
-    tags: ['hidratacion', 'hydration-mismatch', 'ssr', 'suppressHydrationWarning', 'isMounted']
+    tags: ['hydration', 'hydration-mismatch', 'ssr', 'suppressHydrationWarning', 'isMounted']
   },
   {
     id: '8.10',
     level: 8,
-    levelTitle: 'Internos de React',
-    title: '8.10 Implementar Custom Hooks desde cero',
-    summary: 'Demuestra maestría implementando en pizarra: usePrevious, useToggle, useDebounce y useLocalStorage.',
-    whatIsIt: `Una de las pruebas más efectivas en entrevistas técnicas para evaluar si un candidato comprende los mecanismos profundos de React es pedirle que implemente Custom Hooks esenciales **sin mirar documentación ni librerías**:
+    levelTitle: 'React Internals',
+    title: '8.10 Implementing Custom Hooks from Scratch',
+    summary: 'Whiteboard mastery: implementing usePrevious, useToggle, useDebounce, and useLocalStorage from first principles.',
+    whatIsIt: `One of the most effective ways interviewers evaluate whether an engineer truly understands React mechanics is asking them to implement fundamental Custom Hooks **from scratch without libraries or documentation**:
 
 1. **\`usePrevious(value)\`**:
-Retorna el valor que la prop o estado tenía en el render inmediatamente anterior.
-Se implementa aprovechando que \`ref.current\` se actualiza dentro de un \`useEffect\` (el cual corre **después** del render). Por lo tanto, durante el render actual, \`ref.current\` aún conserva el valor anterior.
+Returns the value a prop or state variable held during the immediately preceding render.
+Implemented by exploiting the fact that \`ref.current\` updates inside \`useEffect\` (which runs **after** render). Consequently, during the current render, \`ref.current\` still holds the prior render's value.
 2. **\`useToggle(initialState)\`**:
-Hook para alternar valores booleanos de forma funcional.
+Toggles boolean state functionally.
 3. **\`useDebounce(value, delay)\`**:
-Retorna una versión retardada de un valor mediante \`setTimeout\` y \`clearTimeout\`.
+Debounces a rapidly changing value using \`setTimeout\` and \`clearTimeout\`.
 4. **\`useLocalStorage(key, initialValue)\`**:
-Sincroniza estado con la API de almacenamiento local con serialización segura.`,
-    codeSnippet: `// 1. usePrevious implementado desde cero:
-function usePrevious<T>(valor: T): T | undefined {
+Synchronizes state with browser localStorage with resilient JSON serialization.`,
+    codeSnippet: `// 1. usePrevious implemented from scratch:
+function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T>(undefined);
 
   useEffect(() => {
-    // Se ejecuta DESPUÉS del renderizado
-    ref.current = valor;
-  }, [valor]);
+    // Executes AFTER rendering commits
+    ref.current = value;
+  }, [value]);
 
-  // Durante la ejecución del render, retorna el valor guardado en el ciclo PREVIO
+  // During render execution, returns the value stored in the PREVIOUS cycle
   return ref.current;
 }
 
-// 2. useToggle implementado desde cero:
-function useToggle(inicial: boolean = false): [boolean, (forzar?: boolean) => void] {
-  const [activo, setActivo] = useState(inicial);
-  const toggle = useCallback((forzar?: boolean) => {
-    setActivo(prev => (typeof forzar === 'boolean' ? forzar : !prev));
+// 2. useToggle implemented from scratch:
+function useToggle(initial: boolean = false): [boolean, (force?: boolean) => void] {
+  const [active, setActive] = useState(initial);
+  const toggle = useCallback((force?: boolean) => {
+    setActive(prev => (typeof force === 'boolean' ? force : !prev));
   }, []);
-  return [activo, toggle];
+  return [active, toggle];
 }`,
     interviewTips: [
-      'Explica el truco mental de `usePrevious`: el retorno de la función ocurre durante el render; la asignación a `ref.current` ocurre en el `useEffect` (fase de efectos pasivos). Como el render ocurre ANTES que los efectos, la función siempre retorna el valor del render anterior.',
-      'En React 19: menciona que patrones complejos para capturar valores previos a menudo pueden simplificarse con `useOptimistic` o derivando valores directamente.'
+      'Explain the mental model of `usePrevious`: the return statement evaluates during render; the assignment to `ref.current` evaluates in `useEffect` (passive effects phase). Because render runs BEFORE passive effects, the hook consistently returns the value from the prior render.',
+      'In React 19: mention that complex patterns for tracking previous values can often be simplified with `useOptimistic` or by deriving state directly.'
     ],
     commonTraps: [
-      'Intentar implementar `usePrevious` usando `useState` en vez de `useRef`, provocando un re-render adicional e infinito en cada cambio.',
-      'No manejar excepciones `JSON.parse` ni cuota excedida en implementaciones de `useLocalStorage`.'
+      'Attempting to implement `usePrevious` using `useState` instead of `useRef`, which triggers an infinite re-render loop on every update.',
+      'Failing to handle `JSON.parse` exceptions or quota exceeded errors in `useLocalStorage` implementations.'
     ],
-    keyTakeaway: 'Dominar la implementación de usePrevious, useToggle y useDebounce desde cero demuestra comprensión profunda del ciclo de render.',
+    keyTakeaway: 'Mastering usePrevious, useToggle, and useDebounce from scratch demonstrates an intuitive grasp of the render lifecycle.',
     componentKey: 'CustomHooksFromScratchDemo',
-    tags: ['usePrevious', 'useToggle', 'useDebounce', 'custom-hooks-scratch', 'entrevista-tecnica']
+    tags: ['usePrevious', 'useToggle', 'useDebounce', 'custom-hooks-scratch', 'technical-interview']
   }
 ];

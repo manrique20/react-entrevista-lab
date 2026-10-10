@@ -69,12 +69,12 @@ export function JsExerciseTester({ exercise, index }: JsExerciseTesterProps) {
   const fullPlaygroundCode = `${exercise.solutionCode}\n\n${exercise.testCasesCode}`;
 
   const categoryColors: Record<string, string> = {
-    Funcional: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
-    Asincronía: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    'Estructuras de Datos': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-    Algoritmos: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+    Functional: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
+    Async: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    'Data Structures': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    Algorithms: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
     Polyfills: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-    Objetos: 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+    Objects: 'bg-rose-500/10 text-rose-500 border-rose-500/20'
   };
 
   return (
@@ -90,7 +90,7 @@ export function JsExerciseTester({ exercise, index }: JsExerciseTesterProps) {
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${categoryColors[exercise.category] || 'bg-muted text-muted'}`}>
                 {exercise.category}
               </span>
-              <span className="text-[11px] text-muted font-medium">Ejercicio #{index + 1}</span>
+              <span className="text-[11px] text-muted font-medium">Exercise #{index + 1}</span>
             </div>
             <h3 className="text-base font-bold text-foreground break-words">{exercise.title}</h3>
           </div>
@@ -105,7 +105,7 @@ export function JsExerciseTester({ exercise, index }: JsExerciseTesterProps) {
           }`}
         >
           <CheckCircle2 className={`w-3.5 h-3.5 ${isCompleted ? 'text-emerald-500' : ''}`} />
-          <span>{isCompleted ? 'Completado' : 'Marcar como completado'}</span>
+          <span>{isCompleted ? 'Completed' : 'Mark as completed'}</span>
         </button>
       </div>
 
@@ -127,7 +127,7 @@ export function JsExerciseTester({ exercise, index }: JsExerciseTesterProps) {
               }`}
             >
               <Code2 className="w-3.5 h-3.5" />
-              <span>Solución Senior Canónica</span>
+              <span>Canonical Senior Solution</span>
             </button>
 
             <button
@@ -139,7 +139,7 @@ export function JsExerciseTester({ exercise, index }: JsExerciseTesterProps) {
               }`}
             >
               <Terminal className="w-3.5 h-3.5" />
-              <span>Ejecutar Test Suite en Vivo</span>
+              <span>Run Live Test Suite</span>
             </button>
           </div>
 
@@ -149,7 +149,7 @@ export function JsExerciseTester({ exercise, index }: JsExerciseTesterProps) {
               className="flex items-center gap-1 text-[11px] text-muted hover:text-foreground transition-colors"
             >
               {hasCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-              <span>{hasCopied ? 'Copiado' : 'Copiar código'}</span>
+              <span>{hasCopied ? 'Copied' : 'Copy code'}</span>
             </button>
           )}
         </div>
@@ -177,7 +177,7 @@ export function JsExerciseTester({ exercise, index }: JsExerciseTesterProps) {
               className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 font-semibold hover:underline"
             >
               <Lightbulb className="w-3.5 h-3.5" />
-              <span>{showHints ? 'Ocultar consejos técnicos' : 'Ver consejos clave para la entrevista'}</span>
+              <span>{showHints ? 'Hide technical hints' : 'View key interview hints'}</span>
               {showHints ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
 

@@ -6,18 +6,18 @@ import { ChevronDown } from 'lucide-react';
 const ITEMS_ACORDEON = [
   {
     id: 'p1',
-    pregunta: '¿Por qué la inmutabilidad es vital en React?',
-    respuesta: 'React compara con Object.is; si mutas el objeto directamente, la referencia es la misma y React no detecta el cambio, omitiendo el re-render.'
+    pregunta: 'Why is immutability vital in React?',
+    respuesta: 'React compares values using Object.is; if you mutate an object directly, the reference remains the same and React does not detect the change, skipping the re-render.'
   },
   {
     id: 'p2',
-    pregunta: '¿Cuál es la diferencia entre useMemo y useCallback?',
-    respuesta: 'useMemo memoiza el resultado de un cálculo pesado; useCallback memoiza la función misma para preservar identidad referencial.'
+    pregunta: 'What is the difference between useMemo and useCallback?',
+    respuesta: 'useMemo memoizes the result of an expensive calculation; useCallback memoizes the function definition itself to preserve referential identity.'
   },
   {
     id: 'p3',
-    pregunta: '¿Para qué sirve useTransition en React 18/19?',
-    respuesta: 'Marca actualizaciones como no urgentes e interrumpibles para mantener la capacidad de respuesta de la UI a 60 FPS.'
+    pregunta: 'What is useTransition used for in React 18/19?',
+    respuesta: 'It marks state updates as non-urgent and interruptible to keep the UI responsive at 60 FPS.'
   }
 ];
 
@@ -39,8 +39,8 @@ export function AccordionExercise() {
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
         <div>
-          <h3 className="font-bold text-base">Ejercicio 8: Acordeón Colapsable</h3>
-          <p className="text-xs text-muted">Evalúa gestión de estado múltiple vs exclusivo, atributos `aria-expanded` y transiciones.</p>
+          <h3 className="font-bold text-base">Exercise 8: Collapsible Accordion</h3>
+          <p className="text-xs text-muted">Evaluates multiple vs. exclusive state management, `aria-expanded` attributes, and transitions.</p>
         </div>
         <button
           onClick={() => {
@@ -51,7 +51,7 @@ export function AccordionExercise() {
             modoMultiple ? 'bg-primary text-white' : 'hover:bg-muted'
           }`}
         >
-          {modoMultiple ? 'Modo Múltiple Activo' : 'Modo Simple (Exclusivo)'}
+          {modoMultiple ? 'Multiple Mode Active' : 'Single Mode (Exclusive)'}
         </button>
       </div>
 

@@ -5,7 +5,7 @@ import { Loader2, ArrowDownCircle } from 'lucide-react';
 
 export function InfiniteScrollExercise() {
   const [items, setItems] = useState<string[]>(() =>
-    Array.from({ length: 8 }, (_, i) => `Elemento inicial #${i + 1}`)
+    Array.from({ length: 8 }, (_, i) => `Initial item #${i + 1}`)
   );
   const [pagina, setPagina] = useState(1);
   const [cargandoMas, setCargandoMas] = useState(false);
@@ -38,7 +38,7 @@ export function InfiniteScrollExercise() {
     }
     setCargandoMas(true);
     setTimeout(() => {
-      const nuevos = Array.from({ length: 5 }, (_, i) => `Lote #${pagina + 1} - Elemento ${i + 1}`);
+      const nuevos = Array.from({ length: 5 }, (_, i) => `Batch #${pagina + 1} - Item ${i + 1}`);
       setItems(prev => [...prev, ...nuevos]);
       setPagina(p => p + 1);
       setCargandoMas(false);
@@ -48,8 +48,8 @@ export function InfiniteScrollExercise() {
   return (
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="border-b pb-3">
-        <h3 className="font-bold text-base">Ejercicio 5: Infinite Scroll con IntersectionObserver</h3>
-        <p className="text-xs text-muted">Evalúa `IntersectionObserver`, `useRef` como centinela y acumulación inmutable de lotes.</p>
+        <h3 className="font-bold text-base">Exercise 5: Infinite Scroll with IntersectionObserver</h3>
+        <p className="text-xs text-muted">Evaluates `IntersectionObserver`, `useRef` as a sentinel, and immutable batch accumulation.</p>
       </div>
 
       <div className="h-64 overflow-y-auto border rounded-xl p-3 bg-background space-y-2">
@@ -60,20 +60,20 @@ export function InfiniteScrollExercise() {
           </div>
         ))}
 
-        {/* Centinela de intersección */}
+        {/* Intersection Sentinel */}
         <div ref={centinelaRef} className="py-4 text-center">
           {cargandoMas ? (
             <div className="flex items-center justify-center gap-2 text-xs text-primary font-medium">
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Cargando más elementos en background...</span>
+              <span>Loading more items in background...</span>
             </div>
           ) : hayMas ? (
             <span className="text-[11px] text-muted flex items-center justify-center gap-1">
-              <ArrowDownCircle className="w-3.5 h-3.5" /> Haz scroll para cargar lote {pagina + 1}...
+              <ArrowDownCircle className="w-3.5 h-3.5" /> Scroll down to load batch {pagina + 1}...
             </span>
           ) : (
             <span className="text-xs text-emerald-500 font-semibold">
-              ✓ Has llegado al final de todos los lotes.
+              ✓ You have reached the end of all batches.
             </span>
           )}
         </div>

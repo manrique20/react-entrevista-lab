@@ -15,17 +15,17 @@ import {
 } from 'lucide-react';
 
 export default function QuestionsPage() {
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('Todas');
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('All');
   const [reveladas, setReveladas] = useState<Record<string, boolean>>({});
 
-  const categorias = ['Todas', ...Array.from(new Set(INTERVIEW_QUESTIONS.map(q => q.category)))];
+  const categorias = ['All', ...Array.from(new Set(INTERVIEW_QUESTIONS.map(q => q.category)))];
 
   const toggleRevelar = (id: string) => {
     setReveladas(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   const preguntasFiltradas = INTERVIEW_QUESTIONS.filter(q =>
-    categoriaSeleccionada === 'Todas' || q.category === categoriaSeleccionada
+    categoriaSeleccionada === 'All' || q.category === categoriaSeleccionada
   );
 
   return (
@@ -34,16 +34,16 @@ export default function QuestionsPage() {
       <div className="p-6 sm:p-8 border rounded-3xl bg-card space-y-3 shadow-sm">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-semibold">
           <HelpCircle className="w-3.5 h-3.5" />
-          <span>Simulador de Entrevista Senior</span>
+          <span>Senior Interview Simulator</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">
-          Preguntas Clásicas de Entrevista en React
+          Classic React Technical Interview Questions
         </h1>
         <p className="text-xs sm:text-sm text-muted max-w-4xl leading-relaxed break-words">
-          Las 9 preguntas obligatorias en procesos técnicos para perfiles Mid y Senior. Cada tarjeta te permite pensar tu respuesta antes de revelar la explicación senior, el código demostrativo y las trampas que hacen fallar a candidatos.
+          The essential questions asked in technical processes for Mid and Senior roles. Each card lets you formulate your answer before revealing the senior explanation, code demonstration, and traps that trip up candidates.
         </p>
 
-        {/* Filtros por Categoría */}
+        {/* Category Filters */}
         <div className="pt-4 border-t border-border/60 flex flex-wrap gap-1.5">
           {categorias.map(cat => (
             <button
@@ -61,7 +61,7 @@ export default function QuestionsPage() {
         </div>
       </div>
 
-      {/* Listado de Preguntas */}
+      {/* List of Questions */}
       <div className="space-y-6">
         {preguntasFiltradas.map((q, idx) => {
           const estaRevelada = !!reveladas[q.id];
@@ -71,12 +71,12 @@ export default function QuestionsPage() {
               key={q.id}
               className="border border-border/80 rounded-2xl bg-card p-5 sm:p-6 space-y-4 shadow-sm"
             >
-              {/* Encabezado de Pregunta */}
+              {/* Question Header */}
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                      Pregunta #{idx + 1}
+                      Question #{idx + 1}
                     </span>
                     <span className="text-[11px] text-muted font-medium bg-muted px-2 py-0.5 rounded">
                       {q.category}
@@ -98,12 +98,12 @@ export default function QuestionsPage() {
                   {estaRevelada ? (
                     <>
                       <EyeOff className="w-3.5 h-3.5" />
-                      <span>Ocultar Respuesta</span>
+                      <span>Hide Answer</span>
                     </>
                   ) : (
                     <>
                       <Eye className="w-3.5 h-3.5 text-purple-500" />
-                      <span>Revelar Respuesta Senior</span>
+                      <span>Reveal Senior Answer</span>
                     </>
                   )}
                 </button>
@@ -111,36 +111,36 @@ export default function QuestionsPage() {
 
               {!estaRevelada ? (
                 <div className="p-4 border border-dashed rounded-xl bg-muted/10 text-center text-xs text-muted space-y-1">
-                  <p className="font-semibold text-foreground">💡 Ejercicio de Práctica Mental:</p>
-                  <p>Intenta explicar en voz alta los puntos clave antes de presionar &quot;Revelar Respuesta Senior&quot;.</p>
+                  <p className="font-semibold text-foreground">💡 Mental Practice Challenge:</p>
+                  <p>Try to explain the core concepts out loud before clicking &quot;Reveal Senior Answer&quot;.</p>
                 </div>
               ) : (
                 <div className="space-y-4 pt-3 border-t border-border/40 animate-in fade-in-50">
-                  {/* Respuesta Senior */}
+                  {/* Senior Answer */}
                   <div className="space-y-2">
                     <h4 className="font-bold text-xs text-foreground flex items-center gap-1.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                      Respuesta del Candidato Senior:
+                      Senior Candidate Response:
                     </h4>
                     <div className="p-4 rounded-xl border border-border/80 bg-background text-xs leading-relaxed text-foreground whitespace-pre-line">
                       {q.seniorAnswer}
                     </div>
                   </div>
 
-                  {/* Código de Ejemplo */}
+                  {/* Code Example */}
                   {q.codeExample && (
                     <div>
-                      <h4 className="font-bold text-xs text-foreground mb-1">Ejemplo de Código / Demostración:</h4>
+                      <h4 className="font-bold text-xs text-foreground mb-1">Code Demonstration:</h4>
                       <CodeBlock code={q.codeExample} language="tsx" />
                     </div>
                   )}
 
-                  {/* Trampas y Red Flags */}
+                  {/* Traps and Red Flags */}
                   {q.trapsAndRedFlags.length > 0 && (
                     <div className="space-y-2 pt-2 border-t border-border/40">
                       <h4 className="font-bold text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                         <AlertTriangle className="w-4 h-4 text-amber-500" />
-                        Trampas comunes y Red Flags en la entrevista:
+                        Common Traps &amp; Interview Red Flags:
                       </h4>
                       <ul className="space-y-2 text-xs">
                         {q.trapsAndRedFlags.map((trap, tIdx) => (

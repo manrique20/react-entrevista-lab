@@ -16,17 +16,17 @@ import {
 } from 'lucide-react';
 
 const categories = [
-  'Todos',
-  'Funcional',
-  'Asincronía',
-  'Estructuras de Datos',
-  'Algoritmos',
+  'All',
+  'Functional',
+  'Asynchronous',
+  'Data Structures',
+  'Algorithms',
   'Polyfills',
-  'Objetos'
+  'Objects'
 ];
 
 export default function JsExercisesPage() {
-  const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [filterText, setFilterText] = useState('');
   const [completedIds, setCompletedIds] = useState<string[]>([]);
 
@@ -47,7 +47,7 @@ export default function JsExercisesPage() {
   }, []);
 
   const filteredExercises = jsExercisesData.filter(ex => {
-    const matchesCat = selectedCategory === 'Todos' || ex.category === selectedCategory;
+    const matchesCat = selectedCategory === 'All' || ex.category === selectedCategory;
     const term = filterText.toLowerCase();
     const matchesText =
       !filterText ||
@@ -68,7 +68,7 @@ export default function JsExercisesPage() {
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Volver al Dashboard JS</span>
+          <span>Back to JavaScript Dashboard</span>
         </Link>
       </div>
 
@@ -81,7 +81,7 @@ export default function JsExercisesPage() {
               <span>Live Coding Test Bench</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-foreground leading-tight break-words">
-              17 Ejercicios de Implementación
+              {jsExercisesData.length} Implementation Challenges
             </h1>
           </div>
 
@@ -89,7 +89,7 @@ export default function JsExercisesPage() {
           <div className="p-4 rounded-2xl bg-card border border-border/80 shadow-xs shrink-0 sm:text-right">
             <div className="text-xs text-muted font-medium mb-1 flex items-center gap-1.5 sm:justify-end">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Ejercicios Completados</span>
+              <span>Challenges Completed</span>
             </div>
             <div className="text-xl font-black text-foreground">
               {completedIds.length} / {jsExercisesData.length} ({percent}%)
@@ -104,7 +104,7 @@ export default function JsExercisesPage() {
         </div>
 
         <p className="text-xs sm:text-sm text-muted leading-relaxed max-w-5xl break-words">
-          Escribe de memoria y comprende cada detalle algorítmico de los 17 ejercicios canónicos (E1–E17): debounce, throttle, clonación profunda con ciclos, caché LRU, promise pool, curry, memoize y algoritmos de optimización.
+          Write from memory and master every algorithmic nuance across canonical challenges: debounce, throttle, circular deepClone, LRU cache, promise pool, curry, memoize, and performance optimizations.
         </p>
 
         {/* Filters */}
@@ -115,7 +115,7 @@ export default function JsExercisesPage() {
               type="text"
               value={filterText}
               onChange={(e) => setFilterText(e.target.value)}
-              placeholder="Buscar ejercicio (debounce, LRU, curry)..."
+              placeholder="Search challenges (debounce, LRU, curry)..."
               className="w-full pl-9 pr-4 py-2 rounded-xl border border-border/80 bg-card text-xs text-foreground placeholder:text-muted focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
@@ -141,13 +141,13 @@ export default function JsExercisesPage() {
       {/* Grid of Exercises */}
       <div className="space-y-6">
         <div className="flex items-center justify-between text-xs text-muted font-semibold">
-          <span>Mostrando {filteredExercises.length} de {jsExercisesData.length} ejercicios</span>
-          <span>Ejecuta la suite de pruebas unitarias en vivo en el navegador</span>
+          <span>Showing {filteredExercises.length} of {jsExercisesData.length} challenges</span>
+          <span>Execute unit tests live in your browser</span>
         </div>
 
         {filteredExercises.length === 0 ? (
           <div className="p-10 rounded-2xl border border-dashed text-center text-xs text-muted">
-            No se encontraron ejercicios para los filtros seleccionados.
+            No challenges match your selected filters.
           </div>
         ) : (
           filteredExercises.map((exercise, idx) => (
@@ -159,15 +159,15 @@ export default function JsExercisesPage() {
       {/* Footer CTA */}
       <div className="p-6 rounded-2xl border border-border/80 bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-sm font-bold text-foreground">¿Terminaste de practicar las implementaciones?</h3>
-          <p className="text-xs text-muted">Revisa tu lista de verificación completa para la entrevista técnica.</p>
+          <h3 className="text-sm font-bold text-foreground">Finished practicing these implementations?</h3>
+          <p className="text-xs text-muted">Check out your comprehensive technical interview review checklist.</p>
         </div>
         <Link
           href="/javascript/checklist"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-xs font-bold shadow-md shadow-emerald-500/20 hover:opacity-95 transition-all shrink-0"
         >
           <CheckSquare className="w-4 h-4" />
-          <span>Ver Checklist de Repaso de JavaScript</span>
+          <span>View JavaScript Review Checklist</span>
         </Link>
       </div>
     </div>

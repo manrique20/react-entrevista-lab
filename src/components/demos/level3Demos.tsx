@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useReducer, useMemo, useCallback, useRef, createContext, useContext } from 'react';
+import React, { useState, useEffect, useReducer, useCallback, useRef, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
-import { AlertTriangle, Play, RefreshCw, Zap, ShieldAlert, Layers, CheckCircle2 } from 'lucide-react';
+import { ShieldAlert, CheckCircle2 } from 'lucide-react';
 
 // Demo 3.1: Context API re-render visualizer
 const CounterContext = createContext<{ count: number; inc: () => void }>({ count: 0, inc: () => {} });
@@ -17,63 +17,63 @@ export function ContextRerenderDemo() {
         <div className="flex items-center justify-between border-b pb-3">
           <div>
             <h4 className="font-semibold text-sm">Context Provider</h4>
-            <p className="text-xs text-muted">Cuando el Provider actualiza su valor, TODOS los consumidores se re-evalúan.</p>
+            <p className="text-xs text-muted">When the Provider updates its value, ALL consumers are re-evaluated.</p>
           </div>
           <button onClick={inc} className="px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg">
-            Incrementar Provider ({count})
+            Increment Provider ({count})
           </button>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <ConsumidorA />
-          <ConsumidorB />
+          <ConsumerA />
+          <ConsumerB />
         </div>
       </div>
     </CounterContext.Provider>
   );
 }
 
-function ConsumidorA() {
+function ConsumerA() {
   const { count } = useContext(CounterContext);
   const renders = useRef(0);
   renders.current += 1;
   return (
     <div className="p-3 border rounded-lg bg-background">
       <div className="flex justify-between items-center text-xs">
-        <span className="font-semibold">Consumidor A (Lee count)</span>
+        <span className="font-semibold">Consumer A (Reads count)</span>
         <span className="text-[10px] font-mono bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded">Renders: {renders.current}</span>
       </div>
-      <p className="text-sm font-mono mt-1">Valor leído: {count}</p>
+      <p className="text-sm font-mono mt-1">Read value: {count}</p>
     </div>
   );
 }
 
-function ConsumidorB() {
+function ConsumerB() {
   const { count } = useContext(CounterContext);
   const renders = useRef(0);
   renders.current += 1;
   return (
     <div className="p-3 border rounded-lg bg-background">
       <div className="flex justify-between items-center text-xs">
-        <span className="font-semibold">Consumidor B (Lee count)</span>
+        <span className="font-semibold">Consumer B (Reads count)</span>
         <span className="text-[10px] font-mono bg-purple-500/10 text-purple-500 px-2 py-0.5 rounded">Renders: {renders.current}</span>
       </div>
-      <p className="text-sm font-mono mt-1">Valor leído: {count}</p>
+      <p className="text-sm font-mono mt-1">Read value: {count}</p>
     </div>
   );
 }
 
-// Demo 3.2: useReducer máquina de estados
-type AccionReducer = { type: 'agregar'; texto: string } | { type: 'toggle'; id: number } | { type: 'eliminar'; id: number };
-interface TareaSimple { id: number; texto: string; ok: boolean; }
+// Demo 3.2: useReducer State Machine
+type ReducerAction = { type: 'add'; text: string } | { type: 'toggle'; id: number } | { type: 'delete'; id: number };
+interface SimpleTodo { id: number; text: string; done: boolean; }
 
-function tareasReducer(state: TareaSimple[], action: AccionReducer): TareaSimple[] {
+function todosReducer(state: SimpleTodo[], action: ReducerAction): SimpleTodo[] {
   switch (action.type) {
-    case 'agregar':
-      return [...state, { id: Date.now(), texto: action.texto, ok: false }];
+    case 'add':
+      return [...state, { id: Date.now(), text: action.text, done: false }];
     case 'toggle':
-      return state.map(t => t.id === action.id ? { ...t, ok: !t.ok } : t);
-    case 'eliminar':
+      return state.map(t => t.id === action.id ? { ...t, done: !t.done } : t);
+    case 'delete':
       return state.filter(t => t.id !== action.id);
     default:
       return state;
@@ -81,47 +81,47 @@ function tareasReducer(state: TareaSimple[], action: AccionReducer): TareaSimple
 }
 
 export function UseReducerDemo() {
-  const [tareas, dispatch] = useReducer(tareasReducer, [
-    { id: 1, texto: 'Aprender arquitectura Fiber', ok: true },
-    { id: 2, texto: 'Dominar useCallback y memo', ok: false }
+  const [todos, dispatch] = useReducer(todosReducer, [
+    { id: 1, text: 'Learn Fiber architecture', done: true },
+    { id: 2, text: 'Master useCallback and memo', done: false }
   ]);
-  const [nueva, setNueva] = useState('');
+  const [newText, setNewText] = useState('');
 
-  const handleAgregar = (e: React.FormEvent) => {
+  const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nueva.trim()) return;
-    dispatch({ type: 'agregar', texto: nueva });
-    setNueva('');
+    if (!newText.trim()) return;
+    dispatch({ type: 'add', text: newText });
+    setNewText('');
   };
 
   return (
     <div className="p-4 border rounded-xl bg-card space-y-4">
-      <form onSubmit={handleAgregar} className="flex gap-2">
+      <form onSubmit={handleAdd} className="flex gap-2">
         <input
-          value={nueva}
-          onChange={e => setNueva(e.target.value)}
-          placeholder="Nueva tarea con dispatch({ type: 'agregar' })..."
+          value={newText}
+          onChange={e => setNewText(e.target.value)}
+          placeholder="New task with dispatch({ type: 'add' })..."
           className="flex-1 px-3 py-2 border rounded-lg bg-background text-foreground text-xs"
         />
         <button type="submit" className="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg">
-          Despachar Acción
+          Dispatch Action
         </button>
       </form>
 
       <ul className="space-y-1.5 font-mono text-xs">
-        {tareas.map(t => (
+        {todos.map(t => (
           <li key={t.id} className="p-2 border rounded-lg bg-background flex items-center justify-between">
             <span
               onClick={() => dispatch({ type: 'toggle', id: t.id })}
-              className={`cursor-pointer ${t.ok ? 'line-through text-muted' : 'text-foreground'}`}
+              className={`cursor-pointer ${t.done ? 'line-through text-muted' : 'text-foreground'}`}
             >
-              {t.ok ? '☑' : '☐'} {t.texto}
+              {t.done ? '☑' : '☐'} {t.text}
             </span>
             <button
-              onClick={() => dispatch({ type: 'eliminar', id: t.id })}
+              onClick={() => dispatch({ type: 'delete', id: t.id })}
               className="text-red-500 hover:text-red-700 text-xs px-2"
             >
-              Borrar
+              Delete
             </button>
           </li>
         ))}
@@ -131,93 +131,93 @@ export function UseReducerDemo() {
 }
 
 // Demo 3.3: useMemo & useCallback & React.memo
-const ItemListaMemo = React.memo(function ItemListaMemo({
-  texto,
-  onBorrar
+const MemoizedListItem = React.memo(function MemoizedListItem({
+  text,
+  onDelete
 }: {
-  texto: string;
-  onBorrar: (t: string) => void;
+  text: string;
+  onDelete: (t: string) => void;
 }) {
   const renders = useRef(0);
   renders.current += 1;
   return (
     <li className="p-2 border rounded bg-background flex items-center justify-between text-xs">
-      <span>{texto}</span>
+      <span>{text}</span>
       <div className="flex items-center gap-2">
         <span className="text-[10px] font-mono text-muted">Renders: {renders.current}</span>
-        <button onClick={() => onBorrar(texto)} className="text-red-500 hover:underline">x</button>
+        <button onClick={() => onDelete(text)} className="text-red-500 hover:underline">x</button>
       </div>
     </li>
   );
 });
 
 export function MemoCallbackProfilerDemo() {
-  const [contadorPadre, setContadorPadre] = useState(0);
+  const [parentCount, setParentCount] = useState(0);
   const [items, setItems] = useState(['React 19', 'Next.js 16', 'TypeScript 5']);
-  const [usarCallbackEstable, setUsarCallbackEstable] = useState(true);
+  const [useStableCallback, setUseStableCallback] = useState(true);
 
-  // Callback estable con useCallback vs función nueva inline en cada render
-  const callbackEstable = useCallback((it: string) => {
+  // Stable callback with useCallback vs inline recreated function
+  const stableCallback = useCallback((it: string) => {
     setItems(prev => prev.filter(x => x !== it));
   }, []);
 
-  const callbackInestable = (it: string) => {
+  const unstableCallback = (it: string) => {
     setItems(prev => prev.filter(x => x !== it));
   };
 
-  const handlerActivo = usarCallbackEstable ? callbackEstable : callbackInestable;
+  const activeHandler = useStableCallback ? stableCallback : unstableCallback;
 
   return (
     <div className="p-4 border rounded-xl bg-card space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setContadorPadre(c => c + 1)}
+            onClick={() => setParentCount(c => c + 1)}
             className="px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg"
           >
-            Re-renderizar Padre ({contadorPadre})
+            Re-render Parent ({parentCount})
           </button>
           <button
-            onClick={() => setUsarCallbackEstable(!usarCallbackEstable)}
+            onClick={() => setUseStableCallback(!useStableCallback)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
-              usarCallbackEstable ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/30' : 'bg-red-500/20 text-red-600 border-red-500/30'
+              useStableCallback ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/30' : 'bg-red-500/20 text-red-600 border-red-500/30'
             }`}
           >
-            {usarCallbackEstable ? '✅ Con useCallback estable' : '❌ Con función inline recreada'}
+            {useStableCallback ? '✅ With stable useCallback' : '❌ With recreated inline function'}
           </button>
         </div>
       </div>
 
       <p className="text-xs text-muted">
-        Al hacer clic en &quot;Re-renderizar Padre&quot;: Si tienes activado <strong>useCallback</strong>, los hijos envueltos en <code>React.memo</code> conservan sus renders intactos. Con función inline, <code>React.memo</code> se invalida por referencia nueva.
+        When clicking &quot;Re-render Parent&quot;: If <strong>useCallback</strong> is enabled, children wrapped in <code>React.memo</code> retain their render count intact. With an inline function, <code>React.memo</code> is invalidated due to a fresh function reference.
       </p>
 
       <ul className="space-y-2">
         {items.map(it => (
-          <ItemListaMemo key={it} texto={it} onBorrar={handlerActivo} />
+          <MemoizedListItem key={it} text={it} onDelete={activeHandler} />
         ))}
       </ul>
     </div>
   );
 }
 
-// Demo 3.6: Reconciliación y reinicio forzado por key
+// Demo 3.6: Reconciliation and State Reset via Key
 export function DiffingHeuristicsDemo() {
-  const [usuarioId, setUsuarioId] = useState('user-1');
+  const [userId, setUserId] = useState('user-1');
 
   return (
     <div className="p-4 border rounded-xl bg-card space-y-4">
       <div className="flex gap-2 items-center">
-        <span className="text-xs font-semibold">Seleccionar Usuario:</span>
+        <span className="text-xs font-semibold">Select User:</span>
         <button
-          onClick={() => setUsuarioId('user-1')}
-          className={`px-3 py-1 text-xs rounded-md ${usuarioId === 'user-1' ? 'bg-primary text-white' : 'border'}`}
+          onClick={() => setUserId('user-1')}
+          className={`px-3 py-1 text-xs rounded-md ${userId === 'user-1' ? 'bg-primary text-white' : 'border'}`}
         >
           Ana (user-1)
         </button>
         <button
-          onClick={() => setUsuarioId('user-2')}
-          className={`px-3 py-1 text-xs rounded-md ${usuarioId === 'user-2' ? 'bg-primary text-white' : 'border'}`}
+          onClick={() => setUserId('user-2')}
+          className={`px-3 py-1 text-xs rounded-md ${userId === 'user-2' ? 'bg-primary text-white' : 'border'}`}
         >
           Carlos (user-2)
         </button>
@@ -225,98 +225,98 @@ export function DiffingHeuristicsDemo() {
 
       <div className="p-3 bg-muted/20 border rounded-xl">
         <p className="text-xs text-muted mb-2">
-          Formulario con <code>key={usuarioId}</code>. Al cambiar de usuario, React desmonta y resetea limpiamente el estado interno sin necesidad de escribir efectos manuales:
+          Form with <code>key={userId}</code>. When switching users, React unmounts and cleanly resets internal state without writing manual cleanup effects:
         </p>
-        <FormularioConKey key={usuarioId} usuarioId={usuarioId} />
+        <FormWithKey key={userId} userId={userId} />
       </div>
     </div>
   );
 }
 
-function FormularioConKey({ usuarioId }: { usuarioId: string }) {
-  const [nota, setNota] = useState('');
+function FormWithKey({ userId }: { userId: string }) {
+  const [note, setNote] = useState('');
   return (
     <div className="space-y-2">
-      <p className="text-xs font-semibold text-primary">Editando perfil de: {usuarioId}</p>
+      <p className="text-xs font-semibold text-primary">Editing profile for: {userId}</p>
       <input
-        value={nota}
-        onChange={e => setNota(e.target.value)}
-        placeholder={`Escribe una nota para ${usuarioId}...`}
+        value={note}
+        onChange={e => setNote(e.target.value)}
+        placeholder={`Type a note for ${userId}...`}
         className="w-full px-3 py-1.5 border rounded bg-background text-xs"
       />
     </div>
   );
 }
 
-// Demo 3.7: Fetching con AbortController contra Race Conditions
+// Demo 3.7: Fetching with AbortController against Race Conditions
 export function DataFetchingRaceDemo() {
-  const [recurso, setRecurso] = useState('post-1');
-  const [datos, setDatos] = useState<string | null>(null);
-  const [cargando, setCargando] = useState(false);
-  const [historialPeticiones, setHistorialPeticiones] = useState<string[]>([]);
+  const [resource, setResource] = useState('post-1');
+  const [data, setData] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [requestHistory, setRequestHistory] = useState<string[]>([]);
 
-  const cargarRecurso = (nuevoId: string) => {
-    setRecurso(nuevoId);
+  const loadResource = (newId: string) => {
+    setResource(newId);
   };
 
   useEffect(() => {
     const controller = new AbortController();
-    setCargando(true);
-    const tiempoSimulado = recurso === 'post-1' ? 1800 : 300; // post-1 tarda mucho más que post-2
+    setLoading(true);
+    const simulatedDelay = resource === 'post-1' ? 1800 : 300; // post-1 takes much longer than post-2
 
-    setHistorialPeticiones(prev => [
-      `[Iniciada]: Petición a ${recurso} (espera simulada: ${tiempoSimulado}ms)`,
+    setRequestHistory(prev => [
+      `[Initiated]: Request to ${resource} (simulated delay: ${simulatedDelay}ms)`,
       ...prev.slice(0, 4)
     ]);
 
     const timer = setTimeout(() => {
       if (!controller.signal.aborted) {
-        setDatos(`Respuesta final recibida para: ${recurso}`);
-        setCargando(false);
-        setHistorialPeticiones(prev => [
-          `[Completada]: Datos de ${recurso} pintados con éxito.`,
+        setData(`Final response received for: ${resource}`);
+        setLoading(false);
+        setRequestHistory(prev => [
+          `[Completed]: Data for ${resource} rendered successfully.`,
           ...prev.slice(0, 4)
         ]);
       }
-    }, tiempoSimulado);
+    }, simulatedDelay);
 
     return () => {
       controller.abort();
       clearTimeout(timer);
-      setHistorialPeticiones(prev => [
-        `[Cancelada por AbortController]: Petición previa a ${recurso} descartada para evitar Race Condition.`,
+      setRequestHistory(prev => [
+        `[Aborted by AbortController]: Previous request to ${resource} discarded to prevent Race Condition.`,
         ...prev.slice(0, 4)
       ]);
     };
-  }, [recurso]);
+  }, [resource]);
 
   return (
     <div className="p-4 border rounded-xl bg-card space-y-4">
       <div className="flex gap-2">
         <button
-          onClick={() => cargarRecurso('post-1')}
+          onClick={() => loadResource('post-1')}
           className="px-3 py-1.5 bg-primary text-white text-xs rounded-lg font-medium"
         >
-          Pedir Post 1 (Lento: 1800ms)
+          Fetch Post 1 (Slow: 1800ms)
         </button>
         <button
-          onClick={() => cargarRecurso('post-2')}
+          onClick={() => loadResource('post-2')}
           className="px-3 py-1.5 bg-emerald-600 text-white text-xs rounded-lg font-medium"
         >
-          Pedir Post 2 (Rápido: 300ms)
+          Fetch Post 2 (Fast: 300ms)
         </button>
       </div>
 
       <div className="p-3 border rounded-lg bg-background">
-        <p className="text-xs font-semibold">Resultado visible en pantalla:</p>
+        <p className="text-xs font-semibold">Visible output on screen:</p>
         <p className="text-sm font-mono mt-1 text-primary">
-          {cargando ? 'Cargando respuesta en red...' : datos}
+          {loading ? 'Loading network response...' : data}
         </p>
       </div>
 
       <div className="p-3 bg-muted/20 border rounded-xl text-xs font-mono space-y-1">
-        <p className="font-semibold text-muted text-[11px] uppercase">Monitor de AbortController:</p>
-        {historialPeticiones.map((h, i) => (
+        <p className="font-semibold text-muted text-[11px] uppercase">AbortController Monitor:</p>
+        {requestHistory.map((h, i) => (
           <p key={i} className="text-muted leading-tight">{h}</p>
         ))}
       </div>
@@ -324,43 +324,41 @@ export function DataFetchingRaceDemo() {
   );
 }
 
-// Demo 3.9: Error Boundary interactivo
+// Demo 3.9: Interactive Error Boundary
 export function ErrorBoundaryDemo() {
-  const [tieneError, setTieneError] = useState(false);
-  const [romperHijo, setRomperHijo] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
-  const resetear = () => {
-    setRomperHijo(false);
-    setTieneError(false);
+  const reset = () => {
+    setHasError(false);
   };
 
   return (
     <div className="p-4 border rounded-xl bg-card space-y-3">
       <div className="flex justify-between items-center">
-        <h4 className="font-semibold text-xs">Simulador de Límite de Error (Error Boundary)</h4>
+        <h4 className="font-semibold text-xs">Error Boundary Simulator</h4>
         <button
-          onClick={() => { setRomperHijo(true); setTieneError(true); }}
+          onClick={() => setHasError(true)}
           className="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700"
         >
-          Provocar Excepción de Render
+          Trigger Render Exception
         </button>
       </div>
 
-      {tieneError ? (
+      {hasError ? (
         <div className="p-4 border border-red-500/40 bg-red-500/10 rounded-xl space-y-2">
           <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-semibold text-xs">
-            <ShieldAlert className="w-4 h-4" /> Fallback de Error Boundary Activado
+            <ShieldAlert className="w-4 h-4" /> Error Boundary Fallback Activated
           </div>
           <p className="text-xs text-red-700 dark:text-red-300">
-            Un componente hijo lanzó una excepción en el render. La aplicación principal continúa funcionando sin pantalla en blanco.
+            A child component threw an unhandled render exception. The rest of the application continues functioning without a blank screen crash.
           </p>
-          <button onClick={resetear} className="px-3 py-1 bg-red-600 text-white text-xs rounded font-medium">
-            Resetear Boundary
+          <button onClick={reset} className="px-3 py-1 bg-red-600 text-white text-xs rounded font-medium">
+            Reset Boundary
           </button>
         </div>
       ) : (
         <div className="p-4 border rounded-lg bg-emerald-500/5 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4" /> Subárbol funcionando de forma saludable.
+          <CheckCircle2 className="w-4 h-4" /> Subtree operating in healthy state.
         </div>
       )}
     </div>
@@ -369,7 +367,7 @@ export function ErrorBoundaryDemo() {
 
 // Demo 3.10: Portals (createPortal)
 export function PortalModalDemo() {
-  const [abierto, setAbierto] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -380,35 +378,35 @@ export function PortalModalDemo() {
     <div className="p-4 border rounded-xl bg-card space-y-3 overflow-hidden relative">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted">
-          Este contenedor tiene <code>overflow: hidden</code>. Un modal tradicional quedaría recortado aquí dentro.
+          This container has <code>overflow: hidden</code>. A traditional modal would be clipped inside.
         </p>
         <button
-          onClick={() => setAbierto(true)}
+          onClick={() => setIsOpen(true)}
           className="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg"
         >
-          Abrir Modal con Portal
+          Open Modal with Portal
         </button>
       </div>
 
-      {abierto && mounted && createPortal(
+      {isOpen && mounted && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in"
-          onClick={() => setAbierto(false)}
+          onClick={() => setIsOpen(false)}
         >
           <div
             className="bg-card border border-border p-6 rounded-2xl shadow-2xl max-w-sm w-full space-y-4"
             onClick={e => e.stopPropagation()}
           >
-            <h3 className="font-bold text-sm text-foreground">Modal Renderizado en document.body</h3>
+            <h3 className="font-bold text-sm text-foreground">Modal Rendered into document.body</h3>
             <p className="text-xs text-muted">
-              Físicamente este nodo vive en el fondo del body, escapando de cualquier overflow relativo o transformaciones CSS del contenedor padre.
+              Physically this DOM node lives at the end of the document body, breaking out of any parent overflow clipping or CSS transforms.
             </p>
             <div className="flex justify-end">
               <button
-                onClick={() => setAbierto(false)}
+                onClick={() => setIsOpen(false)}
                 className="px-4 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg"
               >
-                Cerrar Modal
+                Close Modal
               </button>
             </div>
           </div>
@@ -419,35 +417,35 @@ export function PortalModalDemo() {
   );
 }
 
-// Demo 3.13: Virtualización conceptual de lista
+// Demo 3.13: Conceptual List Virtualization
 export function VirtualizationDemo() {
   const total = 5000;
   const itemHeight = 36;
-  const contenedorHeight = 220;
+  const containerHeight = 220;
   const [scrollTop, setScrollTop] = useState(0);
 
   const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - 2);
-  const endIndex = Math.min(total, Math.ceil((scrollTop + contenedorHeight) / itemHeight) + 2);
-  const itemsVisibles = [];
+  const endIndex = Math.min(total, Math.ceil((scrollTop + containerHeight) / itemHeight) + 2);
+  const visibleItems = [];
 
   for (let i = startIndex; i < endIndex; i++) {
-    itemsVisibles.push(i);
+    visibleItems.push(i);
   }
 
   return (
     <div className="p-4 border rounded-xl bg-card space-y-3">
       <div className="flex items-center justify-between text-xs">
-        <span>Elementos totales en memoria: <strong>{total}</strong></span>
-        <span className="text-emerald-500 font-mono font-bold">Nodos reales en el DOM: {itemsVisibles.length}</span>
+        <span>Total elements in memory: <strong>{total}</strong></span>
+        <span className="text-emerald-500 font-mono font-bold">Real DOM nodes: {visibleItems.length}</span>
       </div>
 
       <div
-        style={{ height: contenedorHeight, overflowY: 'auto', position: 'relative' }}
+        style={{ height: containerHeight, overflowY: 'auto', position: 'relative' }}
         onScroll={e => setScrollTop(e.currentTarget.scrollTop)}
         className="border rounded-lg bg-background"
       >
         <div style={{ height: total * itemHeight, position: 'relative' }}>
-          {itemsVisibles.map(index => (
+          {visibleItems.map(index => (
             <div
               key={index}
               style={{
@@ -458,8 +456,8 @@ export function VirtualizationDemo() {
               }}
               className="px-3 flex items-center border-b border-border/50 text-xs font-mono justify-between"
             >
-              <span>Registro #{index + 1} - Usuario Virtualizado</span>
-              <span className="text-[10px] text-muted">Posición: {index * itemHeight}px</span>
+              <span>Record #{index + 1} - Virtualized User</span>
+              <span className="text-[10px] text-muted">Position: {index * itemHeight}px</span>
             </div>
           ))}
         </div>
@@ -468,65 +466,65 @@ export function VirtualizationDemo() {
   );
 }
 
-// Fallback compuesto para otros temas de Nivel 3
+// Level 3 topic helpers & playground
 export function CustomHooksPlaygroundDemo() {
-  const [contador, setContador] = useState(0);
+  const [count, setCount] = useState(0);
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-2">
       <p className="font-semibold text-primary">Custom Hooks Playground</p>
-      <p className="text-muted">Prueba los hooks personalizados integrados en la suite de ejercicios interactivos.</p>
-      <button onClick={() => setContador(c => c + 1)} className="px-3 py-1 bg-muted rounded text-xs">
-        Contador de prueba: {contador}
+      <p className="text-muted">Test custom hooks integrated within the interactive challenge suite.</p>
+      <button onClick={() => setCount(c => c + 1)} className="px-3 py-1 bg-muted rounded text-xs">
+        Test Counter: {count}
       </button>
     </div>
   );
 }
 
 export function RouterSimulatorDemo() {
-  const [ruta, setRuta] = useState('/inicio');
+  const [route, setRoute] = useState('/home');
   return (
     <div className="p-4 border rounded-xl bg-card space-y-3 text-xs">
       <div className="flex gap-2">
-        <button onClick={() => setRuta('/inicio')} className={`px-3 py-1 rounded ${ruta === '/inicio' ? 'bg-primary text-white' : 'border'}`}>Inicio</button>
-        <button onClick={() => setRuta('/perfil/42')} className={`px-3 py-1 rounded ${ruta === '/perfil/42' ? 'bg-primary text-white' : 'border'}`}>Perfil :id</button>
-        <button onClick={() => setRuta('/admin')} className={`px-3 py-1 rounded ${ruta === '/admin' ? 'bg-primary text-white' : 'border'}`}>Ruta Protegida</button>
+        <button onClick={() => setRoute('/home')} className={`px-3 py-1 rounded ${route === '/home' ? 'bg-primary text-white' : 'border'}`}>Home</button>
+        <button onClick={() => setRoute('/profile/42')} className={`px-3 py-1 rounded ${route === '/profile/42' ? 'bg-primary text-white' : 'border'}`}>Profile :id</button>
+        <button onClick={() => setRoute('/admin')} className={`px-3 py-1 rounded ${route === '/admin' ? 'bg-primary text-white' : 'border'}`}>Protected Route</button>
       </div>
       <div className="p-3 border rounded bg-background font-mono">
-        Ruta actual en history: <span className="text-primary font-bold">{ruta}</span>
+        Current route in history: <span className="text-primary font-bold">{route}</span>
       </div>
     </div>
   );
 }
 
 export function ForwardRefImperativeDemo() {
-  const [mensaje, setMensaje] = useState('Listo');
+  const [message, setMessage] = useState('Ready');
   return (
     <div className="p-4 border rounded-xl bg-card text-xs space-y-3">
-      <p>API imperativa expuesta al componente padre con <code>useImperativeHandle</code>:</p>
+      <p>Imperative API exposed to parent component using <code>useImperativeHandle</code>:</p>
       <div className="flex gap-2">
-        <button onClick={() => setMensaje('Método .enfocar() ejecutado')} className="px-3 py-1 bg-primary text-white rounded">ref.current.enfocar()</button>
-        <button onClick={() => setMensaje('Método .limpiar() ejecutado')} className="px-3 py-1 bg-muted rounded">ref.current.limpiar()</button>
+        <button onClick={() => setMessage('Method .focus() executed')} className="px-3 py-1 bg-primary text-white rounded">ref.current.focus()</button>
+        <button onClick={() => setMessage('Method .clear() executed')} className="px-3 py-1 bg-muted rounded">ref.current.clear()</button>
       </div>
-      <p className="font-mono text-muted">Estado del handler: {mensaje}</p>
+      <p className="font-mono text-muted">Handler state: {message}</p>
     </div>
   );
 }
 
 export function CompositionPatternsDemo() {
-  const [abierto, setAbierto] = useState<string | null>('item-1');
+  const [openItem, setOpenItem] = useState<string | null>('item-1');
   return (
     <div className="border rounded-xl divide-y text-xs">
       <div className="p-3">
-        <button onClick={() => setAbierto(abierto === 'item-1' ? null : 'item-1')} className="font-semibold w-full text-left flex justify-between">
-          Compound Component Item 1 <span>{abierto === 'item-1' ? '▲' : '▼'}</span>
+        <button onClick={() => setOpenItem(openItem === 'item-1' ? null : 'item-1')} className="font-semibold w-full text-left flex justify-between">
+          Compound Component Item 1 <span>{openItem === 'item-1' ? '▲' : '▼'}</span>
         </button>
-        {abierto === 'item-1' && <p className="mt-2 text-muted">Contenido coordinado a través de contexto implícito sin props expuestas.</p>}
+        {openItem === 'item-1' && <p className="mt-2 text-muted">Coordinated content via implicit context without prop drilling.</p>}
       </div>
       <div className="p-3">
-        <button onClick={() => setAbierto(abierto === 'item-2' ? null : 'item-2')} className="font-semibold w-full text-left flex justify-between">
-          Compound Component Item 2 <span>{abierto === 'item-2' ? '▲' : '▼'}</span>
+        <button onClick={() => setOpenItem(openItem === 'item-2' ? null : 'item-2')} className="font-semibold w-full text-left flex justify-between">
+          Compound Component Item 2 <span>{openItem === 'item-2' ? '▲' : '▼'}</span>
         </button>
-        {abierto === 'item-2' && <p className="mt-2 text-muted">Máxima flexibilidad declarativa para el desarrollador.</p>}
+        {openItem === 'item-2' && <p className="mt-2 text-muted">Maximum declarative flexibility for developers consuming the API.</p>}
       </div>
     </div>
   );

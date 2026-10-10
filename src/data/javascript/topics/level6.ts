@@ -4,26 +4,26 @@ export const level6Topics: JsTopic[] = [
   {
     "id": "P56",
     "level": 6,
-    "levelTitle": "ES6+ y módulos",
-    "question": "¿Diferencia entre módulos ESM y CommonJS?",
-    "shortAnswer": "**ESM (`import`/`export`)** es el estándar oficial de ECMAScript: tiene análisis estático en tiempo de compilación, admite *tree shaking*, *top-level await* y exporta **enlaces vivos (*live bindings*)**. **CommonJS (`require`/`module.exports`)** es el sistema histórico de Node.js: se evalúa dinámicamente en tiempo de ejecución, es sincrónico y copia valores por valor.",
-    "explanation": `Comparación exhaustiva entre los dos sistemas modulares:
+    "levelTitle": "ES6+ & Modules",
+    "question": "What is the difference between ESM and CommonJS modules?",
+    "shortAnswer": "**ESM (`import`/`export`)** is the official ECMAScript standard: it features compile-time static analysis, supports *tree shaking*, *top-level await*, and exports **live bindings**. **CommonJS (`require`/`module.exports`)** is Node.js's legacy module system: it evaluates dynamically at runtime, is synchronous, and copies exported values by value.",
+    "explanation": `Exhaustive comparison between both module systems:
 
-| Característica | ESM (\`import\` / \`export\`) | CommonJS (\`require\` / \`module.exports\`) |
+| Feature | ESM (\`import\` / \`export\`) | CommonJS (\`require\` / \`module.exports\`) |
 |---|---|---|
-| Análisis y Carga | **Estático** (se resuelve antes de ejecutar el código) | **Dinámico** (se resuelve en runtime donde se llame) |
-| Asincronía | Nativa (soporta *Top-level await* en el nivel raíz) | Estrictamente síncrona |
-| Optimización | Permite **Tree Shaking** automático en bundlers | Muy difícil o imposible de optimizar estáticamente |
-| Enlace de exportaciones | **Live Bindings** (si el módulo exportador muta una variable, el importador ve el cambio) | **Copia por valor** (copia el estado en el instante del require) |
-| Entorno por defecto | Modo estricto obligatorio (\`'use strict'\`), \`this === undefined\` | Objeto \`module.exports\` como \`this\` en nivel raíz |
+| Analysis & Loading | **Static** (resolved before code execution) | **Dynamic** (evaluated at runtime wherever called) |
+| Asynchrony | Native (supports *Top-level await* at root level) | Strictly synchronous |
+| Optimization | Enables automatic **Tree Shaking** in bundlers | Very difficult or impossible to optimize statically |
+| Export Bindings | **Live Bindings** (if the exporter mutates a variable, importer reflects it) | **Copied by value** (snapshots state at require time) |
+| Default Environment | Mandatory strict mode (\`'use strict'\`), \`this === undefined\` | \`module.exports\` object as \`this\` at top level |
 
-Import dinámico en ESM:
-ESM también admite carga bajo demanda con la función \`import('./modulo.js')\`, la cual retorna una Promesa, permitiendo *code splitting* y carga perezosa en React y Next.js.`,
-    "codeSnippet": "// ESM (estándar oficial ECMAScript)\nexport const PI = 3.1416;\nexport default function area(r) { return PI * r ** 2; }\nimport area, { PI } from './geometria.js';\nconst modulo = await import('./pesado.js');   // import dinámico lazy\n\n// CommonJS (Node.js legacy)\nconst fs = require('fs');\nmodule.exports = { area };",
-    "seniorTip": "En entrevistas, explica el concepto de 'Live Bindings': en ESM, import { count } no copia un número; crea un puntero de solo lectura a la variable original del módulo exportador. Si el módulo fuente tiene una función que incrementa count, el importador ve reflejado el nuevo valor sin tener que volver a importar.",
+Dynamic import in ESM:
+ESM also supports on-demand loading via \`import('./module.js')\`, which returns a Promise, enabling code splitting and lazy loading in React and Next.js.`,
+    "codeSnippet": "// ESM (official ECMAScript standard)\nexport const PI = 3.1416;\nexport default function area(r) { return PI * r ** 2; }\nimport area, { PI } from './geometry.js';\nconst module = await import('./heavy.js');   // lazy dynamic import\n\n// CommonJS (Node.js legacy)\nconst fs = require('fs');\nmodule.exports = { area };",
+    "seniorTip": "In interviews, explain the concept of 'Live Bindings': in ESM, import { count } does not copy a primitive number; it creates a read-only pointer to the exporter's original variable. If the exporting module mutates count, the importer reflects the new value without needing to re-import.",
     "tags": [
-      "nivel-6",
-      "modulos",
+      "level-6",
+      "modules",
       "esm",
       "commonjs",
       "javascript"
@@ -33,29 +33,29 @@ ESM también admite carga bajo demanda con la función \`import('./modulo.js')\`
   {
     "id": "P57",
     "level": 6,
-    "levelTitle": "ES6+ y módulos",
-    "question": "¿Qué son los *template literals* y los *tagged templates*?",
-    "shortAnswer": "Los **template literals** son cadenas delimitadas por backticks (`` ` ``) que permiten interpolación de expresiones (`${expresion}`) y textos multilínea nativos. Los **tagged templates** son llamadas a funciones donde la plantilla se pasa como argumentos separados (un array de strings fijos y los valores interpolados), permitiendo procesar, transformar o sanitizar la cadena.",
-    "explanation": `Mecanismo y aplicaciones en frameworks modernos:
+    "levelTitle": "ES6+ & Modules",
+    "question": "What are template literals and tagged templates?",
+    "shortAnswer": "**Template literals** are backtick-delimited strings (`` ` ``) that allow expression interpolation (`${expression}`) and native multi-line text. **Tagged templates** are function calls where a template literal is passed as parsed arguments (an array of static string chunks and the evaluated interpolated expressions), allowing custom string transformation, sanitization, or compilation.",
+    "explanation": `Mechanics and applications in modern frameworks:
 
-1. **Template Literals Ordinarios:**
-- Permiten escribir cadenas de múltiples líneas sin concatenar caracteres \`\\n\`.
-- Evalúan cualquier expresión válida de JavaScript dentro de \`\${}\`: operaciones matemáticas, llamadas a funciones y operadores ternarios.
+1. **Standard Template Literals:**
+- Allow multi-line strings without manual \`\\n\` escapes.
+- Evaluate any valid JavaScript expression inside \`\${}\`: arithmetic, function calls, and ternary operators.
 
-2. **Anatomía de un Tagged Template:**
-- Definición de la función tag: \`function tag(strings, ...valores) { ... }\`
-- Invocación sin paréntesis: \`tag\` seguido de la plantilla literal con backticks.
-- \`strings\`: Array con los fragmentos de texto estáticos: \`['Hola ', ', tienes ', ' notificaciones']\`. Incluye además la propiedad \`strings.raw\` con las cadenas sin procesar escapes.
-- \`...valores\`: Argumentos rest con las expresiones evaluadas: \`[nombre, mensajes]\`.
+2. **Anatomy of a Tagged Template:**
+- Tag function definition: \`function tag(strings, ...values) { ... }\`
+- Invocation without parentheses: \`tag\` followed directly by the backtick template literal.
+- \`strings\`: Array of static string fragments: \`['Hello ', ', you have ', ' notifications']\`. Also includes \`strings.raw\` containing raw unescaped strings.
+- \`...values\`: Rest parameter collecting evaluated expressions: \`[name, messages]\`.
 
-3. **Usos masivos en la industria:**
-- **Estilos CSS-in-JS:** \`styled.div\` en styled-components y emotion.
-- **Consultas GraphQL:** \`gql\` en Apollo Client para parsear queries en AST.
-- **Prevención de SQL Injection y XSS:** Librerías de base de datos como Prisma o Slonik sanitizan parámetros interpolados usando tagged templates para evitar inyecciones maliciosas.`,
-    "codeSnippet": "const nombre = 'Ana';\nconst mensaje = `Hola ${nombre},\nesto es multilínea y ${1 + 1} es una expresión`;\n\n// Tagged Template Function\nfunction resaltar(strings, ...valores) {\n  return strings.reduce((acc, s, i) => {\n    const val = valores[i] !== undefined ? `<b>${valores[i]}</b>` : '';\n    return acc + s + val;\n  }, '');\n}\n\nconst html = resaltar`Usuario ${nombre} tiene ${5} mensajes`;\nconsole.log(html); // 'Usuario <b>Ana</b> tiene <b>5</b> mensajes'",
-    "seniorTip": "Pregunta típica de React/CSS: ¿Cómo funciona styled.button por debajo? Responde: 'Es una tagged template function que recibe las reglas CSS separadas de las funciones interpoladas de temas (props => props.color), generando dinámicamente clases CSS inyectadas en el DOM'.",
+3. **Widespread Industry Use Cases:**
+- **CSS-in-JS Styling:** \`styled.div\` in styled-components and emotion.
+- **GraphQL Queries:** \`gql\` in Apollo Client for AST query parsing.
+- **SQL Injection & XSS Prevention:** Database libraries like Prisma or Slonik sanitize interpolated query parameters using tagged templates to neutralize injection attacks.`,
+    "codeSnippet": "const name = 'Ana';\nconst message = `Hello ${name},\nthis is multiline and ${1 + 1} is an expression`;\n\n// Tagged Template Function\nfunction highlight(strings, ...values) {\n  return strings.reduce((acc, s, i) => {\n    const val = values[i] !== undefined ? `<b>${values[i]}</b>` : '';\n    return acc + s + val;\n  }, '');\n}\n\nconst html = highlight`User ${name} has ${5} messages`;\nconsole.log(html); // 'User <b>Ana</b> has <b>5</b> messages'",
+    "seniorTip": "Common React/CSS question: How does styled.button work under the hood? Answer: 'It is a tagged template function that receives static CSS rule segments separated from interpolated theme functions (props => props.color), dynamically generating injected CSS classes in the DOM.'",
     "tags": [
-      "nivel-6",
+      "level-6",
       "javascript",
       "es6",
       "template-literals"
@@ -65,64 +65,64 @@ ESM también admite carga bajo demanda con la función \`import('./modulo.js')\`
   {
     "id": "P58",
     "level": 6,
-    "levelTitle": "ES6+ y módulos",
-    "question": "¿Qué son iterables e iteradores?",
-    "shortAnswer": "Un **iterable** es cualquier objeto que implementa el protocolo de iteración proveyendo un método `[Symbol.iterator]()`. Un **iterador** es el objeto devuelto por ese método, el cual cuenta con una función `.next()` que produce objetos con la forma `{ value: any, done: boolean }` hasta completar la secuencia.",
-    "explanation": `El protocolo de iteración de ES6 en profundidad:
+    "levelTitle": "ES6+ & Modules",
+    "question": "What are iterables and iterators?",
+    "shortAnswer": "An **iterable** is any object that adheres to the iteration protocol by providing a `[Symbol.iterator]()` method. An **iterator** is the object returned by that method, which provides a `.next()` function that yields objects formatted as `{ value: any, done: boolean }` until the sequence is exhausted.",
+    "explanation": `The ES6 iteration protocol in depth:
 
-1. **El Contrato del Protocolo de Iteración:**
-- **Objeto Iterable:** Objeto que posee la clave \`[Symbol.iterator]\`: una función sin argumentos que devuelve un objeto iterador.
-- **Objeto Iterador:** Objeto que posee un método \`.next()\`:
-  - Mientras haya elementos: \`{ value: elementoActual, done: false }\`.
-  - Al culminar la colección: \`{ value: undefined, done: true }\`.
+1. **The Iteration Protocol Contract:**
+- **Iterable Object:** An object possessing the \`[Symbol.iterator]\` property: a zero-argument function returning an iterator object.
+- **Iterator Object:** An object implementing the \`.next()\` method:
+  - While items remain: \`{ value: currentItem, done: false }\`.
+  - Upon completing iteration: \`{ value: undefined, done: true }\`.
 
-2. **Estructuras de datos iterables nativas:**
-Arrays, Strings, Maps, Sets, \`TypedArrays\`, \`arguments\` y colecciones DOM (\`NodeList\`).
-*(Nota crítica: Los objetos planos \`{}\` **NO son iterables** por defecto porque no definen un orden de recorrido universal).*
+2. **Built-in Iterable Data Structures:**
+Arrays, Strings, Maps, Sets, \`TypedArrays\`, \`arguments\`, and DOM \`NodeList\` collections.
+*(Critical note: Plain objects \`{}\` are **NOT iterable** by default because they lack an inherent traversal order).*
 
-3. **Consumidores nativos de iterables:**
-- Bucles \`for...of\`
-- Operador Spread (\`[...iterable]\`, \`Math.max(...iterable)\`)
-- Desestructuración de arrays (\`const [x, y] = iterable\`)
-- Constructores: \`new Set(iterable)\`, \`new Map(iterable)\`
-- Métodos estáticos: \`Promise.all(iterable)\``,
-    "codeSnippet": "const rango = {\n  desde: 1, hasta: 3,\n  [Symbol.iterator]() {\n    let actual = this.desde, hasta = this.hasta;\n    return {\n      next: () => actual <= hasta\n        ? { value: actual++, done: false }\n        : { value: undefined, done: true }\n    };\n  },\n};\n\nconsole.log([...rango]); // [1, 2, 3]\nfor (const n of rango) console.log(n); // 1, 2, 3",
-    "seniorTip": "Muestra maestría técnica explicando cómo hacer que un objeto propio sea iterable: basta con añadir *[Symbol.iterator]() { yield this.prop1; yield this.prop2; }. Esto permite usar for...of o [...miObjeto] directamente sobre tu modelo de dominio.",
+3. **Native Consumers of Iterables:**
+- \`for...of\` loops
+- Spread operator (\`[...iterable]\`, \`Math.max(...iterable)\`)
+- Array destructuring (\`const [x, y] = iterable\`)
+- Constructors: \`new Set(iterable)\`, \`new Map(iterable)\`
+- Static methods: \`Promise.all(iterable)\``,
+    "codeSnippet": "const range = {\n  from: 1, to: 3,\n  [Symbol.iterator]() {\n    let current = this.from, to = this.to;\n    return {\n      next: () => current <= to\n        ? { value: current++, done: false }\n        : { value: undefined, done: true }\n    };\n  },\n};\n\nconsole.log([...range]); // [1, 2, 3]\nfor (const n of range) console.log(n); // 1, 2, 3",
+    "seniorTip": "Demonstrate technical depth by explaining how to make custom domain objects iterable: simply add *[Symbol.iterator]() { yield this.prop1; yield this.prop2; }. This enables for...of or [...myObject] directly on your domain model.",
     "tags": [
-      "nivel-6",
+      "level-6",
       "javascript",
-      "iteradores",
-      "protocolos"
+      "iterators",
+      "protocols"
     ],
     "interactiveDemo": "console"
   },
   {
     "id": "P59",
     "level": 6,
-    "levelTitle": "ES6+ y módulos",
-    "question": "¿Qué son los generadores?",
-    "shortAnswer": "Los **generadores** son funciones especiales declaradas con `function*` que pueden **pausar su ejecución** en cada instrucción `yield` y reanudarla posteriormente bajo demanda. Devuelven un objeto iterador y permiten la evaluación perezosa (*lazy evaluation*) de secuencias potencialmente infinitas.",
-    "explanation": `Mecánica de ejecución y comunicación bidireccional:
+    "levelTitle": "ES6+ & Modules",
+    "question": "What are generators?",
+    "shortAnswer": "**Generators** are special functions declared with `function*` that can **pause execution** at each `yield` expression and resume later on demand. They return an iterator object and enable lazy evaluation of potentially infinite sequences.",
+    "explanation": `Execution mechanics and bidirectional communication:
 
-1. **Evaluación Perezosa (*Lazy Evaluation*):**
-A diferencia de una función ordinaria que corre de principio a fin de forma bloqueante, un generador no ejecuta su código al ser invocado; simplemente devuelve un objeto generador (que implementa el protocolo de iterador). El código solo avanza hasta el siguiente \`yield\` cada vez que el consumidor llama a \`.next()\`.
+1. **Lazy Evaluation:**
+Unlike regular functions that execute to completion synchronously, a generator does not immediately run its body when called; it returns a generator object (implementing the iterator protocol). Execution only advances to the next \`yield\` when the consumer invokes \`.next()\`.
 
-2. **Flujos infinitos sin desbordamiento de memoria:**
-Un generador puede contener un bucle infinito \`while(true) { yield id++; }\` sin consumir la memoria del sistema ni congelar el hilo principal, porque solo produce un único valor cuando se lo solicitan.
+2. **Infinite Streams Without Memory Overflow:**
+A generator can run an infinite loop \`while (true) { yield id++; }\` without exhausting system memory or locking the main thread, because it produces exactly one item per request.
 
-3. **Comunicación bidireccional con \`.next(valor)\`:**
-\`yield\` no solo emite valores hacia afuera; también puede **recibir valores** desde el exterior:
-\`const input = yield 'esperando dato';\`
-Al invocar \`gen.next('miDato')\`, ese valor se asigna a \`input\` dentro del generador.
+3. **Bidirectional Communication with \`.next(value)\`:**
+\`yield\` does not merely emit values outward; it can also **receive values** passed from the outside:
+\`const input = yield 'waiting for data';\`
+Calling \`gen.next('myData')\` assigns that value directly to \`input\` inside the generator.
 
-4. **Uso histórico en asincronía:**
-Antes de \`async/await\`, librerías como \`co\` y Redux-Saga utilizaban generadores con \`yield\` sobre promesas para escribir flujos asíncronos limpios.`,
-    "codeSnippet": "function* idsInfinitos() {\n  let id = 1;\n  while (true) yield id++;\n}\nconst gen = idsInfinitos();\nconsole.log(gen.next().value); // 1\nconsole.log(gen.next().value); // 2\n\nfunction* tomar(n, iterable) {\n  let i = 0;\n  for (const x of iterable) {\n    if (i++ >= n) return;\n    yield x;\n  }\n}\nconsole.log([...tomar(3, idsInfinitos())]); // [1, 2, 3]",
-    "seniorTip": "En una entrevista de arquitectura, cita Redux-Saga: explica cómo utiliza generadores para representar efectos secundarios (API calls, delays) como objetos planos descritos (yield call(fetchUser)), lo que hace que los tests unitarios sean extremadamente sencillos de probar con simples .next() sin necesidad de simular APIs complejas.",
+4. **Historical Use in Asynchronous Programming:**
+Prior to \`async/await\`, libraries like \`co\` and Redux-Saga used generators with \`yield\` on promises to orchestrate clean async workflows.`,
+    "codeSnippet": "function* infiniteIds() {\n  let id = 1;\n  while (true) yield id++;\n}\nconst gen = infiniteIds();\nconsole.log(gen.next().value); // 1\nconsole.log(gen.next().value); // 2\n\nfunction* take(n, iterable) {\n  let i = 0;\n  for (const x of iterable) {\n    if (i++ >= n) return;\n    yield x;\n  }\n}\nconsole.log([...take(3, infiniteIds())]); // [1, 2, 3]",
+    "seniorTip": "In an architecture interview, cite Redux-Saga: explain how it uses generators to represent side effects (API calls, delays) as descriptive plain objects (yield call(fetchUser)), making unit testing effortless with simple .next() calls without mocking complex APIs.",
     "tags": [
-      "nivel-6",
+      "level-6",
       "javascript",
-      "generadores",
+      "generators",
       "yield"
     ],
     "interactiveDemo": "console"
@@ -130,35 +130,35 @@ Antes de \`async/await\`, librerías como \`co\` y Redux-Saga utilizaban generad
   {
     "id": "P60",
     "level": 6,
-    "levelTitle": "ES6+ y módulos",
-    "question": "¿Qué son `Proxy` y `Reflect`?",
-    "shortAnswer": "`Proxy` permite envolver un objeto para interceptar y personalizar sus operaciones fundamentales (lectura de propiedades, escritura, eliminación, invocación). `Reflect` es un objeto global que provee los métodos equivalentes a las operaciones internas del lenguaje con retorno predecible, facilitando delegar el comportamiento predeterminado dentro del Proxy.",
-    "explanation": `Metaprogramación y arquitectura reactiva moderna:
+    "levelTitle": "ES6+ & Modules",
+    "question": "What are `Proxy` and `Reflect`?",
+    "shortAnswer": "`Proxy` wraps an object to intercept and customize its fundamental operations (property lookup, assignment, deletion, function invocation). `Reflect` is a built-in object providing methods corresponding to JavaScript's internal operations with predictable return values, simplifying delegating default behavior inside Proxy traps.",
+    "explanation": `Metaprogramming and modern reactive architectures:
 
-1. **Anatomía de un \`Proxy\`:**
+1. **Anatomy of a \`Proxy\`:**
 \`const proxy = new Proxy(target, handler);\`
-- \`target\`: El objeto original que se desea envolver.
-- \`handler\`: Objeto contenedor de 'trampas' (*traps*) que interceptan operaciones:
-  - \`get(target, prop, receiver)\`: Intercepta lecturas.
-  - \`set(target, prop, value, receiver)\`: Intercepta asignaciones.
-  - \`deleteProperty(target, prop)\`: Intercepta borrado con \`delete\`.
-  - \`has(target, prop)\`: Intercepta el operador \`in\`.
-  - \`apply(target, thisArg, argumentsList)\`: Intercepta llamadas a funciones.
+- \`target\`: The original object being wrapped.
+- \`handler\`: Object containing 'traps' that intercept operations:
+  - \`get(target, prop, receiver)\`: Intercepts property reads.
+  - \`set(target, prop, value, receiver)\`: Intercepts property writes.
+  - \`deleteProperty(target, prop)\`: Intercepts property deletion with \`delete\`.
+  - \`has(target, prop)\`: Intercepts the \`in\` operator.
+  - \`apply(target, thisArg, argumentsList)\`: Intercepts function invocations.
 
-2. **Por qué \`Reflect\` es el complemento indispensable:**
-\`Reflect\` contiene los métodos espejo exactos de cada trampa del Proxy:
-- Devuelve booleanos limpios en lugar de lanzar errores silenciosos (\`Reflect.set()\` retorna \`false\` si falla, permitiendo manejarlo sin \`try/catch\`).
-- Soporta el parámetro \`receiver\`, garantizando que \`this\` apunte correctamente al Proxy en getters heredados.
+2. **Why \`Reflect\` is Indispensable:**
+\`Reflect\` exposes mirror methods for every Proxy trap:
+- Returns boolean indicators rather than throwing silent errors (\`Reflect.set()\` returns \`false\` on failure, avoiding \`try/catch\` boilerplate).
+- Forwards the \`receiver\` parameter, ensuring \`this\` binds correctly to the Proxy on inherited getters.
 
-3. **El motor de Reactividad de Vue 3:**
-Vue 3 reemplazó los getters/setters de \`Object.defineProperty\` por \`Proxy\`. Esto le permite detectar automáticamente adición de nuevas propiedades, eliminación de propiedades y mutaciones en arrays (\`arr.push(1)\`) sin trucos auxiliares.`,
-    "codeSnippet": "const validador = new Proxy({}, {\n  set(obj, prop, valor) {\n    if (prop === 'edad' && !Number.isInteger(valor)) {\n      throw new TypeError('La edad debe ser un número entero');\n    }\n    return Reflect.set(obj, prop, valor);\n  },\n  get(obj, prop) {\n    return prop in obj ? Reflect.get(obj, prop) : `propiedad_${String(prop)}_no_existe`;\n  },\n});\nvalidador.edad = 30; // Válido\n// validador.edad = 'treinta'; // Lanza TypeError",
-    "seniorTip": "Ten presente la limitación de invariantes (Proxy Invariants): un Proxy no puede mentir sobre propiedades no configurables o no modificables del objeto target (por ejemplo, si una propiedad es writable: false, configurable: false, la trampa get está obligada a retornar el valor original o el motor arrojará un TypeError).",
+3. **Vue 3 Reactivity Engine:**
+Vue 3 replaced \`Object.defineProperty\` getters/setters with \`Proxy\`. This enables native detection of added properties, deleted properties, and array mutations (\`arr.push(1)\`) without monkey-patching.`,
+    "codeSnippet": "const validator = new Proxy({}, {\n  set(obj, prop, value) {\n    if (prop === 'age' && !Number.isInteger(value)) {\n      throw new TypeError('Age must be an integer');\n    }\n    return Reflect.set(obj, prop, value);\n  },\n  get(obj, prop) {\n    return prop in obj ? Reflect.get(obj, prop) : `property_${String(prop)}_does_not_exist`;\n  },\n});\nvalidator.age = 30; // Valid\n// validator.age = 'thirty'; // Throws TypeError",
+    "seniorTip": "Keep Proxy Invariants in mind: a Proxy cannot violate non-configurable or non-writable properties on the target object (for example, if a property is writable: false, configurable: false, the get trap is strictly required to return the original value, or the engine throws a TypeError).",
     "tags": [
       "proxy",
-      "nivel-6",
+      "level-6",
       "javascript",
-      "metaprogramacion",
+      "metaprogramming",
       "reflect"
     ],
     "interactiveDemo": "console"
@@ -166,28 +166,28 @@ Vue 3 reemplazó los getters/setters de \`Object.defineProperty\` por \`Proxy\`.
   {
     "id": "P61",
     "level": 6,
-    "levelTitle": "ES6+ y módulos",
-    "question": "¿Qué novedades útiles trajeron las versiones recientes (ES2022–ES2024)?",
-    "shortAnswer": "Las versiones recientes han incorporado mejoras sustanciales: `Array.prototype.at()` (índices negativos), `Object.hasOwn()` y campos privados `#` (ES2022); métodos de array inmutables como `toSorted` y `toReversed` (ES2023); y `Object.groupBy()` junto a `Promise.withResolvers()` (ES2024).",
-    "explanation": `Desglose de las adiciones modernas más útiles en producción:
+    "levelTitle": "ES6+ & Modules",
+    "question": "What useful features were introduced in recent versions (ES2022–ES2024)?",
+    "shortAnswer": "Recent ECMAScript editions introduced major enhancements: `Array.prototype.at()` (negative indexing), `Object.hasOwn()`, and `#` private fields (ES2022); immutable array methods like `toSorted` and `toReversed` (ES2023); and `Object.groupBy()` along with `Promise.withResolvers()` (ES2024).",
+    "explanation": `Breakdown of modern additions in production:
 
 1. **ES2022:**
-- **\`.at(index)\` en Arrays y Strings:** Permite indexación negativa intuitiva: \`arr.at(-1)\` reemplaza al engorroso \`arr[arr.length - 1]\`.
-- **\`Object.hasOwn(obj, prop)\`:** Reemplazo directo y seguro de \`obj.hasOwnProperty(prop)\`, inmune a objetos creados con \`Object.create(null)\` o propiedades sobrescritas.
-- **Top-level await:** Permite usar \`await\` fuera de funciones \`async\` en el nivel raíz de módulos ESM.
-- **Error Cause:** Encadenamiento de causas de error: \`new Error('Fallo de red', { cause: errOriginal })\`.
+- **\`.at(index)\` on Arrays and Strings:** Enables clean negative indexing: \`arr.at(-1)\` replaces cumbersome \`arr[arr.length - 1]\`.
+- **\`Object.hasOwn(obj, prop)\`:** Safe direct replacement for \`obj.hasOwnProperty(prop)\`, immune to \`Object.create(null)\` objects or shadowed properties.
+- **Top-level await:** Enables \`await\` outside \`async\` functions at the root of ESM modules.
+- **Error Cause:** Chained error diagnostics: \`new Error('Network failure', { cause: originalErr })\`.
 
 2. **ES2023:**
-- **Métodos inmutables de Array:** \`toSorted()\`, \`toReversed()\`, \`toSpliced()\` y \`with(index, valor)\` devuelven copias transformadas sin mutar el array original.
-- **\`findLast()\` y \`findLastIndex()\`:** Búsqueda optimizada desde el final hacia el inicio del array.
+- **Immutable Array Methods:** \`toSorted()\`, \`toReversed()\`, \`toSpliced()\`, and \`with(index, value)\` return transformed copies without mutating the original array.
+- **\`findLast()\` and \`findLastIndex()\`:** Optimized search starting from the end of arrays.
 
 3. **ES2024:**
-- **\`Object.groupBy(items, callback)\` y \`Map.groupBy()\`:** Agrupación nativa de colecciones sin requerir utilidades externas de Lodash ni reducers manuales.
-- **\`Promise.withResolvers()\`:** Desestructura \`{ promise, resolve, reject }\` en una sola llamada limpia, eliminando la necesidad de guardar referencias al callback de \`new Promise\`.`,
-    "codeSnippet": "[1, 2, 3].at(-1);                                    // 3 (ES2022)\nObject.hasOwn({ a: 1 }, 'a');                        // true (ES2022)\n[3, 1, 2].toSorted();                                // [1, 2, 3] inmutable (ES2023)\nObject.groupBy([{ g: 'a' }, { g: 'b' }], (x) => x.g); // { a: [...], b: [...] } (ES2024)\nconst { promise, resolve } = Promise.withResolvers(); // ES2024",
-    "seniorTip": "Destacar Promise.withResolvers() y Object.groupBy() en una entrevista técnica demuestra que te mantienes al día con las especificaciones TC39 de última hornada. Demuestra cómo Object.groupBy(usuarios, u => u.rol) simplifica tareas complejas de manipulación de datos.",
+- **\`Object.groupBy(items, callback)\` and \`Map.groupBy()\`:** Native collection grouping without external Lodash helpers or manual reduce functions.
+- **\`Promise.withResolvers()\`:** Destructures \`{ promise, resolve, reject }\` in a single clean call, eliminating external executor callback bindings.`,
+    "codeSnippet": "[1, 2, 3].at(-1);                                    // 3 (ES2022)\nObject.hasOwn({ a: 1 }, 'a');                        // true (ES2022)\n[3, 1, 2].toSorted();                                // [1, 2, 3] immutable (ES2023)\nObject.groupBy([{ g: 'a' }, { g: 'b' }], (x) => x.g); // { a: [...], b: [...] } (ES2024)\nconst { promise, resolve } = Promise.withResolvers(); // ES2024",
+    "seniorTip": "Highlighting Promise.withResolvers() and Object.groupBy() in a technical interview shows you stay on top of the latest TC39 specifications. Demonstrate how Object.groupBy(users, u => u.role) replaces manual reduce boilerplate or lodash imports.",
     "tags": [
-      "nivel-6",
+      "level-6",
       "javascript",
       "es2022",
       "es2023",
@@ -198,32 +198,32 @@ Vue 3 reemplazó los getters/setters de \`Object.defineProperty\` por \`Proxy\`.
   {
     "id": "P62",
     "level": 6,
-    "levelTitle": "ES6+ y módulos",
-    "question": "¿Qué es el *tree shaking*?",
-    "shortAnswer": "El **Tree Shaking** es una técnica de optimización ejecutada por empaquetadores modernos (Rollup, Webpack, Turbopack, esbuild) durante la compilación que analiza el grafo de dependencias y **elimina el código muerto (*dead code*) exportado que nunca llega a importarse o utilizarse en la aplicación**, reduciendo drásticamente el peso del bundle final.",
-    "explanation": `Fundamento técnico y requisitos indispensables para que funcione:
+    "levelTitle": "ES6+ & Modules",
+    "question": "What is tree shaking?",
+    "shortAnswer": "The **Tree Shaking** optimization technique employed by modern module bundlers (Rollup, Webpack, Turbopack, esbuild) during compilation analyzes the dependency graph and **eliminates unused exported dead code**, significantly reducing production bundle size.",
+    "explanation": `Technical foundations and requirements for tree shaking:
 
-1. **Por qué depende exclusivamente de ESM:**
-Los módulos ES (\`import\`/\`export\`) tienen **estructura estática**: las importaciones no pueden ser condicionales ni incluir expresiones dinámicas dentro de \`if\`. Esto permite a los bundlers analizar todo el grafo de dependencias en tiempo de compilación sin ejecutar el código, identificando inequívocamente qué funciones o constantes no tienen ningún consumidor.
-*(CommonJS no permite tree shaking eficaz porque \`require('./' + variable)\` es dinámico).*
+1. **Why it relies exclusively on ESM:**
+ES Modules (\`import\`/\`export\`) feature a **static structure**: imports cannot be conditional or placed inside runtime \`if\` blocks. This allows bundlers to statically trace the full dependency graph at build time without executing code, identifying unused exports with certainty.
+*(CommonJS does not permit reliable tree shaking because \`require('./' + variable)\` is dynamic).*
 
-2. **El peligro de los efectos secundarios (*Side Effects*):**
-Un bundler no eliminará un módulo sin usar si sospecha que importarlo ejecuta código que modifica el entorno global (ej. polyfills, manipulación de \`window\` o CSS inyectado).
-- Si la librería es pura, debe declarar en su \`package.json\`:
+2. **The Hazard of Side Effects:**
+A bundler will not prune an unused module if it suspects importing it executes global side effects (e.g., polyfills, mutating \`window\`, or injecting global CSS).
+- If a library is pure, declare in its \`package.json\`:
   \`"sideEffects": false\`
-  Esto autoriza al bundler a descartar de forma segura cualquier archivo de la librería si ninguna de sus exportaciones es consumida.
+  This authorizes the bundler to safely drop any file from the package if none of its exports are consumed.
 
-3. **Buenas prácticas en el código:**
-- Importar funciones nombradas específicas: \`import { debounce } from 'lodash-es'\` en vez de importar el objeto global \`import _ from 'lodash'\`.
-- Evitar clases monolíticas masivas o exportaciones por defecto de grandes objetos con métodos.`,
-    "codeSnippet": "// utils.js\nexport const formatearFecha = (d) => d.toISOString();\nexport const funcionPesadaNoUsada = () => { /* 50kb de lógica */ };\n\n// app.js\nimport { formatearFecha } from './utils.js';\n// El bundler descarta 'funcionPesadaNoUsada' del archivo final generado",
-    "seniorTip": "El clásico error de novato en entrevistas es intentar hacer tree shaking con lodash: la librería clásica lodash está empaquetada en CommonJS, por lo que el bundler importará los 70KB completos. La solución correcta es migrar a lodash-es o librerías nativas modernas como es-toolkit.",
+3. **Code Best Practices:**
+- Import specific named exports: \`import { debounce } from 'lodash-es'\` instead of importing default namespaces like \`import _ from 'lodash'\`.
+- Avoid monolithic classes or default-exported mega-objects with bundled methods.`,
+    "codeSnippet": "// utils.js\nexport const formatDate = (d) => d.toISOString();\nexport const heavyUnusedFunction = () => { /* 50kb of logic */ };\n\n// app.js\nimport { formatDate } from './utils.js';\n// The bundler drops 'heavyUnusedFunction' from the final production bundle",
+    "seniorTip": "The classic junior mistake in interviews is attempting to tree-shake lodash: standard lodash is packaged in CommonJS, so bundlers will import the entire 70KB bundle. The correct solution is migrating to lodash-es or modern native libraries like es-toolkit.",
     "tags": [
-      "nivel-6",
+      "level-6",
       "javascript",
       "tree-shaking",
       "bundlers",
-      "rendimiento"
+      "performance"
     ],
     "interactiveDemo": "console"
   }

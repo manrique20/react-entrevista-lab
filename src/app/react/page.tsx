@@ -24,7 +24,9 @@ import {
   BookOpen,
   Terminal,
   Trophy,
-  Atom
+  Atom,
+  Award,
+  Split
 } from 'lucide-react';
 
 const ICONS_MAP: Record<string, React.ElementType> = {
@@ -54,24 +56,24 @@ export default function HomePage() {
   }, []);
 
   const totalTopics = ALL_TOPICS.length;
-  const porcentaje = Math.round((completedTopics.length / totalTopics) * 100);
+  const percentage = Math.round((completedTopics.length / totalTopics) * 100);
 
   return (
     <div className="space-y-12 pb-16">
-      {/* Barra de navegación rápida al Hub */}
+      {/* Quick Navigation to Hub */}
       <div className="flex items-center justify-between">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Volver al Hub Principal</span>
+          <span>Back to Main Hub</span>
         </Link>
         <Link
           href="/javascript"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline"
         >
-          <span>Explorar Track de JavaScript Core &gt;</span>
+          <span>Explore JavaScript Core Track &gt;</span>
         </Link>
       </div>
 
@@ -80,18 +82,18 @@ export default function HomePage() {
         <div className="w-full max-w-5xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Actualizado para React 19, Server Components y Next.js 16</span>
+            <span>Updated for React 19, Server Components &amp; Next.js 16</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight sm:leading-tight lg:leading-[1.2] break-words pb-1">
             React &amp; Next.js <br />
             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent">
-              Laboratorio de Entrevistas
+              Interview Laboratory
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-muted leading-relaxed max-w-3xl">
-            Una plataforma interactiva completa basada en el documento <code>react-entrevista.md</code>. Cada uno de los 79 tópicos cuenta con su modelo mental, código fuente, laboratorio en vivo interactivo y las respuestas senior que esperan los entrevistadores técnicos.
+            A comprehensive interactive platform for technical frontend interviews. Each of the 79 topics covers core mental models, runnable source code, interactive sandboxes, and senior answers expected by technical interviewers.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2 justify-center sm:justify-start">
@@ -100,88 +102,167 @@ export default function HomePage() {
               className="px-5 py-2.5 rounded-xl bg-primary text-white text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 flex items-center gap-2"
             >
               <BookOpen className="w-4 h-4" />
-              <span>Comenzar Nivel 1</span>
+              <span>Start Level 1</span>
+            </Link>
+            <Link
+              href="/react/re-renders"
+              className="px-5 py-2.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-500/25 text-xs sm:text-sm font-bold transition-colors flex items-center gap-2"
+            >
+              <Layers className="w-4 h-4 text-cyan-500" />
+              <span>Re-renders Visualizer</span>
+            </Link>
+            <Link
+              href="/simulador"
+              className="px-5 py-2.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/25 text-xs sm:text-sm font-bold transition-colors flex items-center gap-2"
+            >
+              <Award className="w-4 h-4 text-indigo-500" />
+              <span>Mock Simulator</span>
+            </Link>
+            <Link
+              href="/refactorings"
+              className="px-5 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/25 text-xs sm:text-sm font-bold transition-colors flex items-center gap-2"
+            >
+              <Split className="w-4 h-4 text-emerald-500" />
+              <span>Refactorings</span>
+            </Link>
+            <Link
+              href="/system-design"
+              className="px-5 py-2.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-700 dark:text-purple-300 hover:bg-purple-500/25 text-xs sm:text-sm font-bold transition-colors flex items-center gap-2"
+            >
+              <Cpu className="w-4 h-4 text-purple-500" />
+              <span>System Design</span>
             </Link>
             <Link
               href="/react/acertijos"
               className="px-5 py-2.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-700 dark:text-blue-300 hover:bg-blue-500/25 text-xs sm:text-sm font-bold transition-colors flex items-center gap-2"
             >
               <Atom className="w-4 h-4 text-blue-500 animate-spin-slow" />
-              <span>{reactRiddlesData.length} Acertijos React</span>
+              <span>{reactRiddlesData.length} Riddles</span>
             </Link>
             <Link
               href="/preguntas"
               className="px-5 py-2.5 rounded-xl border border-border hover:bg-muted text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
             >
               <HelpCircle className="w-4 h-4 text-purple-500" />
-              <span>{INTERVIEW_QUESTIONS.length} Preguntas Senior</span>
+              <span>{INTERVIEW_QUESTIONS.length} Questions</span>
             </Link>
             <Link
               href="/ejercicios"
               className="px-5 py-2.5 rounded-xl border border-border hover:bg-muted text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
             >
               <Code2 className="w-4 h-4 text-emerald-500" />
-              <span>{EXERCISES.length} Ejercicios Prácticos</span>
+              <span>{EXERCISES.length} Exercises</span>
             </Link>
           </div>
         </div>
 
-        {/* Barra de progreso global */}
+        {/* Global Progress Bar */}
         <div className="mt-8 pt-6 border-t border-border/60 max-w-xl">
           <div className="flex justify-between items-center text-xs mb-2">
-            <span className="font-semibold text-muted">Progreso Global de Estudio</span>
-            <span className="font-mono font-bold text-primary">{completedTopics.length} de {totalTopics} temas ({porcentaje}%)</span>
+            <span className="font-semibold text-muted">Overall Study Progress</span>
+            <span className="font-mono font-bold text-primary">{completedTopics.length} of {totalTopics} topics ({percentage}%)</span>
           </div>
           <div className="w-full h-2.5 rounded-full bg-muted/40 overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-500 rounded-full"
-              style={{ width: `${porcentaje}%` }}
+              style={{ width: `${percentage}%` }}
             />
           </div>
         </div>
       </section>
 
-      {/* Métricas destacadas */}
+      {/* Highlights Metrics */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Link href="/nivel/1" className="p-5 border rounded-2xl bg-card hover:border-primary/50 transition-colors text-center sm:text-left space-y-1 block">
           <span className="text-2xl sm:text-3xl font-extrabold text-blue-500 font-mono">8</span>
-          <p className="text-xs font-semibold text-foreground">Niveles Estructurados</p>
-          <p className="text-[11px] text-muted">79 Tópicos con Demos</p>
+          <p className="text-xs font-semibold text-foreground">Structured Levels</p>
+          <p className="text-[11px] text-muted">79 Topics with Demos</p>
         </Link>
         <Link href="/react/acertijos" className="p-5 border rounded-2xl bg-card hover:border-cyan-500/50 transition-colors text-center sm:text-left space-y-1 block">
           <span className="text-2xl sm:text-3xl font-extrabold text-cyan-500 font-mono">{reactRiddlesData.length}</span>
-          <p className="text-xs font-semibold text-foreground">Acertijos React</p>
-          <p className="text-[11px] text-muted">¿Qué renderiza? con opciones</p>
+          <p className="text-xs font-semibold text-foreground">React Riddles</p>
+          <p className="text-[11px] text-muted">What renders? with options</p>
         </Link>
         <Link href="/preguntas" className="p-5 border rounded-2xl bg-card hover:border-purple-500/50 transition-colors text-center sm:text-left space-y-1 block">
           <span className="text-2xl sm:text-3xl font-extrabold text-purple-500 font-mono">{INTERVIEW_QUESTIONS.length}</span>
-          <p className="text-xs font-semibold text-foreground">Preguntas Senior</p>
-          <p className="text-[11px] text-muted">Simulador con trampas y red flags</p>
+          <p className="text-xs font-semibold text-foreground">Senior Questions</p>
+          <p className="text-[11px] text-muted">Simulator with red flags &amp; traps</p>
         </Link>
         <Link href="/ejercicios" className="p-5 border rounded-2xl bg-card hover:border-emerald-500/50 transition-colors text-center sm:text-left space-y-1 block">
           <span className="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">{EXERCISES.length}</span>
-          <p className="text-xs font-semibold text-foreground">Ejercicios de Código</p>
-          <p className="text-[11px] text-muted">Retos prácticos interactivos</p>
+          <p className="text-xs font-semibold text-foreground">Code Exercises</p>
+          <p className="text-[11px] text-muted">Interactive practical challenges</p>
         </Link>
       </section>
 
-      {/* Grid de los 8 Niveles */}
+      {/* Featured Interactive Labs */}
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-6 rounded-2xl border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-card to-card space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-600 dark:text-cyan-400">
+              Live Laboratory
+            </span>
+            <Layers className="w-5 h-5 text-cyan-500" />
+          </div>
+          <h3 className="text-lg font-bold text-foreground">
+            React Re-renders Visualizer
+          </h3>
+          <p className="text-xs text-muted leading-relaxed">
+            Experiment in real time across 6 reconciliation scenarios: React.memo, useCallback, inline props, and children slot pattern.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/react/re-renders"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 hover:underline"
+            >
+              <span>Open Interactive Visualizer</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-indigo-500/10 via-card to-card space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
+              Timed Evaluation
+            </span>
+            <Award className="w-5 h-5 text-indigo-500" />
+          </div>
+          <h3 className="text-lg font-bold text-foreground">
+            Technical Mock Interview Simulator
+          </h3>
+          <p className="text-xs text-muted leading-relaxed">
+            Timed 15, 30, or 45-minute exam mode. Senior questions, execution riddles, and live coding with in-browser test runner to diagnose your seniority.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/simulador"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+            >
+              <span>Start Simulation</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Grid of the 8 Levels */}
       <section className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/80 pb-4">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Ruta de Aprendizaje por Niveles</h2>
-            <p className="text-xs text-muted">Selecciona cualquier nivel para explorar sus explicaciones, código y widgets interactivos.</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground">Learning Roadmap by Levels</h2>
+            <p className="text-xs text-muted">Select any level to explore its mental models, code examples, and interactive widgets.</p>
           </div>
           <Link href="/checklist" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
-            Ver checklist completo &rarr;
+            View full checklist &rarr;
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {LEVELS.map(level => {
             const Icon = ICONS_MAP[level.iconName] || Layers;
-            const topicsEnNivel = level.topicIds.length;
-            const completadosEnNivel = level.topicIds.filter(id => completedTopics.includes(id)).length;
+            const topicsInLevel = level.topicIds.length;
+            const completedInLevel = level.topicIds.filter(id => completedTopics.includes(id)).length;
 
             return (
               <Link
@@ -195,7 +276,7 @@ export default function HomePage() {
                       <Icon className="w-5 h-5" />
                     </div>
                     <span className="text-xs font-mono font-bold text-muted bg-muted px-2 py-0.5 rounded">
-                      {completadosEnNivel}/{topicsEnNivel}
+                      {completedInLevel}/{topicsInLevel}
                     </span>
                   </div>
 
@@ -210,7 +291,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="pt-4 mt-4 border-t border-border/50 flex items-center justify-between text-xs font-semibold text-primary">
-                  <span>Explorar nivel</span>
+                  <span>Explore level</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
@@ -219,21 +300,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Sección rápida: Preguntas de entrevista recomendadas */}
+      {/* Recommended Interview Questions Quick Section */}
       <section className="p-6 sm:p-8 border rounded-3xl bg-card space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
               <HelpCircle className="w-5 h-5 text-purple-500" />
-              Simulador de Preguntas Clásicas de Entrevista
+              Classic Interview Questions Simulator
             </h3>
-            <p className="text-xs text-muted">¿Por qué no se debe mutar el estado? ¿Cuándo usar Context vs Zustand? ¿Qué pasa si usas el index como key?</p>
+            <p className="text-xs text-muted">Why shouldn&apos;t state be mutated? When to use Context vs Zustand? What happens if you use indices as keys?</p>
           </div>
           <Link
             href="/preguntas"
             className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold transition-colors"
           >
-            Abrir Simulador Completo
+            Open Full Simulator
           </Link>
         </div>
 
@@ -258,21 +339,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Sección rápida: Laboratorio de Ejercicios */}
+      {/* Exercises Laboratory Quick Section */}
       <section className="p-6 sm:p-8 border rounded-3xl bg-card space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
               <Code2 className="w-5 h-5 text-emerald-500" />
-              Suite de 11 Ejercicios Prácticos Frecuentes
+              Suite of 13 Canonical Practical Challenges
             </h3>
-            <p className="text-xs text-muted">Todo list, Buscador Debounce con AbortController, Modal con createPortal, Paginación, Infinite Scroll y Formularios Zod.</p>
+            <p className="text-xs text-muted">Todo List, Debounce Search with AbortController, createPortal Modal, Pagination, Infinite Scroll &amp; Zod Forms.</p>
           </div>
           <Link
             href="/ejercicios"
             className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-colors"
           >
-            Ver todos los Ejercicios
+            View All Exercises
           </Link>
         </div>
 

@@ -27,7 +27,7 @@ async function LevelContent({ params }: LevelPageProps) {
 
 export default function LevelPage(props: LevelPageProps) {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-muted">Cargando nivel...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-muted">Loading level...</div>}>
       <LevelContent {...props} />
     </Suspense>
   );

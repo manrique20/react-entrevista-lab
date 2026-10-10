@@ -1,31 +1,31 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { AlertCircle, Check, Play, RefreshCw, Eye, EyeOff, Layers, Timer } from 'lucide-react';
+import { AlertCircle, Check, Timer, Layers } from 'lucide-react';
 
-// Demo 2.1: useState asincronía y actualización funcional
+// Demo 2.1: useState Async Nature and Functional Updates
 export function UseStateAsyncDemo() {
-  const [cuenta, setCuenta] = useState(0);
+  const [count, setCount] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
 
-  const handleLecturaInmediata = () => {
-    // ❌ Error común: setCount(count + 1) tres veces
-    setCuenta(cuenta + 1);
-    setCuenta(cuenta + 1);
-    setCuenta(cuenta + 1);
+  const handleImmediateRead = () => {
+    // ❌ Common mistake: setCount(count + 1) three times
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
     setLogs(prev => [
-      `[Lectura Inmediata]: Llamaste a setCuenta(cuenta + 1) 3 veces consecutivas. En las 3 líneas, cuenta valía ${cuenta}. Resultado final: suma solo +1.`,
+      `[Immediate Read]: Called setCount(count + 1) 3 consecutive times. In all 3 lines, count evaluated to ${count}. Final result: increments by only +1.`,
       ...prev.slice(0, 3)
     ]);
   };
 
-  const handleActualizacionFuncional = () => {
-    // ✅ Forma funcional segura
-    setCuenta(prev => prev + 1);
-    setCuenta(prev => prev + 1);
-    setCuenta(prev => prev + 1);
+  const handleFunctionalUpdate = () => {
+    // ✅ Safe functional update
+    setCount(prev => prev + 1);
+    setCount(prev => prev + 1);
+    setCount(prev => prev + 1);
     setLogs(prev => [
-      `[Actualización Funcional]: Llamaste a setCuenta(prev => prev + 1) 3 veces. Cada llamada tomó el valor pendiente más reciente. Resultado: suma exactamente +3.`,
+      `[Functional Update]: Called setCount(prev => prev + 1) 3 times. Each call received the latest pending value. Final result: increments by exactly +3.`,
       ...prev.slice(0, 3)
     ]);
   };
@@ -34,24 +34,24 @@ export function UseStateAsyncDemo() {
     <div className="space-y-4">
       <div className="flex items-center gap-4 p-4 border rounded-xl bg-card">
         <div className="text-center px-4 py-2 bg-primary/10 border border-primary/20 rounded-xl">
-          <span className="text-xs text-muted block uppercase">Valor actual</span>
-          <span className="text-3xl font-extrabold text-primary font-mono">{cuenta}</span>
+          <span className="text-xs text-muted block uppercase">Current Value</span>
+          <span className="text-3xl font-extrabold text-primary font-mono">{count}</span>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={handleLecturaInmediata}
+            onClick={handleImmediateRead}
             className="px-3.5 py-2 bg-red-600/90 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors"
           >
-            ❌ setCount(cuenta + 1) x3 (Suma +1)
+            ❌ setCount(count + 1) x3 (Adds +1)
           </button>
           <button
-            onClick={handleActualizacionFuncional}
+            onClick={handleFunctionalUpdate}
             className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors"
           >
-            ✅ setCount(prev =&gt; prev + 1) x3 (Suma +3)
+            ✅ setCount(prev =&gt; prev + 1) x3 (Adds +3)
           </button>
           <button
-            onClick={() => { setCuenta(0); setLogs([]); }}
+            onClick={() => { setCount(0); setLogs([]); }}
             className="px-3 py-2 border rounded-lg text-xs hover:bg-muted"
           >
             Reset
@@ -60,9 +60,9 @@ export function UseStateAsyncDemo() {
       </div>
 
       <div className="p-3 border rounded-xl bg-muted/20 font-mono text-xs space-y-1">
-        <p className="font-semibold text-muted text-[11px] uppercase">Registro de ejecución:</p>
+        <p className="font-semibold text-muted text-[11px] uppercase">Execution Log:</p>
         {logs.length === 0 ? (
-          <p className="text-muted italic">Haz clic en los botones para observar la diferencia en tiempo real.</p>
+          <p className="text-muted italic">Click the buttons to observe the difference in real time.</p>
         ) : (
           logs.map((l, i) => <p key={i} className="text-foreground/90">{l}</p>)
         )}
@@ -71,26 +71,26 @@ export function UseStateAsyncDemo() {
   );
 }
 
-// Demo 2.2: useEffect ciclo de vida y cleanup
+// Demo 2.2: useEffect Lifecycle and Cleanup
 export function UseEffectLifecycleDemo() {
-  const [activo, setActivo] = useState(false);
-  const [segundos, setSegundos] = useState(0);
-  const [limpiezasEjecutadas, setLimpiezasEjecutadas] = useState(0);
+  const [active, setActive] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [cleanupsRun, setCleanupsRun] = useState(0);
 
   useEffect(() => {
-    if (!activo) return;
+    if (!active) return;
 
-    // Inicia el intervalo
+    // Start interval
     const timerId = setInterval(() => {
-      setSegundos(s => s + 1);
+      setSeconds(s => s + 1);
     }, 1000);
 
-    // Función de limpieza (Cleanup)
+    // Cleanup function
     return () => {
       clearInterval(timerId);
-      setLimpiezasEjecutadas(prev => prev + 1);
+      setCleanupsRun(prev => prev + 1);
     };
-  }, [activo]);
+  }, [active]);
 
   return (
     <div className="space-y-4">
@@ -98,21 +98,21 @@ export function UseEffectLifecycleDemo() {
         <div className="flex items-center gap-3">
           <Timer className="w-5 h-5 text-primary" />
           <div>
-            <p className="font-semibold text-sm">Estado del Efecto: {activo ? 'Suscripción Activa' : 'Detenido'}</p>
-            <p className="text-xs text-muted">Contador: <strong className="font-mono text-primary">{segundos}s</strong></p>
+            <p className="font-semibold text-sm">Effect Status: {active ? 'Active Subscription' : 'Stopped'}</p>
+            <p className="text-xs text-muted">Timer: <strong className="font-mono text-primary">{seconds}s</strong></p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setActivo(!activo)}
+            onClick={() => setActive(!active)}
             className={`px-4 py-2 rounded-lg text-xs font-semibold text-white transition-colors ${
-              activo ? 'bg-amber-600 hover:bg-amber-700' : 'bg-primary hover:bg-primary/90'
+              active ? 'bg-amber-600 hover:bg-amber-700' : 'bg-primary hover:bg-primary/90'
             }`}
           >
-            {activo ? 'Pausar (Ejecuta Cleanup)' : 'Iniciar Suscripción'}
+            {active ? 'Pause (Runs Cleanup)' : 'Start Subscription'}
           </button>
           <button
-            onClick={() => { setActivo(false); setSegundos(0); setLimpiezasEjecutadas(0); }}
+            onClick={() => { setActive(false); setSeconds(0); setCleanupsRun(0); }}
             className="px-3 py-2 border rounded-lg text-xs hover:bg-muted"
           >
             Reset
@@ -121,162 +121,162 @@ export function UseEffectLifecycleDemo() {
       </div>
 
       <div className="p-3 bg-muted/30 border rounded-xl text-xs space-y-1">
-        <p><strong>Funciones de Limpieza (Cleanup) invocadas:</strong> <span className="font-mono font-bold text-amber-500">{limpiezasEjecutadas}</span></p>
+        <p><strong>Cleanup functions executed:</strong> <span className="font-mono font-bold text-amber-500">{cleanupsRun}</span></p>
         <p className="text-muted text-[11px]">
-          Al pulsar &quot;Pausar&quot; o cambiar de pestaña, React ejecuta la función de retorno \`clearInterval(timerId)\` para garantizar que no quede ningún proceso huérfano consumiendo memoria.
+          When clicking &quot;Pause&quot; or re-running effects, React invokes the returned cleanup function \`clearInterval(timerId)\` to ensure no orphaned processes leak memory.
         </p>
       </div>
     </div>
   );
 }
 
-// Demo 2.3: Controlado vs No Controlado
+// Demo 2.3: Controlled vs Uncontrolled Components
 export function ControlledVsUncontrolledDemo() {
-  const [valorControlado, setValorControlado] = useState('');
-  const [rendersControlado, setRendersControlado] = useState(0);
+  const [controlledValue, setControlledValue] = useState('');
+  const [controlledRenders, setControlledRenders] = useState(0);
 
-  const inputNoControladoRef = useRef<HTMLInputElement>(null);
-  const [valorEnviadoNoControlado, setValorEnviadoNoControlado] = useState<string | null>(null);
+  const uncontrolledInputRef = useRef<HTMLInputElement>(null);
+  const [submittedUncontrolledValue, setSubmittedUncontrolledValue] = useState<string | null>(null);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {/* Controlado */}
+      {/* Controlled */}
       <div className="p-4 border border-blue-500/30 rounded-xl bg-blue-500/5 space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-xs text-blue-600 dark:text-blue-400">1. Input Controlado (React State)</h4>
+          <h4 className="font-semibold text-xs text-blue-600 dark:text-blue-400">1. Controlled Input (React State)</h4>
           <span className="text-[10px] font-mono bg-blue-500/20 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded">
-            Rerenders: {rendersControlado}
+            Rerenders: {controlledRenders}
           </span>
         </div>
         <input
-          value={valorControlado}
+          value={controlledValue}
           onChange={e => {
-            setValorControlado(e.target.value);
-            setRendersControlado(r => r + 1);
+            setControlledValue(e.target.value);
+            setControlledRenders(r => r + 1);
           }}
-          placeholder="Escribe cada letra..."
+          placeholder="Type each letter..."
           className="w-full px-3 py-2 border rounded-lg bg-card text-foreground text-xs"
         />
         <div className="text-xs space-y-1">
-          <p>Longitud en vivo: <strong>{valorControlado.length}</strong> caracteres</p>
-          <p className="text-muted text-[11px]">Re-renderiza el componente con cada pulsación de tecla.</p>
+          <p>Live length: <strong>{controlledValue.length}</strong> characters</p>
+          <p className="text-muted text-[11px]">Re-renders the component on every keystroke.</p>
         </div>
       </div>
 
-      {/* No Controlado */}
+      {/* Uncontrolled */}
       <div className="p-4 border border-purple-500/30 rounded-xl bg-purple-500/5 space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-xs text-purple-600 dark:text-purple-400">2. Input No Controlado (DOM Ref)</h4>
+          <h4 className="font-semibold text-xs text-purple-600 dark:text-purple-400">2. Uncontrolled Input (DOM Ref)</h4>
           <span className="text-[10px] font-mono bg-purple-500/20 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded">
-            Cero re-renders al teclear
+            Zero re-renders on keystroke
           </span>
         </div>
         <div className="flex gap-2">
           <input
-            ref={inputNoControladoRef}
+            ref={uncontrolledInputRef}
             defaultValue=""
-            placeholder="El DOM retiene el valor..."
+            placeholder="DOM holds the input value..."
             className="flex-1 px-3 py-2 border rounded-lg bg-card text-foreground text-xs"
           />
           <button
-            onClick={() => setValorEnviadoNoControlado(inputNoControladoRef.current?.value ?? '')}
+            onClick={() => setSubmittedUncontrolledValue(uncontrolledInputRef.current?.value ?? '')}
             className="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-medium hover:bg-purple-700"
           >
-            Leer Ref
+            Read Ref
           </button>
         </div>
         <div className="text-xs space-y-1">
-          <p>Valor leído bajo demanda: <strong>{valorEnviadoNoControlado ?? '(Presiona Leer Ref)'}</strong></p>
-          <p className="text-muted text-[11px]">React no interviene mientras el usuario escribe.</p>
+          <p>Value read on demand: <strong>{submittedUncontrolledValue ?? '(Click Read Ref)'}</strong></p>
+          <p className="text-muted text-[11px]">React does not participate while the user types.</p>
         </div>
       </div>
     </div>
   );
 }
 
-// Demo 2.4: Formulario y validación
+// Demo 2.4: Form Handling and Validation
 export function FormValidationDemo() {
   const [form, setForm] = useState({ email: '', password: '' });
-  const [errores, setErrores] = useState<{ email?: string; password?: string }>({});
-  const [enviadoExitoso, setEnviadoExitoso] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-    // Validación inmediata en vivo
+    // Live validation
     if (name === 'email') {
-      setErrores(errs => ({
+      setErrors(errs => ({
         ...errs,
-        email: !value.includes('@') ? 'El email debe contener un @' : undefined
+        email: !value.includes('@') ? 'Email must contain @' : undefined
       }));
     }
     if (name === 'password') {
-      setErrores(errs => ({
+      setErrors(errs => ({
         ...errs,
-        password: value.length < 6 ? 'Mínimo 6 caracteres' : undefined
+        password: value.length < 6 ? 'Minimum 6 characters' : undefined
       }));
     }
-    setEnviadoExitoso(false);
+    setIsSubmitted(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.email.includes('@') || form.password.length < 6) {
-      setErrores({
-        email: !form.email.includes('@') ? 'Email inválido' : undefined,
-        password: form.password.length < 6 ? 'Contraseña demasiado corta' : undefined
+      setErrors({
+        email: !form.email.includes('@') ? 'Invalid email format' : undefined,
+        password: form.password.length < 6 ? 'Password is too short' : undefined
       });
       return;
     }
-    setErrores({});
-    setEnviadoExitoso(true);
+    setErrors({});
+    setIsSubmitted(true);
   };
 
   return (
     <form onSubmit={handleSubmit} className="p-4 border rounded-xl bg-card space-y-3">
       <div>
-        <label className="text-xs font-medium text-muted block mb-1">Correo Electrónico</label>
+        <label className="text-xs font-medium text-muted block mb-1">Email Address</label>
         <input
           name="email"
           value={form.email}
           onChange={handleChange}
-          placeholder="ejemplo@correo.com"
+          placeholder="user@example.com"
           className={`w-full px-3 py-2 border rounded-lg bg-background text-foreground text-xs ${
-            errores.email ? 'border-red-500 focus:ring-red-500' : ''
+            errors.email ? 'border-red-500 focus:ring-red-500' : ''
           }`}
         />
-        {errores.email && <p className="text-red-500 text-[11px] mt-1">{errores.email}</p>}
+        {errors.email && <p className="text-red-500 text-[11px] mt-1">{errors.email}</p>}
       </div>
 
       <div>
-        <label className="text-xs font-medium text-muted block mb-1">Contraseña</label>
+        <label className="text-xs font-medium text-muted block mb-1">Password</label>
         <input
           type="password"
           name="password"
           value={form.password}
           onChange={handleChange}
-          placeholder="Mínimo 6 caracteres"
+          placeholder="Minimum 6 characters"
           className={`w-full px-3 py-2 border rounded-lg bg-background text-foreground text-xs ${
-            errores.password ? 'border-red-500 focus:ring-red-500' : ''
+            errors.password ? 'border-red-500 focus:ring-red-500' : ''
           }`}
         />
-        {errores.password && <p className="text-red-500 text-[11px] mt-1">{errores.password}</p>}
+        {errors.password && <p className="text-red-500 text-[11px] mt-1">{errors.password}</p>}
       </div>
 
       <button type="submit" className="w-full py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90">
-        Validar y Enviar
+        Validate & Submit
       </button>
 
-      {enviadoExitoso && (
+      {isSubmitted && (
         <div className="p-2.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 rounded-lg text-xs font-medium flex items-center gap-2">
-          <Check className="w-4 h-4" /> Formulario validado y enviado correctamente.
+          <Check className="w-4 h-4" /> Form successfully validated and submitted.
         </div>
       )}
     </form>
   );
 }
 
-// Demo 2.5: Lifting state up (Celsius y Fahrenheit)
+// Demo 2.5: Lifting State Up (Celsius and Fahrenheit)
 export function LiftingStateDemo() {
   const [celsius, setCelsius] = useState(25);
 
@@ -289,11 +289,11 @@ export function LiftingStateDemo() {
   return (
     <div className="p-4 border rounded-xl bg-card space-y-4">
       <div className="text-xs text-muted">
-        El componente padre posee el estado único \`celsius\`. El valor \`fahrenheit\` es un valor derivado matemáticamente, asegurando que ambos hermanos permanezcan en sincronía perfecta.
+        The parent component holds the single source of truth \`celsius\`. The value \`fahrenheit\` is a mathematically derived state, ensuring both inputs remain in perfect synchrony.
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="p-3 border rounded-lg bg-background">
-          <label className="text-xs font-semibold block mb-1">Temperatura en Celsius (°C)</label>
+          <label className="text-xs font-semibold block mb-1">Temperature in Celsius (°C)</label>
           <input
             type="number"
             value={Math.round(celsius * 10) / 10}
@@ -302,7 +302,7 @@ export function LiftingStateDemo() {
           />
         </div>
         <div className="p-3 border rounded-lg bg-background">
-          <label className="text-xs font-semibold block mb-1">Temperatura en Fahrenheit (°F)</label>
+          <label className="text-xs font-semibold block mb-1">Temperature in Fahrenheit (°F)</label>
           <input
             type="number"
             value={Math.round(fahrenheit * 10) / 10}
@@ -315,41 +315,41 @@ export function LiftingStateDemo() {
   );
 }
 
-// Demo 2.6: Composición vs Herencia
+// Demo 2.6: Composition vs Inheritance
 export function CompositionVsInheritanceDemo() {
-  const [variante, setVariante] = useState<'info' | 'alerta'>('info');
+  const [variant, setVariant] = useState<'info' | 'alert'>('info');
 
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
         <button
-          onClick={() => setVariante('info')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium ${variante === 'info' ? 'bg-primary text-white' : 'border'}`}
+          onClick={() => setVariant('info')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium ${variant === 'info' ? 'bg-primary text-white' : 'border'}`}
         >
-          Variante Informativa
+          Info Variant
         </button>
         <button
-          onClick={() => setVariante('alerta')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium ${variante === 'alerta' ? 'bg-amber-600 text-white' : 'border'}`}
+          onClick={() => setVariant('alert')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-medium ${variant === 'alert' ? 'bg-amber-600 text-white' : 'border'}`}
         >
-          Variante Alerta
+          Alert Variant
         </button>
       </div>
 
-      {/* Contenedor compuesto con slots */}
-      <div className={`p-4 border rounded-xl ${variante === 'info' ? 'bg-blue-500/5 border-blue-500/30' : 'bg-amber-500/5 border-amber-500/30'}`}>
+      {/* Composed container with slots */}
+      <div className={`p-4 border rounded-xl ${variant === 'info' ? 'bg-blue-500/5 border-blue-500/30' : 'bg-amber-500/5 border-amber-500/30'}`}>
         <div className="flex items-center justify-between pb-2 border-b border-border/50">
           <h4 className="font-semibold text-sm">
-            {variante === 'info' ? 'ℹ️ Tarjeta de Información' : '⚠️ Aviso Importante'}
+            {variant === 'info' ? 'ℹ️ Information Card' : '⚠️ Important Alert'}
           </h4>
-          <span className="text-[10px] bg-muted px-2 py-0.5 rounded font-mono">Ranura Header</span>
+          <span className="text-[10px] bg-muted px-2 py-0.5 rounded font-mono">Header Slot</span>
         </div>
         <div className="py-3 text-xs text-muted">
-          Este contenido se inyecta dinámicamente como <code>children</code> sin necesidad de heredar clases de componentes base rígidos.
+          This content is dynamically injected as <code>children</code> without needing rigid base class inheritance.
         </div>
         <div className="pt-2 border-t border-border/50 flex justify-end">
           <button className="px-3 py-1 text-xs font-medium bg-foreground text-background rounded-md">
-            Acción de Ranura Footer
+            Footer Slot Action
           </button>
         </div>
       </div>
@@ -357,16 +357,16 @@ export function CompositionVsInheritanceDemo() {
   );
 }
 
-// Demo 2.7: useRef acceso al DOM y contador de renders
+// Demo 2.7: useRef DOM Access and Render Counter
 export function UseRefDomAndStateDemo() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const contadorRenders = useRef(0);
-  const [, setFuerzaRender] = useState(0);
+  const renderCount = useRef(0);
+  const [, setForceRender] = useState(0);
 
-  // Incrementamos la ref en cada pasada de render
-  contadorRenders.current += 1;
+  // Increment ref on every render cycle
+  renderCount.current += 1;
 
-  const enfocarYSeleccionar = () => {
+  const focusAndSelect = () => {
     inputRef.current?.focus();
     inputRef.current?.select();
   };
@@ -375,81 +375,81 @@ export function UseRefDomAndStateDemo() {
     <div className="p-4 border rounded-xl bg-card space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted">
-          Renders acumulados en este componente: <strong className="font-mono text-primary">{contadorRenders.current}</strong>
+          Accumulated renders in this component: <strong className="font-mono text-primary">{renderCount.current}</strong>
         </p>
         <button
-          onClick={() => setFuerzaRender(f => f + 1)}
+          onClick={() => setForceRender(f => f + 1)}
           className="px-3 py-1 bg-muted hover:bg-muted/80 text-xs font-medium rounded-lg flex items-center gap-1"
         >
-          <RefreshCw className="w-3.5 h-3.5" /> Forzar Re-render
+          Force Re-render
         </button>
       </div>
 
       <div className="flex gap-2">
         <input
           ref={inputRef}
-          defaultValue="Texto enfocado vía useRef imperativo"
+          defaultValue="Focused text via imperative useRef"
           className="flex-1 px-3 py-2 border rounded-lg bg-background text-foreground text-xs font-mono"
         />
         <button
-          onClick={enfocarYSeleccionar}
+          onClick={focusAndSelect}
           className="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90"
         >
-          Poner Foco con Ref
+          Set Focus with Ref
         </button>
       </div>
       <p className="text-[11px] text-muted">
-        Nota: Modificar <code>contadorRenders.current += 1</code> persiste el valor a través de renders sin desencadenar renders infinitos.
+        Note: Mutating <code>renderCount.current += 1</code> persists values across renders without triggering infinite re-render loops.
       </p>
     </div>
   );
 }
 
-// Demo 2.8: Reglas de los hooks y lista enlazada interna
+// Demo 2.8: Rules of Hooks and Internal Linked List
 export function HooksRulesAndLinkedListDemo() {
-  const [paso, setPaso] = useState(0);
+  const [step, setStep] = useState(0);
 
-  const hooksEnlazados = [
-    { indice: 0, tipo: 'useState(cuenta)', valor: '0', siguiente: 'Hook 1' },
-    { indice: 1, tipo: 'useEffect(timer)', valor: 'fn cleanup', siguiente: 'Hook 2' },
-    { indice: 2, tipo: 'useRef(inputRef)', valor: '{ current: HTMLInputElement }', siguiente: 'null (Fin)' }
+  const linkedHooks = [
+    { index: 0, type: 'useState(count)', value: '0', next: 'Hook 1' },
+    { index: 1, type: 'useEffect(timer)', value: 'fn cleanup', next: 'Hook 2' },
+    { index: 2, type: 'useRef(inputRef)', value: '{ current: HTMLInputElement }', next: 'null (End)' }
   ];
 
   return (
     <div className="p-4 border rounded-xl bg-card space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="font-semibold text-xs flex items-center gap-1.5">
-          <Layers className="w-4 h-4 text-primary" /> Visualizador de la Lista Enlazada de Hooks (Fiber.memoizedState)
+          <Layers className="w-4 h-4 text-primary" /> Hook Linked List Visualizer (Fiber.memoizedState)
         </h4>
         <button
-          onClick={() => setPaso(p => (p + 1) % 3)}
+          onClick={() => setStep(p => (p + 1) % 3)}
           className="px-3 py-1 bg-primary text-white text-xs rounded-md"
         >
-          Avanzar Cursor ({paso})
+          Advance Cursor ({step})
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {hooksEnlazados.map((h, i) => (
+        {linkedHooks.map((h, i) => (
           <div
             key={i}
             className={`p-3 border rounded-xl transition-all ${
-              paso === i ? 'border-primary ring-2 ring-primary/20 bg-primary/5' : 'bg-background'
+              step === i ? 'border-primary ring-2 ring-primary/20 bg-primary/5' : 'bg-background'
             }`}
           >
             <div className="flex items-center justify-between text-xs font-mono mb-1">
-              <span className="font-bold text-primary">Slot #{h.indice}</span>
-              {paso === i && <span className="bg-primary text-white text-[10px] px-1.5 py-0.2 rounded">Cursor activo</span>}
+              <span className="font-bold text-primary">Slot #{h.index}</span>
+              {step === i && <span className="bg-primary text-white text-[10px] px-1.5 py-0.2 rounded">Active cursor</span>}
             </div>
-            <p className="text-xs font-semibold">{h.tipo}</p>
-            <p className="text-[11px] text-muted font-mono mt-1">Valor: {h.valor}</p>
-            <p className="text-[10px] text-muted mt-2 border-t pt-1">Siguiente: {h.siguiente}</p>
+            <p className="text-xs font-semibold">{h.type}</p>
+            <p className="text-[11px] text-muted font-mono mt-1">Value: {h.value}</p>
+            <p className="text-[10px] text-muted mt-2 border-t pt-1">Next: {h.next}</p>
           </div>
         ))}
       </div>
 
       <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs text-amber-800 dark:text-amber-200">
-        Si un hook se colocara dentro de un <code>if (condicion)</code>, en el render donde la condición fuera falsa el slot se omitiría y el cursor leería el dato del hook contiguo, rompiendo la aplicación por completo.
+        If a hook were wrapped inside an <code>if (condition)</code>, any render where the condition evaluates to false would omit the slot, causing the cursor to read subsequent hook state and corrupting the entire component.
       </div>
     </div>
   );

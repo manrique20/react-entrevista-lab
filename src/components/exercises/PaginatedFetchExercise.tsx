@@ -22,15 +22,15 @@ export function PaginatedFetchExercise() {
     setCargando(true);
     setError(null);
 
-    // Simulación de endpoint paginado
+    // Simulated paginated endpoint
     const timer = setTimeout(() => {
       if (!activo) return;
 
-      // Generamos 3 posts dinámicos por página
+      // 3 dynamic posts per page
       const nuevosPosts: PostMock[] = [
-        { id: (pagina - 1) * 3 + 1, title: `Capítulo ${(pagina - 1) * 3 + 1}: Arquitectura React en Producción`, body: 'Estrategias de escalado y decoupling.', author: 'Equipo React' },
-        { id: (pagina - 1) * 3 + 2, title: `Capítulo ${(pagina - 1) * 3 + 2}: Concurrencia y Suspense`, body: 'Transiciones de prioridad y Server Components.', author: 'Ingeniería Vercel' },
-        { id: (pagina - 1) * 3 + 3, title: `Capítulo ${(pagina - 1) * 3 + 3}: Optimización de Core Web Vitals`, body: 'Mejoras de INP y prevención de CLS.', author: 'Google Chrome Devs' }
+        { id: (pagina - 1) * 3 + 1, title: `Chapter ${(pagina - 1) * 3 + 1}: React Architecture in Production`, body: 'Scaling and decoupling strategies.', author: 'React Team' },
+        { id: (pagina - 1) * 3 + 2, title: `Chapter ${(pagina - 1) * 3 + 2}: Concurrency and Suspense`, body: 'Priority transitions and Server Components.', author: 'Vercel Engineering' },
+        { id: (pagina - 1) * 3 + 3, title: `Chapter ${(pagina - 1) * 3 + 3}: Core Web Vitals Optimization`, body: 'INP improvements and CLS prevention.', author: 'Google Chrome Devs' }
       ];
 
       setPosts(nuevosPosts);
@@ -47,8 +47,8 @@ export function PaginatedFetchExercise() {
     <div className="p-5 border rounded-2xl bg-card space-y-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
         <div>
-          <h3 className="font-bold text-base">Ejercicio 4: Fetch de Datos con Paginación</h3>
-          <p className="text-xs text-muted">Evalúa estados `isLoading`, `error`, `data`, paginación y banderas de montaje.</p>
+          <h3 className="font-bold text-base">Exercise 4: Data Fetching with Pagination</h3>
+          <p className="text-xs text-muted">Evaluates `isLoading`, `error`, `data` states, pagination, and mount flags.</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -59,7 +59,7 @@ export function PaginatedFetchExercise() {
             <ChevronLeft className="w-4 h-4" />
           </button>
           <span className="text-xs font-mono font-semibold px-2">
-            Página {pagina} de {totalPaginas}
+            Page {pagina} of {totalPaginas}
           </span>
           <button
             onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))}
@@ -74,7 +74,7 @@ export function PaginatedFetchExercise() {
       {cargando ? (
         <div className="p-10 text-center flex flex-col items-center justify-center gap-2 text-xs text-muted">
           <Loader2 className="w-5 h-5 text-primary animate-spin" />
-          <span>Obteniendo página #{pagina}...</span>
+          <span>Fetching page #{pagina}...</span>
         </div>
       ) : error ? (
         <div className="p-4 border border-red-500/30 bg-red-500/10 rounded-xl text-xs text-red-600 flex items-center gap-2">
