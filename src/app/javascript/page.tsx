@@ -99,7 +99,7 @@ export default function JavascriptHomePage() {
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/80 bg-card hover:bg-muted text-xs font-bold text-foreground transition-all"
             >
               <Code2 className="w-4 h-4 text-amber-500" />
-              <span>Ejercicios E1–E17</span>
+              <span>Ejercicios ({jsExercisesData.length})</span>
             </Link>
 
             <Link

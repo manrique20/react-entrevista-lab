@@ -74,7 +74,7 @@ export function Navbar() {
       return [
         { href: '/javascript', label: 'Niveles 1-8', icon: Layers },
         { href: '/javascript/acertijos', label: 'Acertijos ¿Qué imprime?', icon: HelpCircle },
-        { href: '/javascript/ejercicios', label: 'Retos E1–E17', icon: Code2 },
+        { href: '/javascript/ejercicios', label: 'Retos Algoritmos', icon: Code2 },
         { href: '/javascript/checklist', label: 'Checklist JS', icon: CheckSquare }
       ];
     }
@@ -82,6 +82,7 @@ export function Navbar() {
     if (isReactTrack) {
       return [
         { href: '/react', label: 'Niveles 1-8', icon: Layers },
+        { href: '/react/acertijos', label: 'Acertijos React', icon: Sparkles },
         { href: '/preguntas', label: 'Preguntas Senior', icon: HelpCircle },
         { href: '/ejercicios', label: 'Ejercicios React', icon: Code2 },
         { href: '/checklist', label: 'Checklist React', icon: CheckSquare }

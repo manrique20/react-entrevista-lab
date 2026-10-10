@@ -23,11 +23,17 @@ import { LEVELS } from '@/data/levelsData';
 import { jsLevelsData } from '@/data/javascript/levelsData';
 import { allJsTopics } from '@/data/javascript/topicsData';
 import { TOPICS } from '@/data/topicsData';
+import { jsRiddlesData } from '@/data/javascript/riddlesData';
+import { jsExercisesData } from '@/data/javascript/exercisesData';
+import { reactRiddlesData } from '@/data/reactRiddlesData';
+import { INTERVIEW_QUESTIONS } from '@/data/interviewQuestions';
+import { EXERCISES } from '@/data/exercisesData';
 
 export default function UnifiedPortalHub() {
   const [reactCompleted, setReactCompleted] = useState(0);
   const [jsCompleted, setJsCompleted] = useState(0);
   const [jsRiddlesCompleted, setJsRiddlesCompleted] = useState(0);
+  const [reactRiddlesCompleted, setReactRiddlesCompleted] = useState(0);
   const [jsExercisesCompleted, setJsExercisesCompleted] = useState(0);
 
   useEffect(() => {
@@ -41,6 +47,9 @@ export default function UnifiedPortalHub() {
 
         const savedRiddles = localStorage.getItem('js_riddles_mastered');
         if (savedRiddles) setJsRiddlesCompleted(JSON.parse(savedRiddles).length);
+
+        const savedReactRiddles = localStorage.getItem('react_riddles_mastered');
+        if (savedReactRiddles) setReactRiddlesCompleted(JSON.parse(savedReactRiddles).length);
 
         const savedExercises = localStorage.getItem('js_exercises_completed');
         if (savedExercises) setJsExercisesCompleted(JSON.parse(savedExercises).length);
@@ -95,11 +104,12 @@ export default function UnifiedPortalHub() {
               style={{ width: `${globalPercent}%` }}
             />
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-muted text-center pt-1 font-medium">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px] text-muted text-center pt-1 font-medium">
             <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">React: {reactCompleted}/79</span>
             <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">JS Core: {jsCompleted}/81</span>
-            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Acertijos: {jsRiddlesCompleted}/12</span>
-            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Retos: {jsExercisesCompleted}/17</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Acertijos JS: {jsRiddlesCompleted}/{jsRiddlesData.length}</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Acertijos React: {reactRiddlesCompleted}/{reactRiddlesData.length}</span>
+            <span className="p-1.5 rounded-xl bg-muted/40 border border-border/60">Retos JS: {jsExercisesCompleted}/{jsExercisesData.length}</span>
           </div>
         </div>
       </section>
@@ -145,15 +155,15 @@ export default function UnifiedPortalHub() {
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <HelpCircle className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span><strong>9 Preguntas</strong> Senior</span>
+                  <span><strong>{INTERVIEW_QUESTIONS.length} Preguntas</strong> Senior</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <Code2 className="w-4 h-4 text-blue-500 shrink-0" />
-                  <span><strong>11 Ejercicios</strong> interactivos</span>
+                  <span><strong>{EXERCISES.length} Ejercicios</strong> interactivos</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
-                  <CheckSquare className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span>Checklist con progreso</span>
+                  <Sparkles className="w-4 h-4 text-cyan-500 shrink-0" />
+                  <span><strong>{reactRiddlesData.length} Acertijos</strong> ¿Qué renderiza?</span>
                 </div>
               </div>
             </div>
@@ -167,12 +177,15 @@ export default function UnifiedPortalHub() {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
 
-              <div className="flex items-center justify-center gap-4 text-xs font-semibold text-muted">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-muted">
+                <Link href="/react/acertijos" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  Acertijos React &gt;
+                </Link>
                 <Link href="/preguntas" className="hover:text-foreground hover:underline">
                   Preguntas Senior &gt;
                 </Link>
                 <Link href="/ejercicios" className="hover:text-foreground hover:underline">
-                  Ejercicios React &gt;
+                  Ejercicios ({EXERCISES.length}) &gt;
                 </Link>
                 <Link href="/checklist" className="hover:text-foreground hover:underline">
                   Checklist React &gt;
@@ -198,7 +211,7 @@ export default function UnifiedPortalHub() {
                   JavaScript Core &amp; Moderno (ES6+)
                 </h3>
                 <p className="text-xs sm:text-sm text-muted leading-relaxed mt-2">
-                  De los misterios del motor V8 (hoisting, coerción, microtareas y event loop) a acertijos trampa y los 17 retos canónicos de algoritmos y polyfills.
+                  De los misterios del motor V8 (hoisting, coerción, microtareas y event loop) a acertijos trampa y los {jsExercisesData.length} retos canónicos de algoritmos y polyfills.
                 </p>
               </div>
 
@@ -210,11 +223,11 @@ export default function UnifiedPortalHub() {
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <HelpCircle className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span><strong>12 Acertijos</strong> ¿Qué imprime?</span>
+                  <span><strong>{jsRiddlesData.length} Acertijos</strong> ¿Qué imprime?</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <Code2 className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span><strong>17 Retos</strong> con test suite</span>
+                  <span><strong>{jsExercisesData.length} Retos</strong> con test suite</span>
                 </div>
                 <div className="p-3 rounded-xl bg-card border border-border/80 flex items-center gap-2">
                   <CheckSquare className="w-4 h-4 text-emerald-500 shrink-0" />
@@ -232,12 +245,12 @@ export default function UnifiedPortalHub() {
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
 
-              <div className="flex items-center justify-center gap-4 text-xs font-semibold text-muted">
-                <Link href="/javascript/acertijos" className="hover:text-foreground hover:underline">
-                  Acertijos &gt;
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-muted">
+                <Link href="/javascript/acertijos" className="text-amber-600 dark:text-amber-400 hover:underline">
+                  Acertijos ({jsRiddlesData.length}) &gt;
                 </Link>
                 <Link href="/javascript/ejercicios" className="hover:text-foreground hover:underline">
-                  Retos E1–E17 &gt;
+                  Retos ({jsExercisesData.length}) &gt;
                 </Link>
                 <Link href="/javascript/checklist" className="hover:text-foreground hover:underline">
                   Checklist JS &gt;
@@ -254,7 +267,27 @@ export default function UnifiedPortalHub() {
           Herramientas y Secciones Rápidas
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <Link
+            href="/react/acertijos"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-blue-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
+          >
+            <div className="space-y-1">
+              <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                ⚛
+              </div>
+              <h3 className="text-sm font-bold text-foreground group-hover:text-blue-500 transition-colors">
+                Acertijos React
+              </h3>
+              <p className="text-xs text-muted">
+                {reactRiddlesData.length} enigmas interactivos: batching, keys y closures.
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-blue-500 flex items-center gap-1 pt-2">
+              Resolver ahora &gt;
+            </span>
+          </Link>
+
           <Link
             href="/javascript/acertijos"
             className="p-5 rounded-2xl border border-border/80 bg-card hover:border-amber-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
@@ -264,10 +297,10 @@ export default function UnifiedPortalHub() {
                 ?
               </div>
               <h3 className="text-sm font-bold text-foreground group-hover:text-amber-500 transition-colors">
-                Acertijos &quot;¿Qué imprime?&quot;
+                Acertijos JS &quot;¿Qué imprime?&quot;
               </h3>
               <p className="text-xs text-muted">
-                12 acertijos con simulación y trampa de entrevista explicada.
+                {jsRiddlesData.length} acertijos: coerción, hoisting y event loop.
               </p>
             </div>
             <span className="text-[11px] font-bold text-amber-500 flex items-center gap-1 pt-2">
@@ -277,17 +310,17 @@ export default function UnifiedPortalHub() {
 
           <Link
             href="/javascript/ejercicios"
-            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-amber-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-indigo-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
           >
             <div className="space-y-1">
               <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-bold text-xs">
                 &lt;/&gt;
               </div>
               <h3 className="text-sm font-bold text-foreground group-hover:text-indigo-500 transition-colors">
-                17 Retos de Algoritmos JS
+                {jsExercisesData.length} Retos Algoritmos JS
               </h3>
               <p className="text-xs text-muted">
-                Debounce, throttle, deepClone con ciclos, LRU y polyfills.
+                reverseSentence, debounce, deepClone, LRU y polyfills.
               </p>
             </div>
             <span className="text-[11px] font-bold text-indigo-500 flex items-center gap-1 pt-2">
@@ -297,20 +330,20 @@ export default function UnifiedPortalHub() {
 
           <Link
             href="/preguntas"
-            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-blue-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
+            className="p-5 rounded-2xl border border-border/80 bg-card hover:border-purple-500/40 hover:bg-muted/20 transition-all flex flex-col justify-between space-y-2 group"
           >
             <div className="space-y-1">
-              <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center font-bold text-xs">
-                9
+              <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
+                {INTERVIEW_QUESTIONS.length}
               </div>
-              <h3 className="text-sm font-bold text-foreground group-hover:text-blue-500 transition-colors">
+              <h3 className="text-sm font-bold text-foreground group-hover:text-purple-500 transition-colors">
                 Preguntas Senior React
               </h3>
               <p className="text-xs text-muted">
-                Simulador con red flags, respuestas canónicas y trampas.
+                Simulador con red flags, Server Actions y trampas.
               </p>
             </div>
-            <span className="text-[11px] font-bold text-blue-500 flex items-center gap-1 pt-2">
+            <span className="text-[11px] font-bold text-purple-500 flex items-center gap-1 pt-2">
               Simular entrevista &gt;
             </span>
           </Link>
@@ -321,13 +354,13 @@ export default function UnifiedPortalHub() {
           >
             <div className="space-y-1">
               <div className="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center font-bold text-xs">
-                11
+                {EXERCISES.length}
               </div>
               <h3 className="text-sm font-bold text-foreground group-hover:text-cyan-500 transition-colors">
-                Ejercicios Prácticos React
+                Ejercicios React
               </h3>
               <p className="text-xs text-muted">
-                Virtualización, debounce search, form con Zod y concurrencia.
+                Optimistic UI, Star Rating, Zod, Debounce y Virtualización.
               </p>
             </div>
             <span className="text-[11px] font-bold text-cyan-500 flex items-center gap-1 pt-2">

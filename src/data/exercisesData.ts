@@ -134,5 +134,31 @@ export const EXERCISES: ExerciseItem[] = [
       'Define el schema con z.object({ email: z.string().email(), ... }).',
       'Usa zodResolver(schema) con useForm para vincular la validación fuertemente tipada.'
     ]
+  },
+  {
+    id: 'ex12',
+    title: '12. UI Optimista con Rollback ante Fallos de Servidor',
+    description: 'Implementa el patrón de actualización optimista en un post (Like / Bookmark y nuevos comentarios). La interfaz actualiza el estado inmediatamente (0ms) y, si la petición simulada falla tras 1.5s, revierte automáticamente al estado anterior con notificación de error y botón de reintento.',
+    difficulty: 'Avanzado',
+    topicsTested: ['Actualizaciones optimistas', 'Manejo de rollback', 'Simulación de fallos de red', 'useOptimistic'],
+    componentKey: 'OptimisticUpdateExercise',
+    hints: [
+      'Guarda una copia del estado anterior antes de aplicar la actualización optimista para restaurarla en caso de error.',
+      'Usa estados de sincronización visual (ej. badge "Sincronizando...") para transparentar el proceso.',
+      'En React 19 este patrón se simplifica con el hook useOptimistic.'
+    ]
+  },
+  {
+    id: 'ex13',
+    title: '13. Calificación por Estrellas Accesible (WAI-ARIA & Teclado)',
+    description: 'Componente interactivo de rating con estrellas (1 a 5). Incluye previsualización fluida al pasar el mouse (hover), selección persistente, botón para limpiar y soporte completo de teclado (flechas izquierda/derecha, inicio/fin, Enter/Espacio) con roles y atributos aria-checked.',
+    difficulty: 'Intermedio',
+    topicsTested: ['Accesibilidad WAI-ARIA', 'Manejo de eventos onKeyDown', 'role="radiogroup"', 'Gestión de hover vs selection'],
+    componentKey: 'StarRatingExercise',
+    hints: [
+      'Separa el estado rating (seleccionado) del estado hoverRating (previsualización momentánea).',
+      'Usa role="radiogroup" en el contenedor y role="radio" en cada estrella con aria-checked y tabIndex.',
+      'Controla ArrowRight/ArrowLeft para decrementar o incrementar la calificación accesiblemente.'
+    ]
   }
 ];

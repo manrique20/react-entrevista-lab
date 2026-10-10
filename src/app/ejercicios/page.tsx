@@ -13,6 +13,8 @@ import { AccordionExercise } from '@/components/exercises/AccordionExercise';
 import { AutocompleteExercise } from '@/components/exercises/AutocompleteExercise';
 import { CustomHooksExercise } from '@/components/exercises/CustomHooksExercise';
 import { ValidatedFormExercise } from '@/components/exercises/ValidatedFormExercise';
+import { OptimisticUpdateExercise } from '@/components/exercises/OptimisticUpdateExercise';
+import { StarRatingExercise } from '@/components/exercises/StarRatingExercise';
 import {
   Code2,
   CheckCircle2,
@@ -32,7 +34,9 @@ const COMPONENT_MAP: Record<string, React.ElementType> = {
   AccordionExercise,
   AutocompleteExercise,
   CustomHooksExercise,
-  ValidatedFormExercise
+  ValidatedFormExercise,
+  OptimisticUpdateExercise,
+  StarRatingExercise
 };
 
 export default function ExercisesPage() {
@@ -53,7 +57,7 @@ export default function ExercisesPage() {
           Ejercicios de Código Frecuentes en Entrevistas
         </h1>
         <p className="text-xs sm:text-sm text-muted max-w-4xl leading-relaxed break-words">
-          Los 11 ejercicios prácticos que los entrevistadores solicitan construir en vivo durante pruebas técnicas (Live Coding y Take-Home). Interactúa con las implementaciones completas y analiza sus conceptos clave.
+          Los {EXERCISES.length} ejercicios prácticos que los entrevistadores solicitan construir en vivo durante pruebas técnicas (Live Coding y Take-Home). Interactúa con las implementaciones completas y analiza sus conceptos clave.
         </p>
       </div>
 

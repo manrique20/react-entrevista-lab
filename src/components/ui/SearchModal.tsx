@@ -7,6 +7,9 @@ import { TOPICS } from '@/data/topicsData';
 import { allJsTopics } from '@/data/javascript/topicsData';
 import { jsRiddlesData } from '@/data/javascript/riddlesData';
 import { jsExercisesData } from '@/data/javascript/exercisesData';
+import { reactRiddlesData } from '@/data/reactRiddlesData';
+import { INTERVIEW_QUESTIONS } from '@/data/interviewQuestions';
+import { EXERCISES } from '@/data/exercisesData';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -54,7 +57,64 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       }
     }
 
-    // 2. Search JavaScript Topics
+    // 2. Search React Riddles
+    for (const rr of reactRiddlesData) {
+      if (
+        rr.title.toLowerCase().includes(term) ||
+        rr.id.toLowerCase().includes(term) ||
+        rr.explanation.toLowerCase().includes(term) ||
+        (rr.topicCategory && rr.topicCategory.toLowerCase().includes(term))
+      ) {
+        matches.push({
+          id: `react-riddle-${rr.id}`,
+          title: `${rr.id}: ${rr.title}`,
+          subtitle: `Acertijo React • ${rr.topicCategory || 'Mental Model'}`,
+          href: `/react/acertijos`,
+          badge: 'Acertijo React',
+          badgeStyle: 'bg-blue-600/10 text-blue-600 dark:text-blue-400 border-blue-600/20'
+        });
+      }
+    }
+
+    // 3. Search React Exercises
+    for (const re of EXERCISES) {
+      if (
+        re.title.toLowerCase().includes(term) ||
+        re.id.toLowerCase().includes(term) ||
+        re.description.toLowerCase().includes(term) ||
+        re.topicsTested.some(tag => tag.toLowerCase().includes(term))
+      ) {
+        matches.push({
+          id: `react-exercise-${re.id}`,
+          title: re.title,
+          subtitle: `Ejercicio React • ${re.difficulty}`,
+          href: `/ejercicios`,
+          badge: 'Ejercicio React',
+          badgeStyle: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20'
+        });
+      }
+    }
+
+    // 4. Search Senior Questions
+    for (const q of INTERVIEW_QUESTIONS) {
+      if (
+        q.question.toLowerCase().includes(term) ||
+        q.id.toLowerCase().includes(term) ||
+        q.category.toLowerCase().includes(term) ||
+        q.seniorAnswer.toLowerCase().includes(term)
+      ) {
+        matches.push({
+          id: `question-${q.id}`,
+          title: q.question,
+          subtitle: `Pregunta Senior • ${q.category}`,
+          href: `/preguntas`,
+          badge: 'Pregunta Senior',
+          badgeStyle: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
+        });
+      }
+    }
+
+    // 5. Search JavaScript Topics
     for (const j of allJsTopics) {
       if (
         j.question.toLowerCase().includes(term) ||
@@ -73,7 +133,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       }
     }
 
-    // 3. Search JS Riddles
+    // 6. Search JS Riddles
     for (const r of jsRiddlesData) {
       if (
         r.title.toLowerCase().includes(term) ||
@@ -86,12 +146,12 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
           subtitle: `Acertijo ¿Qué imprime? • ${r.expectedOutput}`,
           href: `/javascript/acertijos`,
           badge: 'Acertijo JS',
-          badgeStyle: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20'
+          badgeStyle: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
         });
       }
     }
 
-    // 4. Search JS Exercises
+    // 7. Search JS Exercises
     for (const e of jsExercisesData) {
       if (
         e.title.toLowerCase().includes(term) ||

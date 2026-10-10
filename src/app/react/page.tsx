@@ -6,6 +6,7 @@ import { LEVELS } from '@/data/levelsData';
 import { ALL_TOPICS } from '@/data/topicsData';
 import { INTERVIEW_QUESTIONS } from '@/data/interviewQuestions';
 import { EXERCISES } from '@/data/exercisesData';
+import { reactRiddlesData } from '@/data/reactRiddlesData';
 import {
   Boxes,
   Zap,
@@ -22,7 +23,8 @@ import {
   Code2,
   BookOpen,
   Terminal,
-  Trophy
+  Trophy,
+  Atom
 } from 'lucide-react';
 
 const ICONS_MAP: Record<string, React.ElementType> = {
@@ -98,21 +100,28 @@ export default function HomePage() {
               className="px-5 py-2.5 rounded-xl bg-primary text-white text-xs sm:text-sm font-semibold hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 flex items-center gap-2"
             >
               <BookOpen className="w-4 h-4" />
-              <span>Comenzar desde Nivel 1</span>
+              <span>Comenzar Nivel 1</span>
+            </Link>
+            <Link
+              href="/react/acertijos"
+              className="px-5 py-2.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-700 dark:text-blue-300 hover:bg-blue-500/25 text-xs sm:text-sm font-bold transition-colors flex items-center gap-2"
+            >
+              <Atom className="w-4 h-4 text-blue-500 animate-spin-slow" />
+              <span>{reactRiddlesData.length} Acertijos React</span>
             </Link>
             <Link
               href="/preguntas"
               className="px-5 py-2.5 rounded-xl border border-border hover:bg-muted text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
             >
               <HelpCircle className="w-4 h-4 text-purple-500" />
-              <span>Simular Preguntas Clásicas</span>
+              <span>{INTERVIEW_QUESTIONS.length} Preguntas Senior</span>
             </Link>
             <Link
               href="/ejercicios"
               className="px-5 py-2.5 rounded-xl border border-border hover:bg-muted text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2"
             >
               <Code2 className="w-4 h-4 text-emerald-500" />
-              <span>11 Ejercicios Prácticos</span>
+              <span>{EXERCISES.length} Ejercicios Prácticos</span>
             </Link>
           </div>
         </div>
@@ -134,26 +143,26 @@ export default function HomePage() {
 
       {/* Métricas destacadas */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-5 border rounded-2xl bg-card text-center sm:text-left space-y-1">
+        <Link href="/nivel/1" className="p-5 border rounded-2xl bg-card hover:border-primary/50 transition-colors text-center sm:text-left space-y-1 block">
           <span className="text-2xl sm:text-3xl font-extrabold text-blue-500 font-mono">8</span>
           <p className="text-xs font-semibold text-foreground">Niveles Estructurados</p>
-          <p className="text-[11px] text-muted">De Fundamentos a Internos Fiber</p>
-        </div>
-        <div className="p-5 border rounded-2xl bg-card text-center sm:text-left space-y-1">
-          <span className="text-2xl sm:text-3xl font-extrabold text-indigo-500 font-mono">79</span>
-          <p className="text-xs font-semibold text-foreground">Tópicos con Demos</p>
-          <p className="text-[11px] text-muted">Laboratorios y tips de entrevista</p>
-        </div>
-        <div className="p-5 border rounded-2xl bg-card text-center sm:text-left space-y-1">
-          <span className="text-2xl sm:text-3xl font-extrabold text-purple-500 font-mono">9</span>
-          <p className="text-xs font-semibold text-foreground">Preguntas Clásicas</p>
+          <p className="text-[11px] text-muted">79 Tópicos con Demos</p>
+        </Link>
+        <Link href="/react/acertijos" className="p-5 border rounded-2xl bg-card hover:border-cyan-500/50 transition-colors text-center sm:text-left space-y-1 block">
+          <span className="text-2xl sm:text-3xl font-extrabold text-cyan-500 font-mono">{reactRiddlesData.length}</span>
+          <p className="text-xs font-semibold text-foreground">Acertijos React</p>
+          <p className="text-[11px] text-muted">¿Qué renderiza? con opciones</p>
+        </Link>
+        <Link href="/preguntas" className="p-5 border rounded-2xl bg-card hover:border-purple-500/50 transition-colors text-center sm:text-left space-y-1 block">
+          <span className="text-2xl sm:text-3xl font-extrabold text-purple-500 font-mono">{INTERVIEW_QUESTIONS.length}</span>
+          <p className="text-xs font-semibold text-foreground">Preguntas Senior</p>
           <p className="text-[11px] text-muted">Simulador con trampas y red flags</p>
-        </div>
-        <div className="p-5 border rounded-2xl bg-card text-center sm:text-left space-y-1">
-          <span className="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">11</span>
+        </Link>
+        <Link href="/ejercicios" className="p-5 border rounded-2xl bg-card hover:border-emerald-500/50 transition-colors text-center sm:text-left space-y-1 block">
+          <span className="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">{EXERCISES.length}</span>
           <p className="text-xs font-semibold text-foreground">Ejercicios de Código</p>
-          <p className="text-[11px] text-muted">Los retos más frecuentes en pruebas</p>
-        </div>
+          <p className="text-[11px] text-muted">Retos prácticos interactivos</p>
+        </Link>
       </section>
 
       {/* Grid de los 8 Niveles */}

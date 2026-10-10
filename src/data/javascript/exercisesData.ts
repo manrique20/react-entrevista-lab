@@ -211,15 +211,51 @@ export const jsExercisesData: JsImplementationExercise[] = [
   },
   {
     "id": "E17",
-    "title": "Aplanar un objeto anidado",
+    "title": "Aplanar un objeto anidado (Flatten Object)",
     "category": "Objetos",
-    "description": "---",
-    "solutionCode": "function aplanarObjeto(obj, prefijo = '', salida = {}) {\n  for (const [k, v] of Object.entries(obj)) {\n    const clave = prefijo ? `${prefijo}.${k}` : k;\n    if (v && typeof v === 'object' && !Array.isArray(v)) aplanarObjeto(v, clave, salida);\n    else salida[clave] = v;\n  }\n  return salida;\n}\naplanarObjeto({ a: 1, b: { c: 2, d: { e: 3 } } }); // { a: 1, 'b.c': 2, 'b.d.e': 3 }",
-    "testCasesCode": "// Test suite aplanarObjeto\nconst plano = aplanarObjeto({ a: 1, b: { c: 2, d: { e: 3 } } });\nconsole.assert(plano['b.c'] === 2 && plano['b.d.e'] === 3, 'Aplanar falló');\nconsole.log('✓ aplanarObjeto resultado: ' + JSON.stringify(plano));",
+    "description": "Convierte un objeto con anidación arbitraria en un objeto plano cuyas propiedades reflejen la ruta de acceso jerárquica unida por puntos (ej: 'user.address.city').",
+    "solutionCode": "function aplanarObjeto(obj, prefijo = '', salida = {}) {\n  for (const [k, v] of Object.entries(obj)) {\n    const clave = prefijo ? `${prefijo}.${k}` : k;\n    if (v && typeof v === 'object' && !Array.isArray(v)) {\n      aplanarObjeto(v, clave, salida);\n    } else {\n      salida[clave] = v;\n    }\n  }\n  return salida;\n}\n\nconst obj = { a: 1, b: { c: 2, d: { e: 3 } } };\nconsole.log(aplanarObjeto(obj));",
+    "testCasesCode": "// Test suite aplanarObjeto\nconst plano = aplanarObjeto({ a: 1, b: { c: 2, d: { e: 3 } } });\nconsole.assert(plano['a'] === 1, 'Clave raíz falló');\nconsole.assert(plano['b.c'] === 2 && plano['b.d.e'] === 3, 'Anidación profunda falló');\nconsole.log('✓ aplanarObjeto resultado: ' + JSON.stringify(plano));",
     "hints": [
-      "Presta atención al manejo de argumentos y al contexto 'this'.",
-      "Considera casos borde como entradas nulas o estructuras vacías.",
-      "Asegúrate de no mutar objetos inesperadamente."
+      "Usa recursión pasando un prefijo acumulador.",
+      "Comprueba que el valor sea un objeto no nulo y no sea un array antes de descender recursivamente."
+    ]
+  },
+  {
+    "id": "E18",
+    "title": "reverseSentence (Invertir el orden de las palabras)",
+    "category": "Algoritmos",
+    "description": "Escribe una función que tome una oración (string) como entrada y devuelva un nuevo string con el orden de las palabras invertido, normalizando espacios intermedios y eliminando espacios en los extremos.",
+    "solutionCode": "const reverseSentence = (sentence) => {\n  if (!sentence || typeof sentence !== 'string') return '';\n  return sentence.trim().split(/\\s+/).reverse().join(' ');\n};\n\nconsole.log(\n  'Resultado:',\n  reverseSentence('Colorless green ideas sleep furiously')\n);",
+    "testCasesCode": "// Test suite para reverseSentence\nconst test1 = reverseSentence('Colorless green ideas sleep furiously') === 'furiously sleep ideas green Colorless';\nconst test2 = reverseSentence('  hola   mundo  ') === 'mundo hola';\nconst test3 = reverseSentence('JavaScript') === 'JavaScript';\nconst test4 = reverseSentence('') === '';\n\nconsole.assert(test1, 'Test 1 falló con frase del reto');\nconsole.assert(test2, 'Test 2 falló con espacios múltiples');\nconsole.assert(test3, 'Test 3 falló con palabra única');\nconsole.assert(test4, 'Test 4 falló con string vacío');\n\nconsole.log('✓ reverseSentence superó todos los casos de prueba!');",
+    "hints": [
+      "Usa .trim() al inicio para eliminar espacios accidentales en los bordes.",
+      "Divide mediante la expresión regular /\\s+/ para considerar cualquier secuencia de uno o más espacios, tabs o saltos de línea.",
+      "Aplica .reverse() y finalmente une con .join(' ')."
+    ]
+  },
+  {
+    "id": "E19",
+    "title": "groupBy (Agrupar elementos de colección)",
+    "category": "Funcional",
+    "description": "Implementa una función de agrupación que clasifique los elementos de un array en un objeto según una clave de propiedad o el resultado devuelto por una función callback (equivalente canónico al nuevo Object.groupBy de ES2024).",
+    "solutionCode": "function groupBy(items, callbackOClave) {\n  const resultado = {};\n  const obtenerClave = typeof callbackOClave === 'function'\n    ? callbackOClave\n    : (item) => item[callbackOClave];\n\n  for (const item of items) {\n    const clave = String(obtenerClave(item));\n    if (!resultado[clave]) {\n      resultado[clave] = [];\n    }\n    resultado[clave].push(item);\n  }\n  return resultado;\n}\n\nconst productos = [\n  { nombre: 'Manzana', categoria: 'Fruta' },\n  { nombre: 'Zanahoria', categoria: 'Verdura' },\n  { nombre: 'Plátano', categoria: 'Fruta' }\n];\nconsole.log(groupBy(productos, 'categoria'));",
+    "testCasesCode": "// Test suite para groupBy\nconst nums = [1.3, 2.1, 2.4];\nconst agNums = groupBy(nums, Math.floor);\nconsole.assert(agNums['1'].length === 1 && agNums['2'].length === 2, 'groupBy con función falló');\n\nconst personas = [{ edad: 20 }, { edad: 30 }, { edad: 20 }];\nconst agEdad = groupBy(personas, 'edad');\nconsole.assert(agEdad['20'].length === 2 && agEdad['30'].length === 1, 'groupBy con clave falló');\nconsole.log('✓ groupBy superó todos los tests con funciones y claves!');",
+    "hints": [
+      "Soporta tanto una clave en formato string como una función selectora.",
+      "Inicializa el array resultado[clave] = [] si la clave aún no existe antes de hacer push."
+    ]
+  },
+  {
+    "id": "E20",
+    "title": "deepEqual (Comparación estructural profunda)",
+    "category": "Objetos",
+    "description": "Implementa una función para comparar si dos valores (incluyendo objetos complejos y arrays anidados) son estructuralmente equivalentes sin importar el orden de sus claves.",
+    "solutionCode": "function deepEqual(a, b) {\n  if (Object.is(a, b)) return true;\n\n  if (a === null || typeof a !== 'object' || b === null || typeof b !== 'object') {\n    return false;\n  }\n\n  if (Array.isArray(a) !== Array.isArray(b)) return false;\n\n  const clavesA = Object.keys(a);\n  const clavesB = Object.keys(b);\n\n  if (clavesA.length !== clavesB.length) return false;\n\n  for (const clave of clavesA) {\n    if (!Object.prototype.hasOwnProperty.call(b, clave)) return false;\n    if (!deepEqual(a[clave], b[clave])) return false;\n  }\n\n  return true;\n}\n\nconsole.log(deepEqual({ x: [1, 2], y: { z: 3 } }, { x: [1, 2], y: { z: 3 } }));",
+    "testCasesCode": "// Test suite deepEqual\nconsole.assert(deepEqual({ a: 1, b: 2 }, { b: 2, a: 1 }) === true, 'Objetos equivalentes falló');\nconsole.assert(deepEqual([1, [2, 3]], [1, [2, 3]]) === true, 'Arrays equivalentes falló');\nconsole.assert(deepEqual({ a: 1 }, { a: 2 }) === false, 'Objetos distintos falló');\nconsole.assert(deepEqual(null, {}) === false, 'null vs objeto falló');\nconsole.log('✓ deepEqual superó todos los casos de igualdad profunda!');",
+    "hints": [
+      "Comienza con Object.is(a, b) para manejar primitivos y la identidad de NaN.",
+      "Verifica que ambos valores tengan el mismo número de claves y que cada clave exista y coincida recursivamente."
     ]
   }
 ];
