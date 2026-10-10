@@ -14,9 +14,9 @@ let b = 2;`,
     trapExplanation:
       'Classic interview trap: Believing let and const are not hoisted. They are hoisted, but accessing them before their declaration line throws a ReferenceError.',
     options: [
-      'undefined then ReferenceError (TDZ for b)',
       'undefined then undefined',
       'ReferenceError immediately on line 1',
+      'undefined then ReferenceError (TDZ for b)',
       '1 then 2'
     ]
   },
@@ -60,10 +60,10 @@ console.log(obj.arrow());`,
     trapExplanation:
       'Detaching a method from an object breaks its implicit this binding. Arrow functions never have their own this.',
     options: [
-      `'Ana', undefined, undefined`,
       `'Ana', 'Ana', 'Ana'`,
       `'Ana', 'Ana', undefined`,
-      `'Ana', TypeError, undefined`
+      `'Ana', TypeError, undefined`,
+      `'Ana', undefined, undefined`
     ]
   },
   {
@@ -103,8 +103,8 @@ console.log('G');`,
       'The executor of new Promise(fn) runs immediately and synchronously on the Call Stack; it is not a microtask.',
     options: [
       'A C E G D F B',
-      'A B C D E F G',
       'A C E G B D F',
+      'A B C D E F G',
       'A E C G D F B'
     ]
   },
@@ -118,9 +118,9 @@ console.log('G');`,
     trapExplanation:
       'Passing functions accepting optional parameters directly into .map() causes unintended side effects due to the index argument.',
     options: [
-      '[1, NaN, NaN]',
       '[1, 2, 3]',
       '[1, 2, NaN]',
+      '[1, NaN, NaN]',
       '[NaN, NaN, NaN]'
     ]
   },
@@ -135,10 +135,10 @@ console.log([10, 9, 1, 100].sort((a, b) => a - b));`,
     trapExplanation:
       '.sort() does NOT sort numbers numerically by default in JavaScript; it sorts them as lexicographical strings and mutates the original array in place.',
     options: [
-      '[1, 10, 100, 9] then [1, 9, 10, 100]',
       '[1, 9, 10, 100] then [1, 9, 10, 100]',
       '[100, 10, 9, 1] then [1, 9, 10, 100]',
-      '[1, 10, 9, 100] then [1, 9, 10, 100]'
+      '[1, 10, 9, 100] then [1, 9, 10, 100]',
+      '[1, 10, 100, 9] then [1, 9, 10, 100]'
     ]
   },
   {
@@ -156,8 +156,8 @@ console.log(Object.is(0, -0));`,
     trapExplanation:
       'NaN is the only value in JavaScript that is not strictly equal (===) to itself.',
     options: [
-      'false, false, true, false, true, false',
       'true, true, true, false, true, false',
+      'false, false, true, false, true, false',
       'false, false, false, false, true, true',
       'false, true, true, true, true, false'
     ]
@@ -179,8 +179,8 @@ counter.withArrow();`,
       'Passing traditional functions as callbacks to setTimeout or event listeners detaches their receiver object.',
     options: [
       'undefined then 0',
-      '0 then 0',
       'undefined then undefined',
+      '0 then 0',
       'TypeError on first call'
     ]
   },
@@ -198,8 +198,8 @@ console.log(f());`,
     trapExplanation:
       'finally does not abort try\'s return value unless the finally block itself issues an explicit return (which would overwrite it).',
     options: [
-      `'finally' then 'try'`,
       `'try' then 'finally'`,
+      `'finally' then 'try'`,
       `'try' only ('finally' skipped after return)`,
       `'finally' only (try return discarded)`
     ]
@@ -217,10 +217,10 @@ console.log(typeof foo);`,
     trapExplanation:
       'function foo() is hoisted along with its full implementation; var foo only hoists the uninitialized identifier.',
     options: [
-      `'function' then 'number'`,
       `'undefined' then 'number'`,
       `'function' then 'function'`,
-      `'number' then 'number'`
+      `'number' then 'number'`,
+      `'function' then 'number'`
     ]
   },
   {
@@ -237,8 +237,8 @@ console.log(a.x.y);`,
     trapExplanation:
       'Assuming {...obj} or Object.assign({}, obj) deeply clones nested objects.',
     options: [
-      '2',
       '1',
+      '2',
       'undefined',
       'TypeError: Cannot assign to read only property'
     ]
@@ -259,9 +259,9 @@ console.log(!!(() => null));`,
     trapExplanation:
       'In languages like Python, empty lists [] or dicts {} are falsy. In JavaScript, EVERY object reference is truthy regardless of contents.',
     options: [
-      'true, true, false, true, true, false, true',
       'false, false, false, true, true, false, true',
       'true, true, false, true, false, false, true',
+      'true, true, false, true, true, false, true',
       'false, true, false, true, true, false, false'
     ]
   },
@@ -284,10 +284,10 @@ console.log(copy2[2]);`,
     trapExplanation:
       'Assigning an array or object variable with = never clones; both variables point to the identical heap address.',
     options: [
-      '9, 9, 3',
       '3, 9, 3',
       '9, 9, 9',
-      '3, 9, 5'
+      '3, 9, 5',
+      '9, 9, 3'
     ]
   },
   {
@@ -327,9 +327,9 @@ console.log(6);`,
     trapExplanation:
       'The executor callback passed to new Promise((resolve) => ...) is NOT asynchronous; it executes immediately on the main Call Stack.',
     options: [
-      '1, 2, 6, 4, 3, 5',
       '1, 2, 4, 6, 3, 5',
       '1, 6, 2, 4, 3, 5',
+      '1, 2, 6, 4, 3, 5',
       '1, 2, 6, 3, 5, 4'
     ]
   },
@@ -350,8 +350,8 @@ console.log(a[b]);`,
     trapExplanation:
       'Plain objects cannot use object references as distinct keys without string coercion.',
     options: [
-      '456',
       '123',
+      '456',
       'undefined',
       'TypeError: Invalid object key'
     ]
@@ -371,9 +371,9 @@ console.log(typeof b);`,
     trapExplanation:
       'Never chain variable declarations (var a = b = 3) because the second variable leaks to global scope.',
     options: [
-      `'undefined' and 'number'`,
       `'number' and 'number'`,
       `'undefined' and 'undefined'`,
+      `'undefined' and 'number'`,
       `ReferenceError on console.log(a)`
     ]
   }

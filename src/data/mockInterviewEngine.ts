@@ -123,7 +123,8 @@ export function generateInterviewBattery(
 
   if (track === 'react' || track === 'fullstack') {
     const rRiddles = reactRiddlesData.map((r, idx): SimulatorQuestion => {
-      const correctIdx = r.options.findIndex(opt => opt === r.expectedOutput);
+      const shuffledOptions = [...r.options].sort(() => 0.5 - Math.random());
+      const correctIdx = shuffledOptions.findIndex(opt => opt === r.expectedOutput);
       return {
         id: `sim-riddle-react-${r.id}-${idx}`,
         type: 'riddle',
@@ -134,7 +135,7 @@ export function generateInterviewBattery(
         points: 10,
         prompt: `What exact value will be logged or rendered after execution?`,
         codeSnippet: r.codeSnippet,
-        options: r.options,
+        options: shuffledOptions,
         correctIndex: correctIdx !== -1 ? correctIdx : 0,
         expectedExplanation: r.explanation,
         traps: [r.trapExplanation],
@@ -146,7 +147,8 @@ export function generateInterviewBattery(
 
   if (track === 'javascript' || track === 'fullstack') {
     const jsRiddles = jsRiddlesData.map((r, idx): SimulatorQuestion => {
-      const correctIdx = r.options.findIndex(opt => opt === r.expectedOutput);
+      const shuffledOptions = [...r.options].sort(() => 0.5 - Math.random());
+      const correctIdx = shuffledOptions.findIndex(opt => opt === r.expectedOutput);
       return {
         id: `sim-riddle-js-${r.id}-${idx}`,
         type: 'riddle',
@@ -157,7 +159,7 @@ export function generateInterviewBattery(
         points: 10,
         prompt: `What is the exact console output of this code snippet?`,
         codeSnippet: r.codeSnippet,
-        options: r.options,
+        options: shuffledOptions,
         correctIndex: correctIdx !== -1 ? correctIdx : 0,
         expectedExplanation: r.explanation,
         traps: [r.trapExplanation],

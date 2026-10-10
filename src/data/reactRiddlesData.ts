@@ -27,9 +27,9 @@ export const reactRiddlesData: ReactRiddle[] = [
     trapExplanation:
       'setState schedules a render and does not mutate the count variable synchronously. To accumulate updates within a single event, use functional updates: setCount(prev => prev + 1).',
     options: [
-      'Console logs 0; next render displays 1 on the button',
       'Console logs 3; next render displays 3 on the button',
       'Console logs 1; next render displays 3 on the button',
+      'Console logs 0; next render displays 1 on the button',
       'Console logs 0; next render displays 3 on the button'
     ]
   },
@@ -62,8 +62,8 @@ export const reactRiddlesData: ReactRiddle[] = [
     trapExplanation:
       'Using indices as keys corrupts the internal state of uncontrolled inputs, checkboxes, and CSS transitions whenever lists are reordered, filtered, or deleted.',
     options: [
-      'Rendered text shows B and C, but inputs retain "Text A" and "Text B"',
       'Inputs update correctly to "Text B" and "Text C"',
+      'Rendered text shows B and C, but inputs retain "Text A" and "Text B"',
       'A reconciliation runtime error is thrown due to missing indices',
       'All inputs reset to blank values'
     ]
@@ -90,10 +90,10 @@ export const reactRiddlesData: ReactRiddle[] = [
     trapExplanation:
       'To prevent stale closures in intervals without resetting the timer every second, use functional state updates: setSeconds(prev => prev + 1).',
     options: [
-      'Increments to 1 after 1 second, then remains frozen at 1 indefinitely',
       'Increments every second: 1, 2, 3, 4... without issue',
       'Increments exponentially due to duplicate timers',
-      'Throws a React runtime lifecycle error'
+      'Throws a React runtime lifecycle error',
+      'Increments to 1 after 1 second, then remains frozen at 1 indefinitely'
     ]
   },
   {
@@ -150,8 +150,8 @@ function Parent() {
     trapExplanation:
       'Do not assume parent effects run first because parent render functions execute earlier. Rendering is top-down, but effect execution on mount is bottom-up.',
     options: [
-      '"Child Effect" followed by "Parent Effect"',
       '"Parent Effect" followed by "Child Effect"',
+      '"Child Effect" followed by "Parent Effect"',
       'Both execute simultaneously in parallel Web Worker threads',
       'Only "Parent Effect" executes'
     ]
@@ -174,9 +174,9 @@ function Parent() {
     trapExplanation:
       'Never use count && <Component /> for numeric checks. Use explicit boolean comparisons: count > 0 && <Component /> or Boolean(count) && <Component />.',
     options: [
-      'Renders the visible number 0 in the DOM (<div>0</div>)',
       'Renders nothing in the DOM (empty <div></div>)',
       'Renders the text "You have messages"',
+      'Renders the visible number 0 in the DOM (<div>0</div>)',
       'Throws a JSX compilation type error'
     ]
   },
@@ -225,10 +225,10 @@ function MyComponent() {
     trapExplanation:
       'StrictMode double-rendering occurs exclusively in development environments (next dev); in production builds (next build / start) every component renders exactly once.',
     options: [
-      'Logs "Render: 1" followed by "Render: 2" during initial mount',
       'Logs only "Render: 1"',
       'Throws a compilation warning for accessing an outer variable',
-      'Logs "Render: 1" every 1000ms indefinitely'
+      'Logs "Render: 1" every 1000ms indefinitely',
+      'Logs "Render: 1" followed by "Render: 2" during initial mount'
     ]
   }
 ];
